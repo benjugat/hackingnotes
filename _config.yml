@@ -2,7 +2,7 @@
 # Site
 
 title: Hacking Notes
-#url: "https://mvc1009.github.io"
+#url: "https://benjugat.github.io"
 baseurl: "/hackingnotes"
 google_analytics_key:
 show_full_navigation: true
@@ -17,7 +17,7 @@ author:
 social:
   name: Hacking Notes
   links:
-    - https://github.com/mvc1009/
+    - https://github.com/benjugat/
 
 # -----
 # Build
