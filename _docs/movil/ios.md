@@ -51,9 +51,27 @@ Once on DFU mode open close the palera1n and execute palera1n another time with 
 sudo ./palera1n-linux-x86_64
 ```
 
-> **Note**: If fails and the phone gets stucked on DFU or recovery mode execute the following command: `sudo ./palera1n --exit-recovery`
+### Troubleshooting
 
-> **Note**: If wifi does not work afeter jailbreak, try to execute palera1n in safe mode: `sudo ./palera1n -s`
+* **Phone stucked in DFU mode**:
+
+If fails and the phone gets stucked on DFU or recovery mode execute the following command: 
+
+```
+sudo ./palera1n --exit-recovery
+```
+
+* **Wifi not working**:
+
+If wifi does not work afeter jailbreak, try to execute palera1n in safe mode.
+
+```
+sudo ./palera1n -s
+```
+
+* **Timeout Error**:
+
+If an error like this `<Error>: Timed out waiting for download mode (error code: -status_exploit_timeout_error)` appears, try to unplug and plug again the device without closing palerain.
 
 
 # Installing Burp certificate
