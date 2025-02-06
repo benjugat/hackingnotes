@@ -22,7 +22,7 @@ Directory traversal (also known as file path traversal) is a web security vulner
 A search for path traversals begins with the examination of URL query strings and form bodies in search of values that appears as file references, including the most common indicator as file extensions.
 
 ```
-<img src="/loadImage?filename=218.png">
+https://example.com/loadImage?filename=image.png
 ```
 
 The `loadImage` URL takes a `filename` parameter and returns the contents of the specified file. The image files themselves are stored on disk in the location `/var/www/images/`.
@@ -34,10 +34,28 @@ The `loadImage` URL takes a `filename` parameter and returns the contents of the
 So we can request the following url to retrieve an arbitrary file from the server's filesystem:
 
 ```
-https://insecure-website.com/loadImage?filename=../../../etc/passwd
+https://example.com/loadImage?filename=../../../../../../etc/passwd
 ```
 
 This causes the application to read from the following file path `/var/www/images/../../../etc/passwd`
+
+> **Note**: In windows `..\` and `../` are both valid in directory traversal sequences.
+
+## Bypassing defenses
+
+Many applications that place user input into file paths implement defenses against path traversal attacks. These can often be bypassed.
+
+If an application strips or blocks directory traversal sequences from the user-supplied filename, it might be possible to bypass the defense using a variety of techniques.
+
+* **Absolute paths**: Using absolute paths such as `filename=/etc/passwd` sometimes works.
+
+* **Nested Sequences**: The use of nested sequences such as `...////` or `....\/`  will be revert to simple travesal sequences when the `../` is stripped.
+
+* **URL Encode or doble URL Encode**: URL encode the `../` characters to `%2e%2e%2f` and `%252e%252e%252f` respectively. Some non estandards encodings such as `..%c0%af` or `..%ef%bc%8f` may work.
+
+* **Expected folder**: The app may require the user-supplied filename to start with the expected base folder like `filename=/var/www/images/image.png` so `filename=/var/www/images/../../../../etc/passwd` could work.
+
+* **Expected extension**: The app may require the user-supplied extension such as `filename=image.png` so we can use the null byte character `%00` to effectively terminate the string. `filename=/etc/passwd%0a.png`
 
 # Interesting Files
 
