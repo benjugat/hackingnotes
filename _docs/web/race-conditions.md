@@ -129,4 +129,34 @@ If the first request still has a longer processing time, but the rest of the req
 
 ### Abusing rate or resource limits
 
-If connection warming doesn't make any difference, there are various solutions to this problem. 
+If connection warming doesn't make any difference, there are various solutions to this problem.
+
+We can solve the problem by sending a large number of dummy requests to intentionally triger the rate or resource limit, we may be bale to cause a suitable server-side delay. This makes the single-packet attack viable even when delayed execution is required.
+
+![](/hackingnotes/images/race-condition-9.png)
+
+# Single-endpoint race conditions
+
+Sending parallel requests with different values to a single endpoint can sometimes trigger powerful race conditions. Consider a password reset mechanism that stores the user ID and reset token in the user's session. 
+
+In this scenario, sending two parallel password reset requests from the same session, but with two different usernames, could potentially cause the following collision: 
+
+![](/hackingnotes/images/race-condition-10.png)
+
+Note the final state when all operations are complete: 
+
+* `session['reset-user'] = victim`
+* `session['reset-token'] = 1234`
+
+To work, the different opperations performed by each process must occur in just the right order. I would likely require multiple attempts to achieve the desired outcome.
+
+Email address confirmations, or any email-based operations, are generally a good target for single-endpoint race conditions. Emails are often sent in a background thread after the server issues the HTTP response to the client, making race conditions more likely. 
+
+
+# Time-sensitive attacks
+
+Sometimes you may not find race conditions, but the techniques for delivering requests with precise timing can still reveal the presence of other vulnerabilities. 
+
+One such example is when high-resolution timestamps are used instead of cryptographically secure random strings to generate security tokens. 
+
+Consider a password reset token that is only randomized using a timestamp. In this case, it might be possible to trigger two password resets for two different users, which both use the same token. All you need to do is time the requests so that they generate the same timestamp. 
