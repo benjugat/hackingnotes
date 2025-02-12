@@ -20,7 +20,7 @@ There are many variations of this kind of attack:
 * Reusing a single CAPTCHA solution.
 * Bypassing an anti-force rate limit.
 
-# Detecting and exploiting limit overrun race conditions
+# Limit overrun race conditions
 
 The challange is timming the requests in order to line up at least two race windows, causing a collision. Even if we sent multiple requests at the same time, there are various uncontrollable and unpredictable external factors that affect the server processes each request and in which order.
 
@@ -66,3 +66,67 @@ def queueRequests(target, wordlists):
     # send all requests in gate '1' in parallel
     engine.openGate('1')
 ```
+
+# Hidden multi-step sequences
+
+In practice, a single request may initiate an entire multi-step sequence behind the scenes, transitioning the application through multiple hidden states that it enters and then exits again before request processing is complete. We'll refer to these as "sub-states". 
+
+If you can identify one or more HTTP requests that cause an interaction with the same data, you can potentially abuse these sub-states to expose time-sensitive variations of the kinds of logic flaws that are common in multi-step workflows. This enables race condition exploits that go far beyond limit overruns. 
+
+
+Here an example of a vulnerable app:
+
+```
+session['userid'] = user.userid
+if user.mfa_enabled:
+	session['enforce_mfa'] = True
+# generate and send MFA code to user
+# redirect browser to MFA code entry form
+```
+
+Here we can see that is a multi-step sequence. The app transitions through a sub-state in which te user temporarily has a valid logged-in session, but MFA ins't yet being enforced.
+
+So we can send a login request along with a request to an authenticated endpoint.
+
+# Multi-endpoint race conditions
+
+Perhaps the most intuitive form of these race conditions are those that involve sending requests to multiple endpoints at the same time. 
+
+Think about the classic logic flaw in online stores where you add an item to your basket or cart, pay for it, then add more items to the cart before force-browsing to the order confirmation page. In this case, we can potentially add more items to our basket during the race windows between when the payment is validated and when the order is finally confirmed.
+
+## Aligning multi-endpoint race windows
+
+When testing for multi-endpoint race conditions, you may encounter issues trying to line up the race windows for each request, even if you send them all at exactly the same time using the single-packet technique. 
+
+![](/hackingnotes/images/race-condition-5.png)
+
+This problem is caused by two factors:
+
+* **Delays by network architechture**: Delay whenever the fornt-end server establishes a new connection to the back-end.
+* **Delays by endpoint-specific processing**: Different endpoints inherently vary in their processing times.
+
+Fortunately there are workarounds to both of these issues.
+
+### Connection warming
+
+Back-end connection delays don't usually interfere with race condition attacks because they typically delay parallel requests equally, so the requests stay in sync.
+
+It's essential to be able to distinguish these delays from those caused by endpoint-specific factors. One way to do this is by warming the connection with one or more inconswquential requests to see if this smoothes out the remaining processing times.
+
+Here we can see an example, where the first request `POST /cart` has 366ms of delay and the second request `POST /cart/checkout` has 121ms.
+
+![](/hackingnotes/images/race-condition-6.png)
+
+The idea is to add for example a `GET /` as the first request of our group, then using the `Send group in sequence (single connection)` option in order to check if we are threating with delays of the architechture or endponint-specific processing.
+
+![](/hackingnotes/images/race-condition-7.png)
+
+As we can see the first requests of the group `GET /` has 357ms of delay whereas the second request now has 58ms. We can see that the time of the same request has been reduced by adding a dummy request to the beginning of the group.
+
+![](/hackingnotes/images/race-condition-8.png)
+
+If the first request still has a longer processing time, but the rest of the requests are now processed within a shot windows, we can ignore the delay and continue testing.
+
+### Abusing rate or resource limits
+
+If connection warming doesn't make any difference, there are various solutions to this problem. 
