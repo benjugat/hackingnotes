@@ -12,13 +12,6 @@ The period of time during which a collision is known as the `race window`. This 
 
 ![](/hackingnotes/images/race-condition-2.png)
 
-There are many variations of this kind of attack:
-
-* Redeeming a gift card multiple times.
-* Rating a product multiple times.
-* Withdrawing or transfering chash in excess of your account balance.
-* Reusing a single CAPTCHA solution.
-* Bypassing an anti-force rate limit.
 
 # Limit overrun race conditions
 
@@ -32,6 +25,14 @@ The challange is timming the requests in order to line up at least two race wind
 This `single-packet` technique enables you to completely neutralize the interference from network jitter by using a single TCP packet to complete 20-30 requests simultaneously.
 
 ![](/hackingnotes/images/race-condition-4.png)
+
+There are many variations of this kind of attack:
+
+* Redeeming a gift card multiple times.
+* Rating a product multiple times.
+* Withdrawing or transfering chash in excess of your account balance.
+* Reusing a single CAPTCHA solution.
+* Bypassing an anti-force rate limit.
 
 ## With Burp Repeater
 
