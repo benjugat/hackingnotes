@@ -4,6 +4,9 @@ category: Web
 order: 10
 ---
 
+> [!NOTE]
+> test
+
 Race conditions are a common type of vulnerability closely related to business logic flaws. They occur when websites process requests concurrently without adequate safeguards. This can lead to multiple distinct threads interacting with the same data at the same time, resulting in a "collision" that causes unintended behavior in the application. A race condition attack uses carefully timed requests to cause intentional collisions and exploit this unintended behavior for malicious purposes.
 
 ![](/hackingnotes/images/race-condition-1.png)
@@ -46,6 +49,8 @@ We just need to agrupate the requests on repeater, and change to `Send group (pa
 
 ## With Turbo Intruder
 
+### Single-Packet
+
 It is also added native support to single-packet attack in turbo intruder. To use single-packet attack in turbo intruder:
 
 1. Ensure that the target support HTTP/2. Incompatible with HTTP/1.
@@ -67,7 +72,27 @@ def queueRequests(target, wordlists):
     # send all requests in gate '1' in parallel
     engine.openGate('1')
 ```
+### Last-byte
 
+```py
+def queueRequests(target, wordlists):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=30,
+                           requestsPerConnection=100,
+                           pipeline=False
+                           )
+
+    # the 'gate' argument blocks the final byte of each request until openGate is invoked
+    for i in range(30):
+        engine.queue(target.req, target.baseInput, gate='race1')
+
+    # wait until every 'race1' tagged request is ready
+    # then send the final byte of each request
+    # (this method is non-blocking, just like queue)
+    engine.openGate('race1')
+    engine.complete(timeout=60)
+
+```
 # Hidden multi-step sequences
 
 In practice, a single request may initiate an entire multi-step sequence behind the scenes, transitioning the application through multiple hidden states that it enters and then exits again before request processing is complete. We'll refer to these as "sub-states". 
