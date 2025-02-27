@@ -260,3 +260,13 @@ The origin server is likely to return an error `404` because will interpret `/pr
 ```
 /profile;%2f%2e%2e%2fstatic
 ```
+
+# Exploiting file name cache rules
+
+Certain files such as `robots.txt`, `index.html` or `favicon.ico` are common files found on web servers. They're often cached due to their infrequent changes. Those files can be cached.
+
+The exploitation is similar to static directory cache rules but specifying the file.
+
+```
+/profile;%2f%2e%2e%2findex.html
+```
