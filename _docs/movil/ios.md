@@ -115,7 +115,7 @@ In order to make and audit some software is needed:
 * **Openssh server**
 * **Frida Server**: Hooking software. Repo -> `https://build.frida.re`.
 * **Newterm**: Terminal
-* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.shadow`.
+* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.me`.
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
 
 ## on Kali
