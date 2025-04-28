@@ -27,7 +27,7 @@ Once properly configured we can jailbreak our iphone.
 
 ![Checkra1n](/hackingnotes/images/checkra1n_03.png)
 
-## Jailbreak iOS 15 with Palera1n
+## Jailbreak iOS 15 with Palera1n (rootless)
 
 Passcode should be deleted previously. You can download palera1n from the following link:
 
@@ -49,6 +49,16 @@ Once on DFU mode open close the palera1n and execute palera1n another time with 
 
 ```
 sudo ./palera1n-linux-x86_64
+```
+
+With a newer version of palera1n its possible to do it with one step.
+
+```
+sudo /bin/sh -c "$(curl -fsSL https://static.palera.in/scripts/install.sh)"
+```
+
+```
+sudo palera1n -l
 ```
 
 ### Troubleshooting
@@ -73,6 +83,10 @@ sudo ./palera1n -s
 
 If an error like this `<Error>: Timed out waiting for download mode (error code: -status_exploit_timeout_error)` appears, try to unplug and plug again the device without closing palerain.
 
+
+* **Loader Palera1n not installed**:
+
+Remember to not set passcode or touchID during the hard reset.
 
 # Installing Burp certificate
 
@@ -107,15 +121,15 @@ Retype New Password: [alpine]
 
 # Installing packages
 
-## on Sileo 
+## on Zebra 
 
 In order to make and audit some software is needed:
 
-* **Filza File Manager**: File manager to install ipa files.
-* **Openssh server**
+* **Filza File Manager**: File manager to install ipa files. -> `http://apt.thebigboss.org/`
+* **Openssh server** -> `https://apt.procurs.us/`
 * **Frida Server**: Hooking software. Repo -> `https://build.frida.re`.
-* **Newterm**: Terminal
-* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.shadow`.
+* **Newterm**: Terminal. -> `https://repo.chariz.com`
+* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.shadow`, `https://ellekit.space`
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
 
 ## on Kali
@@ -142,6 +156,8 @@ frida download <remote> <local>
 frida-trace -U "app" -i "*log*"		# functions called
 
 frida-ios-dump
+
+frida -U -p 1234 -l test_script.js
 ```
 
 * **Objection**:
