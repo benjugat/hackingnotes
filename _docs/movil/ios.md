@@ -128,8 +128,13 @@ In order to make and audit some software is needed:
 * **Filza File Manager**: File manager to install ipa files. -> `http://apt.thebigboss.org/`
 * **Openssh server** -> `https://apt.procurs.us/`
 * **Frida Server**: Hooking software. Repo -> `https://build.frida.re`.
+<<<<<<< HEAD
 * **Newterm**: Terminal. -> `https://repo.chariz.com`
 * **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.shadow`, `https://ellekit.space`
+=======
+* **Newterm**: Terminal
+* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.me`.
+>>>>>>> 249133f15aa3440f8859773ec47846c3c7baf18b
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
 
 ## on Kali
