@@ -129,9 +129,8 @@ In order to make and audit some software is needed:
 * **Openssh server** -> `https://apt.procurs.us/`
 * **Frida Server**: Hooking software. Repo -> `https://build.frida.re`.
 * **Newterm**: Terminal. -> `https://repo.chariz.com`
-* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.shadow`, `https://ellekit.space`
+* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.me` or `https://ellekit.space`
 * **Newterm**: Terminal
-* **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.me`.
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
 
 ## on Kali
