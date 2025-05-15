@@ -24,7 +24,7 @@ $output = $twig->render("Dear " . $_GET['name']);
 The simplest initial approach is to try fuzzing the template by injecting a sequence of special characters commonly used in template expressions
 
 ```
-${{<%[%'"}}%
+$\{\{<%[%'"\}\}%
 <\%=foo\%>
 ```
 
