@@ -200,3 +200,9 @@ Host: 10.10.10.11
 On intruder deselect the `Update Host header to match target` in order to avoid the target is modified during the attack.
 
 ![Burp Host Header](/hackingnotes/images/burp-host-header.png)
+
+# Connection state attacks
+
+For performance reasons, many websites reuse connections for multiple request/response cycles with the same client. Poorly implemented HTTP servers sometimes work on the dangerous assumption that certain properties, such as the Host header, are identical for all HTTP/1.1 requests sent over the same connection.
+
+This may be true of requests sent by a browser, but isn't necessarily the case for a sequence of requests sent from Burp Repeater. This can lead to a number of potential issues. 
