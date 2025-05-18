@@ -12,9 +12,11 @@ OAuth is a commonly used authorization framework that enables websites and web a
 
 Client applications will often use a reputable, battle-hardened OAuth service that is well protected against widely known exploits. However, their own side of the implementation may be less secure.
 
-## **Improper implementation of the implicit grant type**
+## Improper implementation of the implicit grant type
 
-Once the OAuth 2.0 flow is completed and the token is assigned, the information is sent to the application (username, email and the token). We can bypass the authentication by changing the email and username of the request:
+Once the OAuth 2.0 flow is completed and the token is assigned, the information is sent to the application (username, email and the token). We can bypass the authentication by changing the email and username of the request.
+
+The client application will often submit this data to the server in a POST request and then assign the user a session cookie, effectively logging them in. This request is roughly equivalent to the form submission request that might be sent as part of a classic, password-based login. However, in this scenario, the server does not have any secrets or passwords to compare with the submitted data, which means that it is implicitly trusted. 
 
 ```
 # Original Request
@@ -64,7 +66,7 @@ Cookie: session=Pjx1J1HBlOKuYpE6ngdvP0lwKrc6N6xn
 }
 ```
 
-## **Flawed CSRF protection (no state parameter)**
+## Flawed CSRF protection (no state parameter)
 
 Although many components of the OAuth flows are optional, some of them are strongly recommended unless there's an important reason not to use them. One such example is the `state` parameter.
 
@@ -127,9 +129,7 @@ Payload:
 </iframe>
 ```
 
-# **Pentesting OAuth 2.0**
-
-## **redirect\_uri validation**
+##  Flawed redirect\_uri validation
 
 `redirect_uri` parameter should be validated via white list, but sometimes is misconfigured and leads to flaws and vulnerabilities. Things to check:
 
@@ -137,6 +137,53 @@ Payload:
 * Try to append extra values to the default `redirect_uri` parameter: `https://example.com &@foo.evil.com#@bar.evil.com/` .
 * Try duplicate `redirect_uri` parameter.
 * Begin with `localhost` : `http://localhost.evil.com/`.
+
+## Stealing codes and access tokens via a proxy page
+
+Against more robust targets, you might find that no matter what you try, you are unable to successfully submit an external domain as the `redirect_uri`.
+
+Try to work out whether you can change the redirect_uri parameter to point to any other pages on a whitelisted domain. 
+
+You can try to find a interesting subdirectory or use directory traversal tricks to supply any arbitrary path on the domain
+
+```
+https://client-app.com/oauth/callback/../../example/path
+```
+
+And if we have luck to find a open redirect, we can use it to steal the token.
+
+```
+https://oauth-server.example.com/auth?client_id=zg8andmpp2lfjqidng0tr&redirect_uri=/oauth/callback/../../open/redirect&response_type=code&scope=openid%20profile%20email
+```
+
+## OpenID unprotected dynamic client registration
+
+The OpenID specification outlines a standardized way of allowing client applications to register with the OpenID provider. If dynamic client registration is supported, the client application can register itself by sending a `POST` request to a dedicated `/registration` endpoint. The name of this endpoint is usually provided in the configuration file and documentation. 
+
+The register route it is specified on openid configuration file `/.well-known/openid-configuration`.
+
+```
+POST /openid/register HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Host: oauth-authorization-server.com
+Authorization: Bearer ab12cd34ef56gh89
+
+{
+    "application_type": "web",
+    "redirect_uris": [
+        "https://client-app.com/callback",
+        "https://client-app.com/callback2"
+        ],
+    "client_name": "My Application",
+    "logo_uri": "https://client-app.com/logo.png",
+    "token_endpoint_auth_method": "client_secret_basic",
+    "jwks_uri": "https://client-app.com/my_public_keys.jwks",
+    "userinfo_encrypted_response_alg": "RSA1_5",
+    "userinfo_encrypted_response_enc": "A128CBC-HS256",
+    …
+}
+```
 
 # References
 
