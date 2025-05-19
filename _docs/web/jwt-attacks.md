@@ -157,7 +157,6 @@ Follow the steps in order to exploit it using the `JWT Editor` burp extension. A
 3. In the message editor, switch to the extension-generated JSON Web Token tab and modify the token's payload.
 4. Click `Attack` then select `Embed Collaborator payload`. Whem prompted, select `jku`.
 5. Host the key on a exploit server. `Content-Type: application/json`.
-
 ```
 {
     "keys": [
