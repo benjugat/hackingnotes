@@ -32,7 +32,7 @@ By design, servers don't usually store any information about the JWTs that they 
 
 JWT libraries typically provide one method for verifying tokens and another that just decodes them. For example, the Node.js library `jsonwebtoken` has `verify()` and `decode()`.
 
-Occasionally, developers confuse these two methods and only pass incoming tokens to the decode() method. This effectively means that the application doesn't verify the signature at all.
+Occasionally, developers confuse these two methods and only pass incoming tokens to the `decode()` method. This effectively means that the application doesn't verify the signature at all.
 
 So we can change the claims without a valid signature.
 
@@ -116,15 +116,11 @@ You can exploit this behavior by signing a modified JWT using your own RSA priva
 Follow the steps in order to exploit it using the `JWT Editor` burp extension.
 
 1. Generate a new RSA key on the `JWT Editor Keys` tab.
-
 ![JWK RSA Key](/hackingnotes/images/jwk-rsa.png)
-
 2. Send a request containing a JWT to Repeater.
 3. In the message editor, switch to the extension-generated JSON Web Token tab and modify the token's payload.
 4. Click `Attack` then select `Embedded JWK`. Whem prompted, select your newly generated RSA key.
-
 ![Embedded JWK](/hackingnotes/images/jwk-embedded.png)
-
 5. Send the request.
 
 
@@ -156,9 +152,7 @@ JWK Sets like this are sometimes exposed publicly via a standard endpoint, such 
 Follow the steps in order to exploit it using the `JWT Editor` burp extension. Also a exploit server is needed to host the keys.
 
 1. Generate a new RSA key on the `JWT Editor Keys` tab.
-
 ![JWK RSA Key](/hackingnotes/images/jwk-rsa.png)
-
 2. Send a request containing a JWT to Repeater.
 3. In the message editor, switch to the extension-generated JSON Web Token tab and modify the token's payload.
 4. Click `Attack` then select `Embed Collaborator payload`. Whem prompted, select `jku`.
@@ -178,9 +172,7 @@ Follow the steps in order to exploit it using the `JWT Editor` burp extension. A
 ```
 6. Change the `jku` URL to our exploit server: `"jku:"httpps://exploit-server.com/jwks.json"`.
 7. Sign the request with the RSA key. Important, select the option `Update/generate "alg", "typ" and "kid" parameters`.
-
 ![JKU Sign](/hackingnotes/images/jku-sign.png)
-
 8. Send the request.
 
 ## Injecting self-signed JWTs via the kid parameter
@@ -210,12 +202,9 @@ Follow the steps in order to exploit it using the `JWT Editor` burp extension.
 
 1. Generate a new symmetric key in blank on the `JWT Editor Keys` tab.
 ![KID key](/hackingnotes/images/kid-key.png)
-
 2. Send a request containing a JWT to Repeater.
 3. In the message editor, switch to the extension-generated JSON Web Token tab and modify the token's payload.
 4. Modify the `kid` header with a ppath traversal pointing to `/dev/null` file.
-
 ![KID modified](/hackingnotes/images/kid-modified.png)
-
 5. Sign the request with the new key generated
 6. Send the request.
