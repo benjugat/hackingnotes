@@ -415,3 +415,14 @@ X-HTTP-Method-Override: POST
 
 param=bad-stuff-here
 ```
+
+## Normalized cache keys
+
+Any normalization applied to the cache key can also introduce exploitable behavior. In fact, it can occasionally enable some exploits that would otherwise be almost impossible. 
+
+Some caching implementations normalize keyed input when adding it to the cache key. In this case, both of the following requests would have the same key: 
+
+```
+GET /example?param="><test>
+GET /example?param=%22%3e%3ctest%3e
+```
