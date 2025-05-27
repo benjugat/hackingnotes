@@ -291,6 +291,10 @@ We can use `param miner` to do the task and find unkeyed query parameters.
 
 ## Cache parameter cloaking
 
+If you can work out how the cache parses the URL to identify and remove the unwanted parameters, you might find some interesting quirks. Of particular interest are any parsing discrepancies between the cache and the application. This can potentially allow you to sneak arbitrary parameters into the application logic by "cloaking" them in an excluded parameter. 
+
+* **Exploiting parameter parsing quirks**:
+
 The Ruby on Rails framework, for example, interprets both ampersands (&) and semicolons (;) as delimiters. When used in conjunction with a cache that does not allow this, you can potentially exploit another quirk to override the value of a keyed parameter in the application logic. 
 
 ```
@@ -390,4 +394,24 @@ Content-Length: 193
 const setCountryCookie = (country) => { document.cookie = 'country=' + country; };
 const setLangCookie = (lang) => { document.cookie = 'lang=' + lang; };
 alert(1)({"country":"United Kingdom"});
+```
+
+* **Exploiting fat GET support**:
+
+In select cases, the HTTP method may not be keyed. This might allow you to poison the cache with a `POST` request containing a malicious payload in the body. Your payload would then even be served in response to users' `GET` requests. Although this scenario is pretty rare, you can sometimes achieve a similar effect by simply adding a body to a `GET` request to create a "fat" `GET` request: 
+
+```
+GET /?param=innocent HTTP/1.1
+
+param=bad-stuff-here
+```
+
+If the website don't accept a body on `GET` requests, we can override the HTTP method with the following header:
+
+```
+GET /?param=innocent HTTP/1.1
+Host: innocent-website.com
+X-HTTP-Method-Override: POST
+
+param=bad-stuff-here
 ```
