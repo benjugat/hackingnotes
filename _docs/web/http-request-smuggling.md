@@ -6,7 +6,7 @@ order: 26
 
 HTTP request smuggling is a technique for interfering with the way a web site processes sequences of HTTP requests that are received from one or more users. Request smuggling vulnerabilities are often critical in nature, allowing an attacker to bypass security controls, gain unauthorized access to sensitive data, and directly compromise other application users. 
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling.png)
 
 Request smuggling is primarily associated with **HTTP/1 requests**.
 
@@ -43,7 +43,7 @@ Since HTTP/1 has two differents methods for specifyng the length of HTTP message
 * **TE.TE**: Both servers support the `Transfer-Encoding` header, but one of the servers can be induced not to process it by obfuscating the header in some way.
 
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling2.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling2.png)
 
 
 # Burpuiste Setup for smuggling attacks
@@ -54,15 +54,15 @@ We should do this on every request on the repeater tab.
 
 1. Downgrade the protocol to HTTP/1.1.
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling-downgrade.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling-downgrade.png)
 
 2. Disable `Update Content-Length`
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling-update.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling-update.png)
 
 3. Turn on `Non printable characters`
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling-linebreak.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling-linebreak.png)
 
 # CL.TE
 
@@ -79,6 +79,6 @@ Transfer-Encoding: chunked
 SMUGGLED
 ```
 
-[HTTP Request Smuggling](/hackingnotes/images/smuggling-clte.png)
+![HTTP Request Smuggling](/hackingnotes/images/smuggling-clte.png)
 
 # TE.CL
