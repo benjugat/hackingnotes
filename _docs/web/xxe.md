@@ -15,6 +15,17 @@ There are various types of XXE attacks:
 * Exfiltrate data out-of-band
 * To retrieve data via error messages
 
+Here is the simpliest payload to check if entities are enabled:
+
+```
+<!--?xml version="1.0" ?-->
+<!DOCTYPE replace [<!ENTITY example "Doe"> ]>
+ <userInfo>
+  <firstName>John</firstName>
+  <lastName>&example;</lastName>
+ </userInfo>
+```
+
 # Exploiting XXE to retrieve files
 
 To retrieve files we need to modify the `DOCTYPE` element that defines an external entity containing the path to the file and edit a value in the XML that is returned in the application's response.
