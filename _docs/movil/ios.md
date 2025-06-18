@@ -6,6 +6,10 @@ order: 1
 
 Setup of the environment
 
+More info in:
+
+* [https://ios.cfw.guide](https://ios.cfw.guide)
+
 # Jailbreaks
 
 ## Jailbreak iOS 14 with Checkra1n
