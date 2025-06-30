@@ -180,6 +180,46 @@ frida-ps -Uai
 objection --gadget com.example.app explore
 ```
 
+If an error like that occur, try to downgrade from frida 17 to frida 16.
+
+```
+frida.core.RPCException: ReferenceError: 'ObjC' is not defined
+```
+
+On the kali try to install:
+
+```
+pip3 install frida==16.5.2
+```
+
+And execute the following commands on the ios via ssh.
+
+```
+# contains plist
+cd /var/jb/Library/LaunchDaemons/
+
+# move plist to root
+mv re.frida.server.plist ~
+cd ~
+
+#unload frida service
+launchctl unload re.frida.server.plist
+mv re.frida.server.plist /var/jb/Library/LaunchDaemons
+mv /var/jb/Library/LaunchDaemons/re.frida.server.plist /var/jb/Library/LaunchDaemons/re.frida.server.backup
+
+# fetch FRIDA
+wget -O /tmp/frida_16.5.2_iphoneos-arm64.deb https://github.com/frida/frida/releases/download/16.5.2/frida_16.5.2_iphoneos-arm64.deb
+
+# update server, agent and plist
+dpkg -i /tmp/frida_16.5.2_iphoneos-arm64.deb
+
+# restore plist
+mv /var/jb/Library/LaunchDaemons/re.frida.server.backup /var/jb/Library/LaunchDaemons/re.frida.server.plist
+
+# launch service using new plist
+launchctl load /Library/LaunchDaemons/re.frida.server.plist
+```
+
 
 # IPA extractor
 
