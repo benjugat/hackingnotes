@@ -243,6 +243,8 @@ KeyFileName = None
 python3 ./dump.py com.example.app
 ```
 
+It is also possible to zip the bundle app and download it by ssh.
+
 # Evasion techniques
 
 ## SSL Pinning
@@ -598,6 +600,46 @@ function hook_ssl_verify_peer_cert(address) {
 }
 ````
 
+# Static Analysis
+
+## Binary Analysis
+
+First, we need to download the ipa to our computer and install `llvm`.
+
+* **Position Independent Executable (PIE)**: Output must have PIE.
+
+```
+$ llvm-otool-19 -h -v  Runner | grep PIE          
+MH_MAGIC_64   ARM64        ALL  0x00     EXECUTE    81       9088   NOUNDEFS DYLDLINK TWOLEVEL BINDS_TO_WEAK PIE
+```
+
+* **Stack Smashing Protections**: Output must have `stack_chk_fail` and `stack_chk_guard`.
+
+```
+$ llvm-otool-19 -I -v  Runner | grep stack        
+0x00000001000bafc4   265 ___stack_chk_fail
+0x00000001000fc198   266 ___stack_chk_guard
+```
+
+* **Automatic Reference Counting (ARC)**: Output must have:
+
+```
+_objc_retain
+_objc_release
+_objc_storeStrong
+_objc_releaseReturnValue
+_objc_autoreleaseReturnValue
+_objc_retainAutoreleaseReturnValue
+```
+
+```
+$ llvm-otool-19 -I -v  Runner | grep _objc_           
+0x00000001000bb21c   362 _objc_alloc
+0x00000001000bb228   363 _objc_allocWithZone
+0x00000001000bb234   364 _objc_alloc_init
+0x00000001000bb240   365 _objc_autorelease
+0x00000001000bb24c   366 _objc_autoreleasePool
+```
 
 
 # References:
