@@ -18,3 +18,13 @@ proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(1000)
 println "out> $sout err> $serr"
 ```
+
+
+Decode a base64 string and store it to a file, useful to upload binaries on the server.
+
+```
+def outputFile = new File("/tmp/isec.txt") 
+def base64Content = "SG9sYSBtYW51" 
+byte[] decodedBytes = Base64.decoder.decode(base64Content)
+outputFile.bytes = decodedBytes
+```
