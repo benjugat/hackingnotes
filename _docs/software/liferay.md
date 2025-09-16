@@ -25,7 +25,7 @@ Write on a file:
 ```
 def file = new File("test.txt")
 file.append("outuput\n")
-``
+```
 
 Decode a base64 string and store it to a file, useful to upload binaries on the server.
 
