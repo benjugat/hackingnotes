@@ -23,8 +23,8 @@ println "out> $sout err> $serr"
 Decode a base64 string and store it to a file, useful to upload binaries on the server.
 
 ```
-def outputFile = new File("/tmp/isec.txt") 
-def base64Content = "SG9sYSBtYW51" 
+def outputFile = new File("/tmp/test.txt") 
+def base64Content = "<BASE64-CONTENT>" 
 byte[] decodedBytes = Base64.decoder.decode(base64Content)
 outputFile.bytes = decodedBytes
 ```
