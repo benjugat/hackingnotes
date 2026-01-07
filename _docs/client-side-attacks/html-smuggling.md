@@ -6,7 +6,7 @@ order: 4
 
 It is a discret delivery method of payloads. An attacker can embed a link in an email. When the victim reads the email and visits the webpage, js code will use html smuggling to automatically save the dropper file.
 
-'''
+```html
 <html>
     <script>
         function base64ToArrayBuffer(base64){ 
@@ -30,7 +30,7 @@ It is a discret delivery method of payloads. An attacker can embed a link in an 
         window.URL.revokeObjectURL(url);
     </script>
 </html>
-'''
+```
 
 It will be executed once the victim enters to the download folder and execute it manually.
 
