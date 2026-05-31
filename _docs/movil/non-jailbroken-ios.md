@@ -13,7 +13,11 @@ On a jailbroken device, you can run `frida-server`, which handles injection for 
 
 ## Debug Version
 
-Frist we need to create our signing certificate and the provisioning profile in xcode. After create that we can Sign our IPA without with the flag `get-task-allow` in `iOS App Signer`.
+Applications signed with the entitlement `get_task_allow` allow third party applications to run a function called `task_for_pid()` with the process ID of the initial application as argument in order to get the task port over it (be able to control it and access it’s memory).
+
+However, this technique only works if the app binary **isn't FairPlay-encrypted** (i.e., if it was obtained from the App Store).
+
+To abuse that we need to create our signing certificate and the provisioning profile in xcode. After that we can sign our IPA without with the flag `get-task-allow` in `iOS App Signer`.
 
 ![iOS App Signer](/hackingnotes/images/ios-app-signer.jpg)
 
