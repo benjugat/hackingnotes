@@ -78,13 +78,24 @@ It's possible to obtain a decrypted IPA.
 
 ## Decrypting the app
 
-To decrypt the IPA we need to isntall it on a jailbroken device. If the version is not supported to the old device we can modify the `Info.plist`.
+To decrypt the IPA we need to isntall it on a jailbroken device. If the version is not supported to the old device we can modify the `Info.plist` with `TextEdit`.
 
 ```
 unzip example.ipa -d example
 ```
 
 Change the minimum supported version and zip it again.
+
+```
+open -a TextEdit Info.plist
+```
+
+If the plist is in binary format convert it to xml and after the changes turn back to binary.
+
+```
+plutil -convert xml1 Info.plist
+plutil -convert binary1 Info.plist
+```
 
 ```
 cd example
