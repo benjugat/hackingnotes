@@ -97,6 +97,8 @@ plutil -convert xml1 Info.plist
 plutil -convert binary1 Info.plist
 ```
 
+Zip it:
+
 ```
 cd example
 zip -r ../example-noversion.ipa *
