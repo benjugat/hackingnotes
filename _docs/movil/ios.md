@@ -136,6 +136,7 @@ In order to make and audit some software is needed:
 * **Shadow**: Jailbreak bypass. Repo -> `https://ios.jjolano.me` or `https://ellekit.space`
 * **Newterm**: Terminal
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
+* **HookKit Module (Cydia Substrate)**: -> `https://ios.jjolano.me`
 
 ## on Kali
 
@@ -220,10 +221,27 @@ mv /var/jb/Library/LaunchDaemons/re.frida.server.backup /var/jb/Library/LaunchDa
 launchctl load /Library/LaunchDaemons/re.frida.server.plist
 ```
 
+# Install unsigned IPAs
 
-# IPA extractor
+To install an unsigned IPA we need to install on our jailbroken device `AppSync Unified`. You can download the following `.deb` package and install it via `NewTerm`.
+
+* Rootless: [https://github.com/charlie-mtz/AppSync/releases/download/113.0/ai.akemi.appsyncunified_113.0_iphoneos-arm64.deb](https://github.com/charlie-mtz/AppSync/releases/download/113.0/ai.akemi.appsyncunified_113.0_iphoneos-arm64.deb)
+* Rootful: [https://github.com/charlie-mtz/AppSync/releases/download/113.0/ai.akemi.appsyncunified_113.0_iphoneos-arm.deb] (https://github.com/charlie-mtz/AppSync/releases/download/113.0/ai.akemi.appsyncunified_113.0_iphoneos-arm.deb)
+
+```
+sudo dpkg -i ai.akemi.appsyncunified_113.0_iphoneos-arm64.deb
+```
+
+> **Note** `AppSync unified` has `cydia substrate` as a dependency. Install it via Zebra or Sileo.
+
+
+# IPA extractor and decryption
+
+## Frida-ios-dump
 
 We can extract the IPA from an installed application from APP Store.
+
+> **Note**: Won't work with unsigned/re-signed/invalid code signatures.
 
 * [https://github.com/AloneMonkey/frida-ios-dump](https://github.com/AloneMonkey/frida-ios-dump)
 
@@ -244,6 +262,7 @@ python3 ./dump.py com.example.app
 ```
 
 It is also possible to zip the bundle app and download it by ssh.
+
 
 # Evasion techniques
 
@@ -298,6 +317,7 @@ ios hooking watch method "-[<class_name> <method_name>]" --dump-args --dump-retu
 ios hooking set return_value "-[<class_name> <method_name>]" false 		# change boolean return
 ios hooking generate simple <class_name> 		# generate a hooking template
 ```
+
 ## With frida
 
 ```

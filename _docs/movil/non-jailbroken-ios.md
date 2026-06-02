@@ -110,9 +110,11 @@ Then, install it to the jailbroken device.
 ideviceintaller install example-noversion.ipa -w
 ```
 
-> **Note**: `AppSync Unified tweak` from Cydia is needed to prevent any `invalid signature` errors.
+> **Note**: `AppSync Unified` from Cydia is needed to prevent any `invalid signature` errors.
 
-Finally you can use `Iridium Tweak` to obtain the decrypted IPA.
+Finally you can use `Iridium` to obtain the decrypted IPA.
+
+> **Note**: With `ipadecrypt` it's possible to download and decrypt it directly from appstore. There's no need to change the minimum version.
 
 # References
 
