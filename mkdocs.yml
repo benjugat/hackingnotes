@@ -173,8 +173,7 @@ nav:
       - movil/ios.md
       - movil/non-jailbroken-ios.md
 
-  - Network:
-      - network/index.md
+  - Services:
       - services/index.md
       - services/ftp.md
       - services/ssh.md
@@ -190,6 +189,8 @@ nav:
       - services/nfs.md
       - services/mysql.md
       - services/rdp.md
+
+  - Hacking WiFi:
       - hacking-wifi/index.md
       - hacking-wifi/theory.md
       - hacking-wifi/wep.md
