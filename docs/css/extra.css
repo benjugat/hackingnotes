@@ -40,3 +40,38 @@
 .md-footer-meta {
   font-size: 0.7rem;
 }
+
+/* -------------------------------------------------------------------------
+ * Sidebar: force every section's sub-items to be hidden by default, and
+ * only reveal them when the user explicitly clicks the section title.
+ *
+ * This belt-and-suspenders rule overrides any case where Material's
+ * default CSS or JS might leave a section expanded (e.g. when arriving
+ * from a page that was already inside that section, or when persistent
+ * state from `navigation.instant` survives across navigations).
+ * ------------------------------------------------------------------------- */
+.md-nav__item--section.md-nav__item--nested > .md-nav {
+  display: none !important;
+}
+
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__toggle:checked
+  ~ .md-nav {
+  display: block !important;
+}
+
+/* Visual cue: section titles must look clickable */
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__link.md-nav__container
+  > a.md-nav__link,
+.md-nav__item--section.md-nav__item--nested
+  > label.md-nav__link {
+  cursor: pointer;
+}
+
+/* Hover state to make the click target obvious */
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__link.md-nav__container:hover {
+  background-color: var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+}

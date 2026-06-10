@@ -71,6 +71,9 @@ extra:
 extra_css:
   - css/extra.css
 
+extra_javascript:
+  - javascripts/extra.js
+
 markdown_extensions:
   - admonition
   - attr_list
@@ -125,9 +128,11 @@ nav:
   - Changelog: changelog.md
 
   - Reconnaissance:
+      - reconnaissance/index.md
       - reconnaissance/information-gathering.md
 
   - Enumeration:
+      - enumeration/index.md
       - enumeration/host-discovery.md
       - enumeration/os-discovery.md
       - enumeration/port-scanning.md
@@ -135,6 +140,7 @@ nav:
       - enumeration/waf-evasion.md
 
   - Web:
+      - web/index.md
       - web/file-inclusion.md
       - web/broken-authentication.md
       - web/sqli.md
@@ -166,10 +172,13 @@ nav:
       - web/prototype-pollution.md
 
   - Mobile:
+      - movil/index.md
       - movil/ios.md
       - movil/non-jailbroken-ios.md
 
   - Network:
+      - network/index.md
+      - services/index.md
       - services/ftp.md
       - services/ssh.md
       - services/smtp.md
@@ -184,17 +193,20 @@ nav:
       - services/nfs.md
       - services/mysql.md
       - services/rdp.md
+      - hacking-wifi/index.md
       - hacking-wifi/theory.md
       - hacking-wifi/wep.md
       - hacking-wifi/wpa-wpa2-psk.md
       - hacking-wifi/wpa-wpa2-peap-enterprise.md
 
   - Exploiting:
+      - exploiting/index.md
       - exploiting/buffer-overflow.md
       - exploiting/bof-windows.md
       - exploiting/bof-linux.md
 
   - Active Directory:
+      - active-directory/index.md
       - active-directory/introduction.md
       - active-directory/domain-enumeration.md
       - active-directory/lateral-movement.md
@@ -207,12 +219,14 @@ nav:
       - active-directory/ad-attacks.md
 
   - Client-Side Attacks:
+      - client-side-attacks/index.md
       - client-side-attacks/evil-pdf.md
       - client-side-attacks/microsoft-office-macros.md
       - client-side-attacks/html-application.md
       - client-side-attacks/html-smuggling.md
 
   - Post-Exploitation:
+      - post-exploitation/index.md
       - post-exploitation/av-evasion.md
       - post-exploitation/bypass-uac.md
       - post-exploitation/get-credentials.md
@@ -224,11 +238,13 @@ nav:
       - post-exploitation/bypass-applocker.md
 
   - Privilege Escalation:
+      - privilege-escalation/index.md
       - privilege-escalation/linux-privesc.md
       - privilege-escalation/windows-privesc.md
       - privilege-escalation/run-commands-as.md
 
   - Software:
+      - software/index.md
       - software/wordpress.md
       - software/drupal.md
       - software/tomcat.md
@@ -238,6 +254,7 @@ nav:
       - software/liferay.md
 
   - Other:
+      - other/index.md
       - other/hacking-aws.md
       - other/hacking-with-powershell.md
       - other/hacking-python.md
