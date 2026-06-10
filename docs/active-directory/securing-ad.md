@@ -5,7 +5,7 @@ title: Hardening Active Directory
 In this section some detection, defense tools and security advisors are going to be discussed.
 
 
-# Protect / Limit Domain Admins
+## Protect / Limit Domain Admins
 
 It is recommended to protect and limit domain admins:
 
@@ -14,7 +14,7 @@ It is recommended to protect and limit domain admins:
 * Try to never run a service with a Domain Admin (Service Accounts passwords are stored in LSAS and no protections are setted).
 * Set `Account is sensitive and cannot be delegated` for Domain Admins.
 
-# Windows Defender
+## Windows Defender
 
 Microsoft Defender Antivirus is available in Windows 10 and Windows 11, and in versions of Windows Server.
 
@@ -33,7 +33,7 @@ More info in:
 
 * [https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/microsoft-defender-antivirus-windows?view=o365-worldwide](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/microsoft-defender-antivirus-windows?view=o365-worldwide)
 
-# LSA Protection
+## LSA Protection
 
 In Windows 8.1 and later microsoft has provided addition protection for the LSA to prevent untrusted processes from being able to read its memory or inject code. This will prevent `mimikatz` `sekurlsa::logonpasswords` for working properly.
 
@@ -51,7 +51,7 @@ mimikatz # !+
 mimikatz # !processprotect /process:lsass.exe /remove
 ```
 
-# Disable WDigest
+## Disable WDigest
 
 _Windows Digest (WDigest)_ is a authentication protocol introduced in Windows XP and was designed to be used with HTTP protocol which means that **plain-text passwords** are stored in the LSASS.
 
@@ -70,7 +70,7 @@ reg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v Negot
 
 > **Note**: Microsoft has this protocol **enabled by default** in Windows XP, Windows 8.0, Windows Server 2003 and Windows Server 2012.
 
-# LAPS
+## LAPS
 
 LAPS (Local Administrator Password Solution) is a centralized storage of passwords for local administrator in active directory with a periodic randomizing where read permissions are access controlled. Computer objects where LAPS is activated has two new attributes:
 
@@ -84,7 +84,7 @@ More info in:
 
 * [https://docs.microsoft.com/es-es/defender-for-identity/cas-isp-laps](https://docs.microsoft.com/es-es/defender-for-identity/cas-isp-laps)
 
-# Credential Guard
+## Credential Guard
 
 _Credential Guard_ or _Windows Defender Credential Guard_ is a new feature in Windows 10 Entreprise and Education edition and Windows Server 2016 that helps to protect your credentials on a machine from threats such as PassTheHash or Over-PassTheHash by restricting access to NTLM hashes and TGTs.
 
@@ -117,7 +117,7 @@ More info in:
 
 * [https://docs.microsoft.com/es-es/windows/security/identity-protection/credential-guard/credential-guard-manage](https://docs.microsoft.com/es-es/windows/security/identity-protection/credential-guard/credential-guard-manage)
 
-# AppLocker
+## AppLocker
 
 AppLocker is a Windows Defender functionallity which helps you control which apps and files users can run. These include executable files, scripts, Windows Installer files, dynamic-link libraries (DLLs), packaged apps, and packaged app installers.
 
@@ -131,15 +131,15 @@ AppLocker can help you:
 * Simplify creating and managing AppLocker rules by using Windows PowerShell.
 
 
-# Powershell 5.1
+## Powershell 5.1
 
 Upgrade to Windows PowerShell 5.1, this offers multiple security controls which certainly increase the costs to attacker.
 
-## Whitelisting
+### Whitelisting
 
 Use Application Control Policies (Applocker) and Device Guard to restrict PowerShell scripts. If Applocker is configured in "Allow mode" for scripts, Powershell 5 automatically uses the Constrained Language Mode.
 
-### Bypass Whitelisting
+#### Bypass Whitelisting
 
 If PowerShell is blocked, `.NET` code can use `System.Management.Automation` NameSpace to load PowerShell functionality.
 
@@ -147,7 +147,7 @@ If PowerShell is blocked, `.NET` code can use `System.Management.Automation` Nam
 C:\Windows\Microsoft.NET\Framework\v4.0.30319>msbuild.exe pshell.xml
 ```
 
-## Enhanced Logging
+### Enhanced Logging
 
 Enhanced Logging allows BlueTeams to have a very in-depth look of an attacker's activities if he is using PowerShell.
 
@@ -155,7 +155,7 @@ Warning level script block logging only for a known list of suspicious commands.
 
 A huge number of logs when module logging is enabled.
 
-### Script Block Logging
+#### Script Block Logging
 
 Set `EnableSciptBlockLogging` to `1` in the following registry:
 
@@ -169,7 +169,7 @@ PowerShell v5 onwards logs (Warning level Event ID 4104) some suspicious script 
 
 It also records the original obfuscated code as well decoded and deobfuscated code.
 
-### Module Logging
+#### Module Logging
 
 Available since PowerShell v3, module logging logs pipeline execution and command execution events.
 
@@ -190,7 +190,7 @@ And create a key `*` and set it to `*` for all modules.
 HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\ModuleLogging\ModuleNames
 ```
 
-### Bypass Script Block Logging
+#### Bypass Script Block Logging
 
 Script Block logging can be bypassed on the current session without admin rights by disabing it from the Group Policy Cache.
 
@@ -200,7 +200,7 @@ $GroupPolicyField=[ref].Assembly.GetType('System.Management.Automation.Utils')."
 ```
 * [https://cobbr.io/ScriptBlock-Logging-Bypass.html](https://cobbr.io/ScriptBlock-Logging-Bypass.html)
 
-### Unload Warning Level Script Block Logging
+#### Unload Warning Level Script Block Logging
 
 Recall that the Warning level script block logging which is enabled by default uses a lis of known bad words.
 
@@ -214,7 +214,7 @@ Turns out the logging can be bypassed for the current session without admin righ
 [ScriptBlock]."GetFiel`d"('signatures','N'+'onPublic,Static').SetValue($null,(New-ObjectCollections.Generic.HashSet[string]));[Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('IgA8AE0AeQAgAHMAdQBzAHAAaQBjAGkAbwB1AHMAIABOAG8AbgBQAHUAYgBsAGkAYwAgAHAAYQB5AGwAbwBhAGQAPgAiAA=='))|iex
 ```
 
-## System-Wide Transcription
+### System-Wide Transcription
 
 Enables transciption (console logging) for everything which uses PowerShell engine such as powershell.exe, PowerShell ISE, custom hosts, .NET dll, msbuild, installutil, etc...
 
@@ -234,7 +234,7 @@ The transcripts are written as text files and can quicly grow in size because th
 
 > **Note**: Too many logs in an enterprise level network. Enabling Transcripts on a DC breaks the Active Directory Administartrion Centre GUI application.
 
-## AMSI
+### AMSI
 
 AMSI (AntiMalware Scan Interface) provides the registered antivirus access to contents of a script before execution.
 
@@ -244,7 +244,7 @@ Enabled by-default on Windows 10 and supported by Windows Defender.
 
 > **Note**: AMSI has no detection mechanism. It is dependent on the signature based detection by the registered antivirus.
 
-## Constrained Language
+### Constrained Language
 
 Language mode in PoweShell is used to control access to different elements for a PowerShell session.
 
@@ -255,7 +255,7 @@ Intended to work with Applocker in Allow mode or UMCI (Device Guard User Mode Co
 > **Note**: Not easy to implement enterprise-wide.
 
 
-## JEA (Just Enough Administration)
+### JEA (Just Enough Administration)
 
 JEA (Just Enough Administration) provides role based access control for PowerShell based remote delegated administration. With JEA non-admin users can connect remotely to machines for doing specific tasks.
 
@@ -263,7 +263,7 @@ Focused more on securing privileged access than solving a problem introduced wit
 
 JEA endpoints have PowerShell transcription and logging enabled.
 
-# Device Guard
+## Device Guard
 
 _Device Guard_ or _Windows Defender Device Guard_ is a group of features designed to harden a system agains malware attacks. Its focus in preventing malicious code from running by ensuring only known good code can run.
 
@@ -280,7 +280,7 @@ More info in:
 * [https://docs.microsoft.com/es-es/windows/security/threat-protection/device-guard/requirements-and-deployment-planning-guidelines-for-virtualization-based-protection-of-code-integrity](https://docs.microsoft.com/es-es/windows/security/threat-protection/device-guard/requirements-and-deployment-planning-guidelines-for-virtualization-based-protection-of-code-integrity)
 
 
-# Protected Users Group
+## Protected Users Group
 
 _Protected Users_ is a gorup introcued in Server 2012 R2 for better protection against credential theft. Credentials of all members of the the protected users group are not cached in a insecure way. A user added to this group:
 
@@ -323,7 +323,7 @@ More info in:
 * [https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory)
 
 
-# Use of Privileged Administrative Workstations (PAWs)
+## Use of Privileged Administrative Workstations (PAWs)
 
 If the user of the IT department which is a Domain Admin is compromised, in that case there is a risk for the infraestructure and the active directory. For that reason the administrator needs to have aparate hardened workstation to permorm sensitive tasks like administration of domain controllers, cloud infraestructure, sensistive business functions etc...
 
@@ -334,7 +334,7 @@ Admin jump servers should be configured to be accessed only from a PAW. We can a
 * Separate privilege and hardware for administrative and normal tasks.
 * Having a VM on a PAW for user tasks.
 
-# AD Administrative Tier Model
+## AD Administrative Tier Model
 
 The _Active Directory Administrative Tier Model_ is composed of three levels only for administrative accounts:
 
@@ -342,20 +342,20 @@ The _Active Directory Administrative Tier Model_ is composed of three levels onl
 * **Tier 2**: Accounts, groups and computers which have access to resources having significant amount of business value. A common example role is server administrators who maintain these operating systems with the ability to impact all enterprise servers.
 * **Tier 3**: Administrator accounts which have administrative control of a significant amount of business value that is hosted on user workstations and devices. Examples include Help Desk and computer support administrators because can impact the integrity of almost any user data.
 
-## Control Restrictions
+### Control Restrictions
 
 Control restrictions is what admins can control.
 
 ![](../images/tier_model_control.png)
 
-## Logon Restrictions
+### Logon Restrictions
 
 Logon restrictions is where admins can logon.
 
 ![](../images/tier_model_logon.png)
 
 
-# Enhanced Security Admin Environment (ESAE)
+## Enhanced Security Admin Environment (ESAE)
 
 Enhanced Security Admin Environment (ESAE) is a dedicated administrative fores for managing critical assets like administrative users, groups and computers. Since a forest is considered a security boundary rather than a domain, this model provides enhanced security controls.
 
@@ -364,4 +364,4 @@ The amdinistrative forest is also called the **Red Forest**. Administrative user
 Selective authentication to the Red Forest enables stricter security controls and logon of users from non-administrative forests.
 
 
-# Deception (Decoy)
+## Deception (Decoy)

@@ -1,8 +1,3 @@
----
-title: Web
-description: Web application attacks and methodologies: OWASP Top 10, logic flaws, smuggling, deserialization, SSRF, JWT and more.
----
-
 # Web
 
 Web application attacks and methodologies: OWASP Top 10, logic flaws, smuggling, deserialization, SSRF, JWT and more.

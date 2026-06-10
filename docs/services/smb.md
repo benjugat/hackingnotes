@@ -4,13 +4,13 @@ title: PORT 139/tcp, 445/tcp - SMB
 
 SMB stands for Server Message Block. It’s a protocol for sharing resources like files, printers, in general any resource which should be retreivable or made available by the server.
 
-# Introduction
+## Introduction
 
 It primarily runs on port 445 or port 139 depending on the server . It is actually natively available in windows, so windows users don’t need to configure anything extra as such besides basic setting up. In Linux however ,it is a little different. To make it work for Linux, you need to install a samba server because Linux natively does not use SMB protocol.
 
-# Scanning the network
+## Scanning the network
 
-## Nmap
+### Nmap
 
 We can do a port scanner selecting the NetBIOS and SMB ports:
 
@@ -19,7 +19,7 @@ nmap -v -p 139,445 -oG smb.nmap <ip-addr>/<mask>
 grep "Up" smb.nmap | cut -d " " -f 2
 ```
 
-## Nbtscan
+### Nbtscan
 
 We can scan for NetBIOS Service around the network in order to collect additional NetBIOS information like server names:
 
@@ -27,9 +27,9 @@ We can scan for NetBIOS Service around the network in order to collect additiona
 sudo nbtscan -r <ip-addr>/<mask>
 ```
 
-# Enumeration a target
+## Enumeration a target
 
-## Nmap scripts
+### Nmap scripts
 
 `Nmap` contains many useful NSE scripts that can be used to discover and enumerate SMB services. All these scripts are in the folder `/usr/share/nmap/scripts/`
 
@@ -43,7 +43,7 @@ You can launch the script with the `--script` parameter:
 nmap -v -p 139,445 --script=<script> <ip-addr>
 ```
 
-## Enum4linux
+### Enum4linux
 
 Enum4linux is an script that automatize some tasks:
 
@@ -51,7 +51,7 @@ Enum4linux is an script that automatize some tasks:
 enum4linux -a [-u <user> -p <pass>"] <ip-addr>
 ```
 
-## Shared Folders
+### Shared Folders
 
 There are some available `nmap` scripts that could help us in that work:
 
@@ -104,7 +104,7 @@ Finally you can mount the share on your kali.
 sudo mount -t cifs -o vers=2.0,username=guest,password=guest //<ip-addr>/<share>
 ```
 
-# Shell Command Files (SCF) attack
+## Shell Command Files (SCF) attack
 
 It is not new that SCF (Shell Command Files) files can be used to perform a limited set of operations such as showing the Windows desktop or opening a Windows explorer. However a SCF file can be used to access a specific UNC path which allows the penetration tester to build an attack. The code below can be placed inside a text file which then needs to be planted into a network share.
 
@@ -130,7 +130,7 @@ responder -I eth0
 
 * [https://pentestlab.blog/2017/12/13/smb-share-scf-file-attacks/](https://pentestlab.blog/2017/12/13/smb-share-scf-file-attacks/)
 
-# References:
+## References:
 
 * [https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b](https://medium.com/@arnavtripathy98/smb-enumeration-for-penetration-testing-e782a328bf1b)
 * [https://book.hacktricks.xyz/pentesting/pentesting-smb#port-139](https://book.hacktricks.xyz/pentesting/pentesting-smb#port-139)

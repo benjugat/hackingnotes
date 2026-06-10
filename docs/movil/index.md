@@ -1,11 +1,6 @@
----
-title: Mobile
-description: iOS testing notes covering jailbroken and non-jailbroken devices.
----
-
 # Mobile
 
-iOS testing notes covering jailbroken and non-jailbroken devices.
+Mobile pentesting notes.
 
 ## Contents
 

@@ -4,7 +4,7 @@ title: PORT 2049/tcp - NFS
 
 Network File System is a distributed file system protocol originally developed by Sun Microsystems in 1984, allowing a user on a client computer to access files over a computer network much like local storage is accessed.
 
-# Enumeration
+## Enumeration
 
 `showmount` gives us the opportunity to know which folder are available for us.
 
@@ -12,7 +12,7 @@ Network File System is a distributed file system protocol originally developed b
 showmount -e <IP>
 ```
 
-# Mounting the folder
+## Mounting the folder
 
 We can mount the folder with `mount` command.
 
@@ -20,7 +20,7 @@ We can mount the folder with `mount` command.
 mount -t nfs [-o vers=2] <IP>:<NFS_FOLDER> <LOCAL_FOLDER> -o nolock
 ```
 
-# Configuration
+## Configuration
 
 The file `/etc/exports` show the NFS configuration applied on the server.
 
@@ -37,7 +37,7 @@ $ cat /etc/exports
 
 > **Note**: If we have access to the server and a NFS share has this configuration, we can impersonate any user on the attack machine except for the root user.
 
-# Impersonate a User (No Root)
+## Impersonate a User (No Root)
 
 So what we’ll do is add the user frank (user to impersonate) on our kali machine and change his id to 1000 (Assigned on the target).
 
@@ -75,7 +75,7 @@ chmod u+s setuid
 
 And execute it on the target machine.
 
-# References
+## References
 
 * [https://book.hacktricks.xyz/pentesting/nfs-service-pentesting](https://book.hacktricks.xyz/pentesting/nfs-service-pentesting)
 * [https://ethicalhackingguru.com/how-to-enumerate-and-exploit-nfs-shares/](https://ethicalhackingguru.com/how-to-enumerate-and-exploit-nfs-shares/)

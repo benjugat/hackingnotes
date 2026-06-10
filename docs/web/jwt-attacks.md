@@ -22,11 +22,11 @@ With Bupsuite we can modify, sign and attack JWT. Check for more info the follow
 
 * [https://portswigger.net/burp/documentation/desktop/testing-workflow/session-management/jwts](https://portswigger.net/burp/documentation/desktop/testing-workflow/session-management/jwts)
 
-# Exploiting flawed JWT signature verification
+## Exploiting flawed JWT signature verification
 
 By design, servers don't usually store any information about the JWTs that they issue. Instead, each token is an entirely self-contained entity. So if we can modify the claims and bypass the signature verification we can modify our rights.
 
-## Accepting arbitrary signatures
+### Accepting arbitrary signatures
 
 JWT libraries typically provide one method for verifying tokens and another that just decodes them. For example, the Node.js library `jsonwebtoken` has `verify()` and `decode()`.
 
@@ -36,7 +36,7 @@ So we can change the claims without a valid signature.
 
 ![JWT with arbitrary signature](../images/jwt-nosignature.png)
 
-## Accepting tokens with no signature
+### Accepting tokens with no signature
 
 Among other things, the JWT header contains an `alg` parameter. This tells the server which algorithm was used to sign the token and, therefore, which algorithm it needs to use when verifying the signature. 
 
@@ -60,7 +60,7 @@ JWTs can be signed using a range of different algorithms, but can also be left u
 
 ![JWT with arbitrary signature](../images/jwt-none.png)
 
-# Brute-forcing secret keys
+## Brute-forcing secret keys
 
 Some signing algorithms, such as HS256 (HMAC + SHA-256), use an arbitrary, standalone string as the secret key. Just like a password, it's crucial that this secret can't be easily guessed or brute-forced by an attacker. 
 
@@ -79,7 +79,7 @@ Once cracked we should add the key on JWT Editor burp extension as a symmetric k
 ![JWT Key](../images/jwt-key.png)
 
 
-# JWT header parameter injections
+## JWT header parameter injections
 
 According to the JWS specification, only the alg header parameter is mandatory. In practice, however, JWT headers (also known as JOSE headers) often contain several other parameters. The following ones are of particular interest to attackers. 
 
@@ -89,7 +89,7 @@ According to the JWS specification, only the alg header parameter is mandatory. 
 
 These user-controllable parameters each tell the recipient server which key to use when verifying the signature. The idea is to trick the server to use our injected key instead of the server one.
 
-## Injecting self-signed JWTs via the jwk parameter
+### Injecting self-signed JWTs via the jwk parameter
 
 The JSON Web Signature (JWS) specification describes an optional `jwk` header parameter, which servers can use to embed their public key directly within the token itself in JWK format. 
 
@@ -122,7 +122,7 @@ Follow the steps in order to exploit it using the `JWT Editor` burp extension.
 5. Send the request.
 
 
-## Injecting self-signed JWTs via the jku parameter
+### Injecting self-signed JWTs via the jku parameter
 
 Instead of embedding public keys directly using the `jwk` header parameter, some servers let you use the `jku` (JWK Set URL) header parameter to reference a JWK Set containing the key. When verifying the signature, the server fetches the relevant key from this URL. 
 
@@ -172,7 +172,7 @@ Follow the steps in order to exploit it using the `JWT Editor` burp extension. A
 ![JKU Sign](../images/jku-sign.png)
 8. Send the request.
 
-## Injecting self-signed JWTs via the kid parameter
+### Injecting self-signed JWTs via the kid parameter
 
 Servers may use several cryptographic keys for signing different kinds of data, not just JWTs. For this reason, the header of a JWT may contain a `kid` (Key ID) parameter, which helps the server identify which key to use when verifying the signature. 
 
@@ -193,7 +193,7 @@ You could theoretically do this with any file, but one of the simplest methods i
 
 If the server stores its verification keys in a database, the kid header parameter is also a potential vector for SQL injection attacks. 
 
-### Kid header path traversal
+#### Kid header path traversal
 
 Follow the steps in order to exploit it using the `JWT Editor` burp extension.
 

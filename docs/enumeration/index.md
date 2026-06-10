@@ -1,8 +1,3 @@
----
-title: Enumeration
-description: Host and service enumeration: discovery, port scanning, OS fingerprinting, DNS harvesting and WAF evasion techniques.
----
-
 # Enumeration
 
 Host and service enumeration: discovery, port scanning, OS fingerprinting, DNS harvesting and WAF evasion techniques.

@@ -4,7 +4,7 @@ title: WAF Evasion
 
 In this section I will explain techniques to found the original IP of the hosted webapp.
 
-# SSL Certificates
+## SSL Certificates
 
 First we need to look inside the SSL Certificate of the webapp in order to find the fingerprint \(SHA256\)
 
@@ -33,7 +33,7 @@ curl -kv https://190.12.34.45/
 curl -kv https://190.12.34.46/
 ```
 
-# DNS History
+## DNS History
 
 Some times the companies put a WAF on a web application, but they don't configure it properly and any source IP instead of only the WAF can request the server.
 
@@ -49,13 +49,13 @@ Finally with `suip.biz` we can check which apps are hosted on a server.
 
 ![ViewDNS.info](../images/suip.png)
 
-# Via SMTP Functionalities
+## Via SMTP Functionalities
 
 SMTP headers can reveal a lot of value information. If a SMTP functionality is found on the web appliaction try to send a mail to a known recipient to check these headers in order to find the real webserver IP.
 
 ![SMTP Headers](../images/smtp_headers.png)
 
-# Bypassing blacklisting WAFs
+## Bypassing blacklisting WAFs
 
 The whitelisting mode is prone to false positives, which is the reason it is very common to find WAFs deployed in blacklisting mode rather than whitelisting mode.
 
@@ -63,7 +63,7 @@ The blacklisting mode is a collection of well-known attacks. WAF producers put t
 
 So we can use different payloads to bypass some filters.
 
-## Cross-Site Scripting (XSS)
+### Cross-Site Scripting (XSS)
 
 * Instead of using `alert('xss')` or `alert(1)` we can choose a better option:
 ```
@@ -96,7 +96,7 @@ alert(document[/coo/.source+/kie/.source])
 data:text/html:base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=
 ```
 
-## Blind SQL Injection (Blind SQLi)
+### Blind SQL Injection (Blind SQLi)
 
 * Instead of using `' or 1=1` we can use:
 ```
@@ -110,7 +110,7 @@ or 6 is not null
 UNION ALL SELECT
 ```
 
-## Directory Traversal
+### Directory Traversal
 
 * Instead of using `/etc/passwd` we can use:
 ```
@@ -120,14 +120,14 @@ UNION ALL SELECT
 /etc/passwd.......
 ```
 
-## Web Shell
+### Web Shell
 
 * Instead of using `c99.php` , `r57.php` , `shell.aspx` , `cmd.jsp`, `CmdAsp.asp` we can use:
 ```
 augh.php
 ```
 
-# WAF Detection and Fingerprinting
+## WAF Detection and Fingerprinting
 
 WAF systems leave several footprints of their presence, which allow us to detect which WAF is in place.
 
@@ -140,7 +140,7 @@ Also it can be possible to detect the WAF vendor with a nmap script.
 ```
 nmap --script=http-waf-fingerprint www.imperva.com -p 80
 ```
-## Cookie Values
+### Cookie Values
 
 Some WAF systems reveal their presence through cookies.
 
@@ -150,7 +150,7 @@ Some WAF systems reveal their presence through cookies.
 | F5 BIG-IP ASM | ^TS[a-zA-Z0-9]{3,6} |
 | Barracuda | barra_counter_session and BNI__BARRACUDA_LB_COOKIE |
 
-## Header Rewrite
+### Header Rewrite
 
 Some WAFs rewrite the HTTP headers. Usually modify the Server header.
 

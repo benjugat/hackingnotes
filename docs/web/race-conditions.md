@@ -11,7 +11,7 @@ The period of time during which a collision is known as the `race window`. This 
 ![](../images/race-condition-2.png)
 
 
-# Limit overrun race conditions
+## Limit overrun race conditions
 
 The challange is timming the requests in order to line up at least two race windows, causing a collision. Even if we sent multiple requests at the same time, there are various uncontrollable and unpredictable external factors that affect the server processes each request and in which order.
 
@@ -32,7 +32,7 @@ There are many variations of this kind of attack:
 * Reusing a single CAPTCHA solution.
 * Bypassing an anti-force rate limit.
 
-## With Burp Repeater
+### With Burp Repeater
 
 There are multiple techniques to allign the the race windows, that are added in `Burp Repeater: Sending requests in parallel`, more info in:
 
@@ -42,9 +42,9 @@ We just need to agrupate the requests on repeater, and change to `Send group (pa
 
 ![](../images/race-condition-repeater.png)
 
-## With Turbo Intruder
+### With Turbo Intruder
 
-### Single-Packet
+#### Single-Packet
 
 It is also added native support to single-packet attack in turbo intruder. To use single-packet attack in turbo intruder:
 
@@ -67,7 +67,7 @@ def queueRequests(target, wordlists):
     # send all requests in gate '1' in parallel
     engine.openGate('1')
 ```
-### Last-byte
+#### Last-byte
 
 ```py
 def queueRequests(target, wordlists):
@@ -88,7 +88,7 @@ def queueRequests(target, wordlists):
     engine.complete(timeout=60)
 
 ```
-# Hidden multi-step sequences
+## Hidden multi-step sequences
 
 In practice, a single request may initiate an entire multi-step sequence behind the scenes, transitioning the application through multiple hidden states that it enters and then exits again before request processing is complete. We'll refer to these as "sub-states". 
 
@@ -109,13 +109,13 @@ Here we can see that is a multi-step sequence. The app transitions through a sub
 
 So we can send a login request along with a request to an authenticated endpoint.
 
-# Multi-endpoint race conditions
+## Multi-endpoint race conditions
 
 Perhaps the most intuitive form of these race conditions are those that involve sending requests to multiple endpoints at the same time. 
 
 Think about the classic logic flaw in online stores where you add an item to your basket or cart, pay for it, then add more items to the cart before force-browsing to the order confirmation page. In this case, we can potentially add more items to our basket during the race windows between when the payment is validated and when the order is finally confirmed.
 
-## Aligning multi-endpoint race windows
+### Aligning multi-endpoint race windows
 
 When testing for multi-endpoint race conditions, you may encounter issues trying to line up the race windows for each request, even if you send them all at exactly the same time using the single-packet technique. 
 
@@ -128,7 +128,7 @@ This problem is caused by two factors:
 
 Fortunately there are workarounds to both of these issues.
 
-### Connection warming
+#### Connection warming
 
 Back-end connection delays don't usually interfere with race condition attacks because they typically delay parallel requests equally, so the requests stay in sync.
 
@@ -148,7 +148,7 @@ As we can see the first requests of the group `GET /` has 357ms of delay whereas
 
 If the first request still has a longer processing time, but the rest of the requests are now processed within a shot windows, we can ignore the delay and continue testing.
 
-### Abusing rate or resource limits
+#### Abusing rate or resource limits
 
 If connection warming doesn't make any difference, there are various solutions to this problem.
 
@@ -156,7 +156,7 @@ We can solve the problem by sending a large number of dummy requests to intentio
 
 ![](../images/race-condition-9.png)
 
-# Single-endpoint race conditions
+## Single-endpoint race conditions
 
 Sending parallel requests with different values to a single endpoint can sometimes trigger powerful race conditions. Consider a password reset mechanism that stores the user ID and reset token in the user's session. 
 
@@ -174,7 +174,7 @@ To work, the different opperations performed by each process must occur in just 
 Email address confirmations, or any email-based operations, are generally a good target for single-endpoint race conditions. Emails are often sent in a background thread after the server issues the HTTP response to the client, making race conditions more likely. 
 
 
-# Time-sensitive attacks
+## Time-sensitive attacks
 
 Sometimes you may not find race conditions, but the techniques for delivering requests with precise timing can still reveal the presence of other vulnerabilities. 
 

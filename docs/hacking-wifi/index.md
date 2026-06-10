@@ -1,8 +1,3 @@
----
-title: Hacking WiFi
-description: WiFi penetration testing: theory, WEP, WPA/WPA2 PSK and WPA/WPA2 Enterprise (PEAP).
----
-
 # Hacking WiFi
 
 WiFi penetration testing: theory, WEP, WPA/WPA2 PSK and WPA/WPA2 Enterprise (PEAP).

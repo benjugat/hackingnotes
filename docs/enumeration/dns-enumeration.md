@@ -4,13 +4,13 @@ title: DNS Enumeration
 
 The Domain Name System (DNS) is on of the most critical systems on the Internet and is a distributed database responsible for translating user-friendly domain names into IP addresses.
 
-# Interacting with DNS servers
+## Interacting with DNS servers
 
 DNS queries produce listintgs calles Resource Records. This is a representation of Resource Records:
 
 ![Table of DNS Record Types ](../images/table_dnstypes.png)
 
-## DNS Lookup
+### DNS Lookup
 
 A **DNS lookup** is the simplest query a DNS server can receive. Its asks the DNS to resolve a given hostname.
 
@@ -40,7 +40,7 @@ In order to collect the highest number of domains and subdomain related to the t
 * MX Lookup
 * Zone transfers
 
-## Reverse DNS Lookup
+### Reverse DNS Lookup
 
 With **Reverse DNS Lookup**, we will recieve the IP address associated to a given domain name. This process queries for DNS pointer records \(PTR\).
 
@@ -53,7 +53,7 @@ or use online tools:
 
 * [https://network-tools.com/nslookup/](https://network-tools.com/nslookup/)
 
-## Mail Exchange Lookup
+### Mail Exchange Lookup
 
 With **MX\(Mail Exchange\) lookup**, we retrieve a list of servers responsible for delivering emails for that domain:
 
@@ -67,7 +67,7 @@ or use online tools:
 * [https://www.dnsqueries.com/](https://www.dnsqueries.com/)
 * [https://www.mxtoolbox.com/](https://www.mxtoolbox.com/)
 
-## Zone Transfers
+### Zone Transfers
 
 **Zone transfers** are usually a misconfiguration of the remote DNS server. They should be enabled only for trusted IP addresses. Whe zone transfers are enabled, we can enumerate the entire DNS record for that zone. This includes all the sub domains **\(A records\).**
 

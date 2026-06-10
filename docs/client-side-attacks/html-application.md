@@ -10,7 +10,7 @@ An HTA file is executed using `mshta.exe`, which is typically installed along wi
 
 HTA files has the `.hta` extension.
 
-# Executing x64 powershell payload
+## Executing x64 powershell payload
 
 ```html
 <html>
@@ -34,7 +34,7 @@ HTA files has the `.hta` extension.
 </html>
 ```
 
-# Checking the architecture and executing powershell payload
+## Checking the architecture and executing powershell payload
 
 ```html
 <html>
@@ -64,7 +64,7 @@ HTA files has the `.hta` extension.
 </html>
 ```
 
-# Phishing
+## Phishing
 
 By default, Outlook has filetype filtering in order to prevent you from attaching certain files to emails.
 

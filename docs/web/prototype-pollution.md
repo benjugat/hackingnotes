@@ -2,17 +2,17 @@
 title: Prototype Pollution
 ---
 
-# What is Prototype Pollution?
+## What is Prototype Pollution?
 
 Prototype pollution is a JavaScript vulnerability that enables an attacker to add arbitrary properties to global object prototypes, which may then be inherited by user-defined objects. 
 
 Although prototype pollution is often unexploitable as a standalone vulnerability, it lets an attacker control properties of objects that would otherwise be inaccessible. If the application subsequently handles an attacker-controlled property in an unsafe way, this can potentially be chained with other vulnerabilities. In client-side JavaScript, this commonly leads to DOM XSS, while server-side prototype pollution can even result in remote code execution.
 
-## Prototype pollution sources
+### Prototype pollution sources
 
 A prototype pollution source is any user-controllable input that enables you to add arbitrary properties to prototype objects. The most common sources are as follows: 
 
-### Prototype pollution via the URL
+#### Prototype pollution via the URL
 
 Consider the following URL, which contains an attacker-constructed query string: 
 
@@ -27,7 +27,7 @@ targetObject.__proto__.evilProperty = 'payload';
 
 In practice, injecting a property called `evilProperty` is unlikely to have any effect. However, an attacker can use the same technique to pollute the prototype with properties that are used by the application, or any imported libraries. 
 
-### Prototype pollution via JSON input
+#### Prototype pollution via JSON input
 
 User-controllable objects are often derived from a JSON string.
 
@@ -51,7 +51,7 @@ objectFromJson.hasOwnProperty('__proto__');    // true
 
 If the object created via `JSON.parse()` is subsequently merged into an existing object without proper key sanitization, this will also lead to prototype pollution 
 
-## Prototype pollution sinks
+### Prototype pollution sinks
 
 A prototype pollution sink is essentially just a JavaScript function or DOM element that you're able to access via prototype pollution, which enables you to execute arbitrary JavaScript or system commands.
 
@@ -59,7 +59,7 @@ Check [DOM XSS](https://benjugat.github.io/hackingnotes/web/xss/) for more info 
 
 As prototype pollution lets you control properties that would otherwise be inaccessible, this potentially enables you to reach a number of additional sinks within the target application.
 
-## Prototype pollution gadgets
+### Prototype pollution gadgets
 
 A gadget provides a means of turning the prototype pollution vulnerability into an actual exploit. This is any property that is: 
 
@@ -68,7 +68,7 @@ A gadget provides a means of turning the prototype pollution vulnerability into 
 
 A property cannot be a gadget if it is defined directly on the object itself. In this case, the object's own version of the property takes precedence over any malicious version you're able to add to the prototype. 
 
-### Example of a prototype pollution gadget
+#### Example of a prototype pollution gadget
 
 Many JavaScript libraries accept an object that developers can use to set different configuration options. The library code checks whether the developer has explicitly added certain properties to this object and, if so, adjusts the configuration accordingly. If a property that represents a particular option is not present, a predefined default option is often used instead. A simplified example may look something like this: 
 
@@ -98,9 +98,9 @@ By providing a `data:` URL, an attacker could also directly embed an XSS payload
 https://vulnerable-website.com/?__proto__[transport_url]=data:,alert(1);//
 ```
 
-# Client-side prototype pollution vulnerabilities
+## Client-side prototype pollution vulnerabilities
 
-## Finding client-side prototype pollution sources manually
+### Finding client-side prototype pollution sources manually
 
 Finding prototype pollution sources manually is largely a case of trial and error. In short, you need to try different ways of adding an arbitrary property to `Object.prototype` until you find a source that works.
 
@@ -123,7 +123,7 @@ vulnerable-website.com/?__proto__.foo=bar
 ![Proto](../images/proto-manual-source.png)
 
 
-## Finding client-side prototype pollution sources using DOM Invader
+### Finding client-side prototype pollution sources using DOM Invader
 
 Finding prototype pollution sources manually can be a fairly tedious process. Instead, we recommend using DOM Invader, which comes preinstalled with Burp's built-in browser. DOM Invader is able to automatically test for prototype pollution sources as you browse, which can save you a considerable amount of time and effort. 
 
@@ -133,7 +133,7 @@ DOM Invader is disabled by default, enable it.
 
 ![DOM Invader Source](../images/dom-invader-source.png)
 
-## Finding client-side prototype pollution gadgets manually
+### Finding client-side prototype pollution gadgets manually
 
 Once we have identified a source hat lets us to add arbitrary properties to the gobal `Object.prototype`, the next step is to find a suitable gadget that we can use to craft an exploit.
 
@@ -155,13 +155,13 @@ Object.defineProperty(Object.prototype, 'YOUR-PROPERTY', {
 8. Using the browser debugger controls, step through each phase of execution to see if the property is passed to a sink, such as `innerHTML` or `eval`.
 9. Repeat this process for any properties that you think are potential gadgets.
 
-## Finding client-side prototype pollution gadgets using DOM Invader
+### Finding client-side prototype pollution gadgets using DOM Invader
 
 DOM Invader can automatically scan for gadgets on your behalf and can even generate a DOM XSS proof-of-concept in some cases. 
 
 ![DOM Invader Sink](../images/dom-invader-sink.png)
 
-## Prototype pollution via the constructor
+### Prototype pollution via the constructor
 
 Every JavaScript object has a constructor property, which contains a reference to the constructor function that was used to create it.
 
@@ -182,7 +182,7 @@ vulnerable-website.com/?constructor[prototype][foo]=bar
 vulnerable-website.com/?constructor.prototype.foo=bar
 ```
 
-## Bypassing flawed key sanitization
+### Bypassing flawed key sanitization
 
 An obvious way in which websites attempt to prevent prototype pollution is by sanitizing property keys before merging them into an existing object. However, a common mistake is failing to recursively sanitize the input string. For example, consider the following URL: 
 
@@ -196,13 +196,13 @@ If the sanitization process just strips the string `__proto__` without repeating
 https://vulnerable-website.com/?__proto__.gadget=payload
 ```
 
-## Prototype pollution in external libraries
+### Prototype pollution in external libraries
 
 Prototype pollution gadgets may occur in third-party libraries that are imported by the application. In this case, we strongly recommend using DOM Invader's prototype pollution features to identify sources and gadgets.
 
-## Prototype pollution via browser APIs
+### Prototype pollution via browser APIs
 
-### Prototype pollution via fetch()
+#### Prototype pollution via fetch()
 
 The Fetch API provides a simple way for developers to trigger HTTP requests using JavaScript. The `fetch()` method accepts two arguments: 
 
@@ -249,7 +249,7 @@ To exploit this, an attacker could pollute `Object.prototype` with a headers pro
 
 > **Note**:  You can use this technique to control any undefined properties of the options object passed to `fetch()`. This may enable you to add a malicious body to the request
 
-### Prototype pollution via Object.defineProperty()
+#### Prototype pollution via Object.defineProperty()
 
 Developers with some knowledge of prototype pollution may attempt to block potential gadgets by using the `Object.defineProperty()` method. This enables you to set a non-configurable, non-writable property directly on the affected object as follows: 
 
@@ -268,7 +268,7 @@ In this case, an attacker may be able to bypass this defense by polluting `Objec
 ?__proto__[value]=data:,alert(1)
 ```
 
-# Server-side prototype pollution
+## Server-side prototype pollution
 
 For a number of reasons, server-side prototype pollution is generally more difficult to detect than its client-side variant:
 
@@ -277,7 +277,7 @@ For a number of reasons, server-side prototype pollution is generally more diffi
 * **The DoS problem** - Successfully polluting objects in a server-side environment using real properties often breaks application functionality or brings down the server completely. As it's easy to inadvertently cause a denial-of-service (DoS), testing in production can be dangerous. Even if you do identify a vulnerability, developing this into an exploit is also tricky when you've essentially broken the site in the process.
 * **Pollution persistence** - When testing in a browser, you can reverse all of your changes and get a clean environment again by simply refreshing the page. Once you pollute a server-side prototype, this change persists for the entire lifetime of the Node process and you don't have any way of resetting it.
 
-## Detecting server-side prototype pollution via polluted property reflection
+### Detecting server-side prototype pollution via polluted property reflection
 
 An easy trap for developers to fall into is forgetting or overlooking the fact that a JavaScript `for...in` loop iterates over all of an object's enumerable properties, including ones that it has inherited via the prototype chain. 
 
@@ -325,11 +325,11 @@ HTTP/1.1 200 OK
 }
 ```
 
-## Detecting server-side prototype pollution without polluted property reflection
+### Detecting server-side prototype pollution without polluted property reflection
 
 One approach is to try injecting properties that match potential configuration options for the server. You can then compare the server's behavior before and after the injection to see whether this configuration change appears to have taken effect. If so, this is a strong indication that you've successfully found a server-side prototype pollution vulnerability.
 
-### Status code override
+#### Status code override
 
 Server-side JavaScript frameworks like Express allow developers to set custom HTTP response statuses. In the case of errors, a JavaScript server may issue a generic HTTP response, but include an error object in JSON format in the body. This is one way of providing additional details about why an error occurred, which may not be obvious from the default HTTP status. 
 
@@ -367,7 +367,7 @@ Host: vulnerable-website.com
 }
 ```
 
-### JSON spaces override
+#### JSON spaces override
 
 The Express framework provides a `json spaces` option, which enables you to configure the number of spaces used to indent any JSON data in the response. In many cases, developers leave this property undefined as they're happy with the default value, making it susceptible to pollution via the prototype chain. 
 
@@ -389,7 +389,7 @@ Host: vulnerable-website.com
 
 > **Note**: Prototype pollution has been fixed in Express 4.17.4.
 
-### Charset override
+#### Charset override
 
 Express servers often implement so-called "middleware" modules that enable preprocessing of requests before they're passed to the appropriate handler function. For example, the `body-parser` module is commonly used to parse the body of incoming requests in order to generate a `req.body` object. This contains another gadget that you can use to probe for server-side prototype pollution.
 
@@ -417,7 +417,7 @@ If you can find an object whose properties are visible in a response, you can us
 }
 ```
 
-## Scanning for server-side prototype pollution sources
+### Scanning for server-side prototype pollution sources
 
 With `Server-Side Prototype Pollution Scanner` extension for Burp Suite, enables you to automate this process. The basic workflow is as follows:
 
@@ -429,7 +429,7 @@ With `Server-Side Prototype Pollution Scanner` extension for Burp Suite, enables
 * Right-click your selection and go to Extensions > Server-Side Prototype Pollution Scanner > Server-Side Prototype Pollution, then select one of the scanning techniques from the list.
 * When prompted, modify the attack configuration if required, then click OK to launch the scan.
 
-## Bypassing input filters for server-side prototype pollution
+### Bypassing input filters for server-side prototype pollution
 
 Websites often attempt to prevent or patch prototype pollution vulnerabilities by filtering suspicious keys like `__proto__`. This key sanitization approach is not a robust long-term solution as there are a number of ways it can potentially be bypassed. For example, an attacker can:
 
@@ -454,11 +454,11 @@ __pro__proto__to__
 constructconstructoor
 ```
 
-## Remote code execution via server-side prototype pollution
+### Remote code execution via server-side prototype pollution
 
 While client-side prototype pollution typically exposes the vulnerable website to DOM XSS, server-side prototype pollution can potentially result in remote code execution (RCE).
 
-### Identifying a vulnerable request
+#### Identifying a vulnerable request
 
 There are a number of potential command execution sinks in Node, many of which occur in the `child_process` module. These are often invoked by a request that occurs asynchronously to the request with which you're able to pollute the prototype in the first place. As a result, the best way to identify these requests is by polluting the prototype with a payload that triggers an interaction with Burp Collaborator when called. 
 
@@ -470,7 +470,7 @@ The `NODE_OPTIONS` environment variable enables you to define a string of comman
     "NODE_OPTIONS":"--inspect=YOUR-COLLABORATOR-ID.oastify.com\"\".oastify\"\".com"
 }
 ```
-### Remote code execution via child_process.fork()
+#### Remote code execution via child_process.fork()
 
 Methods such as `child_process.spawn()` and `child_process.fork()` enable developers to create new Node subprocesses. The `fork()` method accepts an options object in which one of the potential options is the execArgv property. This is an array of strings containing command-line arguments that should be used when spawning the child process. If it's left undefined by the developers, this potentially also means it can be controlled via prototype pollution. 
 

@@ -17,7 +17,7 @@ Exists multiple scripts to enumerate the domain.
 * **SharpView**: [https://github.com/tevora-threat/SharpView](https://github.com/tevora-threat/SharpView)
 * **ADSearch**: [https://github.com/tomcarver16/ADSearch](https://github.com/tomcarver16/ADSearch)
 
-# Powerview on Linux
+## Powerview on Linux
 
 There are some alternatives based on linux systems. 
 
@@ -48,7 +48,7 @@ KRB5CCNAME=example.ccache python3 pywerview.py get-netcomputer -t srv-ad -u stor
 
 
 
-# Importing the module
+## Importing the module
 
 *  PowerView:
 
@@ -68,7 +68,7 @@ Import-Module .\Microsoft.ActiveDirectory.Management.dll
 Import-Module .\ActiveDirectory\ActiveDirectory.psd1
 ```
 
-# Current Domain
+## Current Domain
 
 * PowerShell:
 ```powershell
@@ -99,7 +99,7 @@ Get-Domain
 Get-ADDomain
 ```
 
-# Another Domain
+## Another Domain
 
 *  PowerView:
 ```powershell
@@ -116,7 +116,7 @@ Get-Domain -Identity corp.local
 Get-ADDomain -Identity corp.local
 ```
 
-# Domain SID
+## Domain SID
 
 *  PowerView:
 ```powershell
@@ -131,7 +131,7 @@ We can find the SID inside the `Get-ADDomain` output.
 Get-ADDomain | select DNSRoot,NetBIOSName,DomainSID
 ```
 
-# Domain Policy
+## Domain Policy
 
 *  PowerView:
 ```powershell
@@ -144,7 +144,7 @@ Get-DomainPolicy
 Get-DomainPolicyData | select -ExpandProperty SystemAccess
 ```
 
-# Domain Controllers
+## Domain Controllers
 
 *  PowerView:
 ```powershell
@@ -164,7 +164,7 @@ Get-ADDomainController
 Get-ADDomainController -DomainName corp.local
 ```
 
-# Users & their Properties / Attributes
+## Users & their Properties / Attributes
 
 *  PowerView:
 ```powershell
@@ -196,7 +196,7 @@ Get-ADUser -Filter * -Properties * | select name,@{expression={[datetime]::fromF
 
 > **Note:** Service accounts stores the password on the LSAS in clear text.
 
-## Search a particular string in users's attributes
+### Search a particular string in users's attributes
 
 Valuable info can be found in user's attributes such as description.
 
@@ -210,7 +210,7 @@ Find-UserField -SearchField Description -SearchTerm "built"
 Get-ADUser -Filter 'Description -like "*built*"' -Properties Description | select name,Description
 ```
 
-# Computers in the domain
+## Computers in the domain
 
 *  PowerView:
 ```powershell
@@ -234,7 +234,7 @@ Get-ADComputer -Filter * -Properties DNSHostname | %{Test-Connection -Count 1 -C
 Get-ADComputer -Filter * -Properties *
 ```
 
-# Domain Groups
+## Domain Groups
 
 *  PowerView:
 ```powershell
@@ -266,7 +266,7 @@ Get-ADGroup -Filter * -Properties *
 Get-ADGroup -Filter 'Name -like "*admin*"' | select Name
 ```
 
-## Find memberships
+### Find memberships
 
 *  PowerView:
 ```powershell
@@ -285,7 +285,7 @@ Get-ADGroupMember -Identity "Domain Admins" -Recursive
 Get-ADPrincipalGroupMembership -Identity username
 ```
 
-# Local Groups
+## Local Groups
 
 To do that task needs administrator privs on non-dc machines.
 
@@ -301,7 +301,7 @@ The following command shows the members of all the local groups on a machine.
 Get-NetLocalGroup -ComputerName filesrv1.corp.local -ListGroups -Recurse
 ```
 
-# Logged Users (User has a session on)
+## Logged Users (User has a session on)
 
 Like local groups to do that task needs administrator privs on non-dc machines.
 
@@ -323,9 +323,9 @@ Get the last logged user on a computer _(needs local admin rights and remote reg
 Get-LastLoggedOn -ComputerName filesrv1.corp.local
 ```
 
-# Find important targets
+## Find important targets
 
-## Shares
+### Shares
 
 *  PowerView:
 ```powershell
@@ -339,7 +339,7 @@ Find-DomainShare
 Find-DomainShare -CheckShareAccess
 ```
 
-## Sensitive Files
+### Sensitive Files
 
 *  PowerView:
 ```powershell
@@ -351,14 +351,14 @@ Invoke-FileFinder -Verbose
 Find-InterestingDomainShareFile -Include *.doc*, *.xls*, *.csv, *.ppt*
 ```
 
-## File servers
+### File servers
 
 * PowerView:
 ```powershell
 Get-NetFileServer
 ```
 
-# Group Policy (GPO)
+## Group Policy (GPO)
 
 Group Policy provides the ability to manage configuration and changes easily and centrally in active directory.
 
@@ -385,7 +385,7 @@ Get-GPResultantSetOfPolicy -ReportType Html -Path c:\windows\temp\report.html
 >
 >`gpresult /R /V`
 
-## Users on Localgroups
+### Users on Localgroups
 
 We can also get users which are in a local group of a machine using GPO.
 
@@ -411,7 +411,7 @@ Find-GPOLocation -UserName <user> -Verbose
 Get-DomainGPOUserLocalGroupMapping -LocalGroup Administrators | select objectName, GPODisplayName, ContainerName, ComputerName | fl
 ```
 
-# Organization Unit (OU)
+## Organization Unit (OU)
 
 * PowerView:
 ```powershell
@@ -449,7 +449,7 @@ Get-NetOU -OUName Students | %{Get-NetComputer -ADSPath $_}
 Get-DomainOU "Servers" | %{Get-DomainComputer -SearchBase $_.distinguishedname -properties name}
 ```
 
-# Access Control List (ACL)
+## Access Control List (ACL)
 
 Enables control on the ability of a process to access objects and other resources in active diectory based on: 
 	
@@ -488,7 +488,7 @@ Invoke-ACLScanner -ResolveGUIDs
 Invoke-ACLScanner -ResolveGUIDs | ?{$_.IdentityReferenceName -match "RDPUsers"}
 ```
 
-# Domain Trust Mapping
+## Domain Trust Mapping
 
 We can get a list of all domain trusts for a domain.
 
@@ -513,7 +513,7 @@ Get-ADTrust -Identity es.lab.corp.local
 nltest /domain_trusts
 ```
 
-# Forest Mapping
+## Forest Mapping
 
 A Forest is like a tree of domains (domain and subdomains) and the name of the forest is the name as the root domain of the tree.
 
@@ -569,9 +569,9 @@ Get-NetForestTrust -Forest extcorp.local
 Get-ADTrust -Filter 'msDS-TrustForestTrustInfo -ne "$null"'
 ```
 
-# User Hunting 
+## User Hunting 
 
-## Local Admin Check
+### Local Admin Check
 
 Find all machines on the current domain where the current user has local admin access.
 
@@ -592,7 +592,7 @@ Find-WMILocalAdminAccess -ComputerFile .\computers.txt -Verbose
 ```
 > **NOTE**: WMI needs ADMIN PRIV to work, so if we get an error is that the user has not enough privileges.
 
-## Get Local Admins (Local Admin Priv. needed)
+### Get Local Admins (Local Admin Priv. needed)
 
 We can find local admins on all machines of the domain but we need administrator privileges on non-dc machines.
 
@@ -604,7 +604,7 @@ Invoke-EnumerateLocalAdmin -Verbose
 >
 > **MAKE A LOT OF NOISE**
 
-## Sessions opened on a machine
+### Sessions opened on a machine
 
 Returns session information for a computer where `CName` is the source IP.
 
@@ -612,7 +612,7 @@ Returns session information for a computer where `CName` is the source IP.
 ```powershell
 Get-NetSession -ComputerName dc01.corp.local | select CName, UserName
 ```
-## Machines where a User/Group has session
+### Machines where a User/Group has session
 
 We can find computers where a domain admin or another specified user or group has an active session:
 
@@ -659,7 +659,7 @@ Invoke-UserHunter -Stealth
 > The binary net.exe uses SAMR protocol, exists another script which hardens a server.
 > [https://vulners.com/n0where/N0WHERE:139229](https://vulners.com/n0where/N0WHERE:139229)
 
-# SQLServers
+## SQLServers
 
 We can provide a list of all SQL servers which have a SPN register on the domain controller.
 
@@ -670,7 +670,7 @@ Get-SQLInstanceDomain
 
 > **Note**: This not mean that is a SQL Server running or listening, that means htat there are a MSSQL on a SPN.
 
-# BloodHound
+## BloodHound
 
 Provides GUI for AD entities and relationships for the data collected by its ingestors (SharpHound.ps1).
 
@@ -731,7 +731,7 @@ To use on LDAP queries we can use `DcOnly` collection method.
 Invoke-BloodHound -CollectionMethod DcOnly
 ```
 
-## Raw queries
+### Raw queries
 
 Executing raw queries is useful for finding nodes that have particular properties or to help specific attack paths.
 

@@ -1,8 +1,3 @@
----
-title: Software
-description: Pentesting notes for specific applications: CMS, mail servers, CI servers, app servers and Python package servers.
----
-
 # Software
 
 Pentesting notes for specific applications: CMS, mail servers, CI servers, app servers and Python package servers.

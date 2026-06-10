@@ -4,13 +4,13 @@ title: Theory
 
 It's an introduction of hacking WiFi, I recollected from the community including others blogs for my own and guides to pass OSWP certificate.
 
-# Hardware required:
+## Hardware required:
 
 An antena that could configure to monitor mode:
 
 * AWUS036ACH: Wide range 2.4GHz/5GHz
 
-# Software required:
+## Software required:
 
 There are some linux distributions like [**wifislax**](https://www.wifislax.com) that could be useful to us, but I used Parrot OS distribution and Kali Linux which have almost all the programs used in that notes, if not install it with `apk install`
 
@@ -29,7 +29,7 @@ There are some linux distributions like [**wifislax**](https://www.wifislax.com)
 * WPSPinGenerator
 * macchanger
 
-# Introduction
+## Introduction
 
 Wi-Fi allows networking of computers and digital devices without the need for wires. Data is transferred over radio frequencies, allowing Wi-Fi capable devices to receive and transmit data when they are in range of a Wi-Fi network.
 
@@ -37,7 +37,7 @@ Wi-Fi uses a radio technology known as 802.11, which can transmit data over shor
 
 To understand how to attack WLAN, we need first to understand how it works. Take a look in detail from networking basis.
 
-## OSI Model
+### OSI Model
 
 The OSI Model (Open Systems Interconnection Model) is a conceptual framework used to describe the functions of a networking system.
 
@@ -47,29 +47,29 @@ The OSI model characterizes computing functions into a universal set of rules an
 
 We are going to see **Physical Layer** and deep on **Data link Layer.**
 
-### Physical Layer
+#### Physical Layer
 
 The physical layer is the lowest layer of the OSI Model and is concerned about how it is transmitted, via electricity, via optical or via radiofrecuence. Contain raw unstructured data bits across the network from the physical layer of the sending device to the physical layer receiving device. In case of WiFi it is transmitted via radiofrecuence.
 
-### Data Link Layer
+#### Data Link Layer
 
 At the data link layer, directly connected nodes are used to perform node-to-node data transfer where data is packaged into frames. The data link layer corrects error that may have occurred at the physical layer.
 
 Its main functions are Data Link Control and Multiple Access Control.
 
-## Data Link Control
+### Data Link Control
 
 The Data Link Control is responsible for reliable transmissions of messages over transmission channel by using techniques like framing, error control and flow control. For Data Link Control refer to Stop and Wait ARQ.
 
 Stop and Wait ARQ is a protocol that consist of send a packet and stop sending until we received a confirmation of received or acknowledge (ACK).
 
-## Multiple Access Control
+### Multiple Access Control
 
 If there is a dedicated link between the sender and the receiver such as a Ethernet wire between two devices then data link control is sufficient, however if there is no dedicated link present then multiple stations can access the channel simultaneously which is the case of Wi-Fi, where all clients try to send in the same medium (air).
 
 Then multiple access protocols are required to decrease collisions and avoid cross-talk. Multiple access protocols are divided in:
 
-### Random Access Protocols
+#### Random Access Protocols
 
 In these types of protocols, all stations have the same priority and any station can send data depending on medium's state, idle or busy.
 
@@ -80,13 +80,13 @@ It has two features:
 
 ALOHA, CSMA, CSMA/CD and CSMA/CA are random access protocols.
 
-### Controlled Access Protocols
+#### Controlled Access Protocols
 
 In these types of protocols, the data is sent by a selection which is approved by all other stations. Here appears the significant of "Token".
 
 Reservation, Polling and Token Passing are some of the controlled access protocols.
 
-### Channelization Protocols
+#### Channelization Protocols
 
 Finally, the last type are channelization protocols, where the available bandwidth of the link is shared in time, frequency and code to multiple stations to access channel simultaneously.
 
@@ -94,7 +94,7 @@ Finally, the last type are channelization protocols, where the available bandwid
 * Time Division Multiple Access (TDMA), has the same logic like FDMA but here the time is divided in slots instead of frequency.
 * Code Division Multiple Access (CDMA) where one channel carries all transmissions simultaneously. There is neither division of bandwidth nor division of time. All transmission uses different codes.
 
-## Introduction to CSMA/CA
+### Introduction to CSMA/CA
 
 This method was developed to decrease the chances of collisions when two or more stations start sending their signals over the data-link layer. Carrier Sense multiple Access requires that each station check the state of the medium before sending. This protocol is used in 802.11 (WLAN).
 
@@ -110,11 +110,11 @@ There are three types of strategies:
 
 ![CSMA / CA](../images/csma_ca.png)
 
-## 802.11 Frame Types and Formats
+### 802.11 Frame Types and Formats
 
 There are three types of 802.11 frames, which are management, control and data.
 
-### Management Frames
+#### Management Frames
 
 Management frames are used to manage the base station. This includes probing, associating, roaming and disconnecting clients from the base station.
 
@@ -128,7 +128,7 @@ Management frames are used to manage the base station. This includes probing, as
 * **Action:** Action frames are management frames that trigger an action to happen. The list of management frame sub types had become exhausted, so instead of creating new management frames as new technologies required them, the action frame can be used. Action frames do not expect an ACK.
 * **Timing Advertisement:** Timing advertisement frames were introduced in 802.11p-2010; this standard describes how Wi-Fi can be used in vehicular environments. This type of management frame is not in use today and is expected to be used to communicate time values to devices that cannot maintain their own timing.
 
-### Control Frames
+#### Control Frames
 
 Control frames are used to control access to the medium and are used for frame acknowledgement.
 
@@ -140,7 +140,7 @@ Control frames are used to control access to the medium and are used for frame a
 * **Beamforming Report Poll:** Beamforming report poll frames are sent from the beamformer (the AP) to beamformees (STAs) to request additional feedback about the RF conditions.
 * **VHT/HE NDP Announcement:** Null data packet (NDP) announcement frames notify the recipient that an NDP will follow.
 
-## Wi-Fi Attacks
+### Wi-Fi Attacks
 
 Now that we look how Wi-Fi is working we will try to attack it. Exists some differents attacks to do in Wi-Fi environments:
 
@@ -156,7 +156,7 @@ Now that we look how Wi-Fi is working we will try to attack it. Exists some diff
 
 Now that we look how Wi-Fi works we will try to attack it.
 
-# References:
+## References:
 
 * [https://blog.ct-networks.io/types-of-wireless-attacks-9b6ecc3317b9](https://blog.ct-networks.io/types-of-wireless-attacks-9b6ecc3317b9)
 * [https://www.geeksforgeeks.org/carrier-sense-multiple-access-csma/](https://www.geeksforgeeks.org/carrier-sense-multiple-access-csma/)

@@ -14,7 +14,7 @@ If a correct implmentation is given, can improve the security of an organisation
 
 Misconfiguration of the AD CS can lead to domain privilege escalations or persistence.
 
-# Enumerating Certificate Authorities
+## Enumerating Certificate Authorities
 
 To find AD CS Certificate Authorities (CA) in domain we can run `certify` with `cas` as parameter.
 
@@ -25,7 +25,7 @@ To find AD CS Certificate Authorities (CA) in domain we can run `certify` with `
 ```
 We will see in te output the `Root CAs` and the `Enrollment CAs`, in addition to this we will see the certificate chain and the list of certificate templates for each CA, and some information about which principals are allowed to manage them.
 
-# Misconfigured Certificate Templates
+## Misconfigured Certificate Templates
 
 `Certify` also allow us to find vulnerable CAs.
 
@@ -65,7 +65,7 @@ And finally we can use `Rubeus` to request a TGT.
 
 > **OPSEC Alert**: Use `/enctype:aes256` parameter to use AES256 and avoid RC4.
 
-# NTLM Relaying to ADCS HTTP Endpoints
+## NTLM Relaying to ADCS HTTP Endpoints
 
 Active Directory Certificate Service support HTTP enrolment methods and even inlcudes a GUI. The endpoint is often found in:
 
@@ -87,7 +87,7 @@ Use one of the remote authentication methods to force a connection to our compro
 
 On the output of `ntlmrelay` we will see the base64 certificate of the machine account. After obtaining the TGT we can abuse `S4U2self` to obtain a TGS of CIFS service.
 
-# User Persistence
+## User Persistence
 
 We can craft a certificate for later use if managerial approval is not required for certificate requests.
 
@@ -103,7 +103,7 @@ This will show every certificat template that has a suitable Extended Key Usage 
 ```
 This certificate will allow us to request a TGT with Rubeus, by default is valid for a year and will continue working even if the user changes their password.
 
-# Computer Persistence
+## Computer Persistence
 
 Similar to User, machines are a special type of user in AD and can have their own certificates issued. The default template for computers is called `Machines`.
 
@@ -113,14 +113,14 @@ Similar to User, machines are a special type of user in AD and can have their ow
 
 > **Note**: The `/machine` parameters tells to Certify to auto-elevate to SYSTEM and assume the identity of the machine account.
 
-# AD CS Auditing
+## AD CS Auditing
 
 AD CS logging is not enabled by default, so it is unsurprisingly common for defenders to be blind to this activity in their domain.
 
 `Audit Certification Services` must also be enalbed via GPO to `Success` or `Failure` depending on the tolerance of the organization.
 
 
-# Dumping Certificates
+## Dumping Certificates
 
 To enumerate certificates use `Seatbelt`.
 

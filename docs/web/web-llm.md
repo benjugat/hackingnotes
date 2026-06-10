@@ -11,7 +11,7 @@ Organizations in order to improve their online customer experience are integrati
 * Trigger attacks on other users and systems that query the LLM.
 
 
-# Detecting LLM vulnerabilities
+## Detecting LLM vulnerabilities
 
 In order to find vulnerabilities on LLM we need to:
 
@@ -19,17 +19,17 @@ In order to find vulnerabilities on LLM we need to:
 * Work out what data and APIs the LLM has access to.
 * Probe this new attack surface for vulnerabilities.
 
-# Prompt Injection
+## Prompt Injection
 
 This is where an attacker uses crafted prompts to manipulate an LLM's outpupt. Prompt injection can result in the AI taking actions that fall outside of its intended purpose, such as making incorrect calls to sensitive APIs or returning content that does not correspond to its guidelines. 
 
-## Exploiting LLM APIs, functions and plugins
+### Exploiting LLM APIs, functions and plugins
 
 LLMs are often hosted by dedicated third party providers. A website can give third-party LLMs access to its specific functionality by describing local APIs for the LLM to use.
 
 An example for a customer support LLM chatbot might have access to APIs that manage users, orders and stock.
 
-## Excessive agency
+### Excessive agency
 
 The term `excessive agency` refers to a situation in which an LLM has acecss to APIs that can access sensitive information and can be ppersuaded to use those APIs unsafely.
 
@@ -46,7 +46,7 @@ Bot: ...[INFO]...
 ```
 
 
-# Indirect Prompt Injection
+## Indirect Prompt Injection
 
 Indirect prompt injection often enables web LLM attacks on other users. For example, if a user asks an LLM to describe a web page, a hidden prompt inside that page might make the LLM reply with an XSS payload designed to exploit the user. 
 

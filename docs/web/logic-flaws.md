@@ -4,7 +4,7 @@ title: Bussiness Logic Flaws
 
 Business logic vulnerabilities are flaws in the design and implementation of an application that allow an attacker to elicit unintended behavior. This potentially enables attackers to manipulate legitimate functionality to achieve a malicious goal. These flaws are generally the result of failing to anticipate unusual application states that may occur and, consequently, failing to handle them safely. 
 
-# Excessive trust in client-side controls
+## Excessive trust in client-side controls
 
 A fundamentally flawed assumption is that users will only interact with the application via the provided web interface. This is especially dangerous because it leads to the further assumption that client-side validation will prevent users from supplying malicious input. 
 
@@ -12,7 +12,7 @@ Check if the price is sent by the client to the server and try to put different 
 
 ![](../images/logic-flaw-1.png)
 
-# Failing to handle unconventional input
+## Failing to handle unconventional input
 
 One aim of the application logic is to restrict user input to values that adhere to the business rules. For example, the application may be designed to accept arbitrary values of a certain data type, but the logic determines whether or not this value is acceptable from the perspective of the business. Many applications incorporate numeric limits into their logic. This might include limits designed to manage inventory, apply budgetary restrictions, trigger phases of the supply chain, and so on.
 
@@ -22,17 +22,17 @@ In particular, try input in ranges that legitimate users are unlikely to ever en
 * What happens when you reach those limits?
 * Is any transformation or normalization being performed on your input?
 
-# Making flawed assumptions about user behavior
+## Making flawed assumptions about user behavior
 
 One of the most common root causes of logic vulnerabilities is making flawed assumptions about user behavior. This can lead to a wide range of issues where developers have not considered potentially dangerous scenarios that violate these assumptions.
 
-## Trusted users won't always remain trustworthy
+### Trusted users won't always remain trustworthy
 
 Applications may appear to be secure because they implement seemingly robust measures to enforce the business rules. Unfortunately, some applications make the mistake of assuming that, having passed these strict controls initially, the user and their data can be trusted indefinitely. This can result in relatively lax enforcement of the same controls from that point on. 
 
 If business rules and security measures are not applied consistently throughout the application, this can lead to potentially dangerous loopholes that may be exploited by an attacker. 
 
-## Users won't always supply mandatory input
+### Users won't always supply mandatory input
 
 One misconception is that users will always supply values for mandatory input fields. Browsers may prevent ordinary users from submitting a form without a required input, but as we know, attackers can tamper with parameters in transit. This even extends to removing parameters entirely.
 
@@ -44,7 +44,7 @@ When probing for logic flaws, you should try removing each parameter in turn and
 * Try deleting the name of the parameter as well as the value. The server will typically handle both cases differently.
 * Follow multi-stage processes through to completion. Sometimes tampering with a parameter in one step will have an effect on another step further along in the workflow.
 
-## Users won't always follow the intended sequence
+### Users won't always follow the intended sequence
 
 Many transactions rely on predefined workflows consisting of a sequence of steps. The web interface will typically guide users through this process, taking them to the next step of the workflow each time they complete the current one. However, attackers won't necessarily adhere to this intended sequence. Failing to account for this possibility can lead to dangerous flaws that may be relatively simple to exploit. 
 
@@ -54,7 +54,7 @@ Note that this kind of testing will often cause exceptions because expected vari
 
 > **Note**: Try to drop some request to see if some default values are setted.
 
-# Domain-specific flaws
+## Domain-specific flaws
 
 The discounting functionality of online shops is a classic attack surface when hunting for logic flaws. This can be a potential gold mine for an attacker, with all kinds of basic logic flaws occurring in the way discounts are applied. 
 
@@ -90,6 +90,6 @@ On the request where we want to specify the custom paramter select the option `D
 
 Finally test the macro and if it works try to use repeater or intruder to see if it is executed.
 
-# Providing an encryption oracle
+## Providing an encryption oracle
 
 Dangerous scenarios can occur when user-controllable input is encrypted and the resulting ciphertext is then made available to the user in some way. This kind of input is sometimes known as an "encryption oracle". An attacker can use this input to encrypt arbitrary data using the correct algorithm and asymmetric key.

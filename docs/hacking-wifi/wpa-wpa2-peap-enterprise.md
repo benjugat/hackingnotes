@@ -6,11 +6,11 @@ In networks with WPA2 PEAP which means Enterprise don't use a pre shared key, th
 
 ![WPA2 PEAP Message Exchange](../images/wpa2_peap.png)
 
-# EvilTwin
+## EvilTwin
 
 To carry out this task, we are going to use `hostapd-wpe` software.
 
-## Configuring Certificates
+### Configuring Certificates
 
 First we need to aclare that when the user will authenticate to our fake AP, some information about the certificate will be displayed, in order to cheat our víctims, the certificate will seems as much real as posible.
 
@@ -58,7 +58,7 @@ Finally, we just need to create it with `bootstrap`.
 /etc/hostapd-wpe/certs/bootstrap
 ```
 
-## Configuring te Fake AP
+### Configuring te Fake AP
 
 Onced configured and created the certificates, the final step is to configure our FAKE AP. We need to create a backup of the default hostapd config file and modify it.
 
@@ -73,7 +73,7 @@ ssid=<ESSID>
 channel=<CHANNEL>
 ```
 
-## Launch & wait for s3crets
+### Launch & wait for s3crets
 
 Finally, just launch the `hostapd-wpe` indicating the modified configuration file.
 

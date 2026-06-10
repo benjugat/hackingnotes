@@ -1,8 +1,3 @@
----
-title: Reconnaissance
-description: Pre-engagement information gathering: OSINT, asset discovery and target profiling.
----
-
 # Reconnaissance
 
 Pre-engagement information gathering: OSINT, asset discovery and target profiling.

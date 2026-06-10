@@ -4,7 +4,7 @@ title: OS Discovery
 
 Some tips to discover the operative system that runs on the target machine.
 
-# TTL
+## TTL
 
 The default values of TTL on a ICMP packet, shown in the following table, can help us to identify the operative system:
 

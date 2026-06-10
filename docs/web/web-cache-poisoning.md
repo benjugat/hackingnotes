@@ -8,7 +8,7 @@ Fundamentally, web cache poisoning involves two phases. First, the attacker must
 
 A poisoned web cache can potentially be a devastating means of distributing numerous different attacks, exploiting vulnerabilities such as XSS, JavaScript injection, open redirection, and so on. 
 
-# Constructing a web cache poisoning attack
+## Constructing a web cache poisoning attack
 
 Generally speaking, constructing a basic web cache poisoning attack involves the following steps: 
 
@@ -16,35 +16,35 @@ Generally speaking, constructing a basic web cache poisoning attack involves the
 2. Elicit a harmful response from the back-end server
 3. Get the response cached
 
-## Identify and evaluate unkeyed inputs
+### Identify and evaluate unkeyed inputs
 
 Any web cache poisoning attack relies on manipulation of unkeyed inputs, such as headers. Web caches ignore unkeyed inputs when deciding whether to serve a cached response to the user. This behavior means that you can use them to inject your payload and elicit a "poisoned" response which, if cached, will be served to all users whose requests have the matching cache key.
 
 You can identify unkeyed inputs manually by adding random inputs to requests and observing whether or not they have an effect on the response. This can be obvious, such as reflecting the input in the response directly, or triggering an entirely different response.
 
-### Param Miner
+#### Param Miner
 
 `Param Miner` is an extension of Burp, to use it you simply right-click on a request that you want to investigate and click "Guess headers".
 
 ![Param Miner](../images/web-cache-poisoning.png)
 
-## Elicit a harmful response from the back-end server
+### Elicit a harmful response from the back-end server
 
 Once you have identified an unkeyed input, the next step is to evaluate exactly how the website processes it. Understanding this is essential to successfully eliciting a harmful response. If an input is reflected in the response from the server without being properly sanitized, or is used to dynamically generate other data, then this is a potential entry point for web cache poisoning.
 
 
-## Get the response cached
+### Get the response cached
 
 Manipulating inputs to elicit a harmful response is half the battle, but it doesn't achieve much unless you can cause the response to be cached, which can sometimes be tricky.
 
 Whether or not a response gets cached can depend on all kinds of factors, such as the file extension, content type, route, status code, and response headers. You will probably need to devote some time to simply playing around with requests on different pages and studying how the cache behaves.
 
 
-# Exploiting cache design flaws
+## Exploiting cache design flaws
 
 Websites are vulnerable to web cache poisoning if they handle **unkeyed input** in an unsafe way and allow the subsequent HTTP responses to be cached. This vulnerability can be used as a delivery method for a variety of different attacks. 
 
-## Using web cache poisoning to deliver an XSS attack
+### Using web cache poisoning to deliver an XSS attack
 
 Perhaps the simplest web cache poisoning vulnerability to exploit is when unkeyed input is reflected in a cacheable response without proper sanitization. 
 
@@ -73,7 +73,7 @@ Cache-Control: public
 
 If this response was cached, all users who accessed `/en?region=uk` would be served this XSS payload.
 
-## Using web cache poisoning to exploit unsafe handling of resource imports
+### Using web cache poisoning to exploit unsafe handling of resource imports
 
 Some websites use unkeyed headers to dynamically generate URLs for importing resources, such as externally hosted JavaScript files. In this case, if an attacker changes the value of the appropriate header to a domain that they control, they could potentially manipulate the URL to point to their own malicious JavaScript file instead. 
 
@@ -93,7 +93,7 @@ Finally we just need to host our evil payload on our exploit server.
 document.write('<script>alert(document.cookie)</script>');
 ```
 
-## Using web cache poisoning to exploit cookie-handling vulnerabilities
+### Using web cache poisoning to exploit cookie-handling vulnerabilities
 
 Cookies are often used to dynamically generate content in a response. A common example might be a cookie that indicates the user's preferred language, which is then used to load the corresponding version of the page: 
 
@@ -112,7 +112,7 @@ Cookie: fehost=BENJUGAT"}%3balert(1)//
 
 When cookie-based cache poisoning vulnerabilities exist, they tend to be identified and resolved quickly because legitimate users have accidentally poisoned the cache. 
 
-## Using multiple headers to exploit web cache poisoning vulnerabilities
+### Using multiple headers to exploit web cache poisoning vulnerabilities
 
 Some websites are vulnerable to simple web cache poisoning exploits, as demonstrated above. However, others require more sophisticated attacks and only become vulnerable when an attacker is able to craft a request that manipulates multiple unkeyed inputs. 
 
@@ -135,7 +135,7 @@ X-Cache: miss
 Content-Length: 0
 ```
 
-## Exploiting responses that expose too much information
+### Exploiting responses that expose too much information
 
 Sometimes websites make themselves more vulnerable to web cache poisoning by giving away too much information about themselves and their behavior. 
 
@@ -156,9 +156,9 @@ Cache-Control: public, max-age=1800
 
 The `Vary` header specifies a list of additional headers that should be treated as part of the cache key even if they are normally unkeyed. It is commonly used to specify that the `User-Agent` header is keyed, for example, so that if the mobile version of a website is cached, this won't be served to non-mobile users by mistake. 
 
-# Exploiting cache implementation flaws
+## Exploiting cache implementation flaws
 
-## Unkeyed port
+### Unkeyed port
 
 The `Host` header is often part of the cache key and, as such, initially seems an unlikely candidate for injecting any kind of payload. However, some caching systems will parse the header and exclude the port from the cache key.
 
@@ -181,7 +181,7 @@ Location: https://vulnerable-website.com:1337/en
 Cache-Status: hit
 ```
 
-## Unkeyed query string
+### Unkeyed query string
 
 There are alterantive ways of adding a cache buster, such as adding it to a keyed header. Some examples:
 
@@ -234,7 +234,7 @@ Content-Length: 8397
         <link rel="canonical" href='//vulnerable-website.com/?cb='/><script>alert(1)</script><''/>
 ```
 
-## Unkeyed query parameters
+### Unkeyed query parameters
 
 So far we've seen that on some websites, the entire query string is excluded from the cache key. But some websites only exclude specific query parameters that are not relevant to the back-end application, such as parameters for analytics or serving targeted advertisements. UTM parameters like `utm_content` are good candidates to check during testing.
 
@@ -287,7 +287,7 @@ We can use `param miner` to do the task and find unkeyed query parameters.
 ![Param Miner](../images/web-cache-poisoning-02.png)
 
 
-## Cache parameter cloaking
+### Cache parameter cloaking
 
 If you can work out how the cache parses the URL to identify and remove the unwanted parameters, you might find some interesting quirks. Of particular interest are any parsing discrepancies between the cache and the application. This can potentially allow you to sneak arbitrary parameters into the application logic by "cloaking" them in an excluded parameter. 
 
@@ -414,7 +414,7 @@ X-HTTP-Method-Override: POST
 param=bad-stuff-here
 ```
 
-## Normalized cache keys
+### Normalized cache keys
 
 Any normalization applied to the cache key can also introduce exploitable behavior. In fact, it can occasionally enable some exploits that would otherwise be almost impossible. 
 

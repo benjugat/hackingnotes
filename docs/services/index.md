@@ -1,6 +1,5 @@
 ---
 title: Services
-description: Per-service attack and enumeration notes for common TCP/UDP services (FTP, SSH, SMB, HTTP, DNS, etc.).
 ---
 
 # Services

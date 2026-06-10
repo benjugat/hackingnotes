@@ -13,7 +13,7 @@ The difference between web cache deception and web cache poisoning, while both e
 * Web cache deception exploits cache rules to trick the cache into storing sensitive or private content, which the attacker can then access
 * Web cache poisoning manipulates cache keys to inject malicious content into a cached response, which is then served to other users.
 
-# Web caches
+## Web caches
 
 A web cache is a system that sits between the origin server and the user. When a client requests a static resource, the request is first directed to the cache. If the cache doesn't contain a copy of the resource (known as a cache miss), the request is forwarded to the origin server, which processes and responds to the request. The response is then sent to the cache before being sent to the user. The cache uses a preconfigured set of rules to determine whether to store the response. 
 
@@ -21,13 +21,13 @@ When a request for the same static resource is made in the future, the cache ser
 
 ![](../images/web-cache-deception-2.png)
 
-## Cache keys
+### Cache keys
 
 When the cache receives an HTTP request, it must decide whether there is a cached response that it can serve directly, or whether it has to forward the request to the origin server. The cache makes this decision by generating a `cache key` from elements of the HTTP request. Typically, this includes the URL path and query parameters, but it can also include a variety of other elements like headers and content type.
 
 If the incoming request's cache key matches that of a previous request, the cache considers them to be equivalent and serves a copy of the cached response. 
 
-## Cache rules
+### Cache rules
 
 Cache rules determine what can be cached and for how long. Cache rules are often set up to store static resources, which generally don't change frequently and are reused across multiple pages. Dynamic content is not cached as it's more likely to contain sensitive information, ensuring users get the latest data directly from the server.
 
@@ -38,7 +38,7 @@ Web cache deception attacks exploit how cache rules are applied, so it's importa
 * **File name rules**: These rules match specific file names to target files that are universally required for web operations and change rarely such as `robots.txt` and `favicon.ico`.
 
 
-# Construting an attack
+## Construting an attack
 
 A basic web cache deception attack involves the following steps:
 
@@ -48,7 +48,7 @@ A basic web cache deception attack involves the following steps:
 
 > **Note**: Avoid doing this directly in the browser as some applications redirect users without a session or invalidate local data, which could hide a vulnerability.
 
-## Cache buster
+### Cache buster
 
 While testing discrepancies and crafting a web cache deception exploit, make sure that each request has a different cache key. As both URL path and any query parameteres are typically included in the cache key, you can change the key by adding a query string to the path and changing it each time you send a request.
 
@@ -56,7 +56,7 @@ This can be done with `Param miner`. Click on `Param miner -> Settings` menu and
 
 ![](../images/web-cache-deception-3.png)
 
-## Detecting cached responses
+### Detecting cached responses
 
 During testing, it's crucial to detect cached responses. Various response headers may indicate that it is cached:
 
@@ -65,11 +65,11 @@ During testing, it's crucial to detect cached responses. Various response header
 
 > **Note**: If you notice a big different in response time for the same request, this may algo indicate that the faster response is served from the cache.
 
-# Exploiting static extension cache rules
+## Exploiting static extension cache rules
 
 Cache rules often target static resources by matching common file extensions like `.css` or `.js`. This is the default behavior in most CDNs. 
 
-## Path mapping discrepancies
+### Path mapping discrepancies
 
 URL path mapping is the process of associating URL paths with resources on a server, such as files, scripts, or command executions. There are a range of different mapping styles used by different frameworks and technologies. Two common styles are traditional URL mapping and RESTful URL mapping. 
 
@@ -91,7 +91,7 @@ An origin server using RESTful URL mapping may interpret this as a request for `
 
 A cache that uses traditional URL mapping may view this as a request for a file named `wcd.css` located in `/profile` directory under `/user/1`. It interprets the URL path as `/user/1/profile/wcd.css`. If the cache is configured to store responses for requests where the path ends in `.css`, it would cache and serve the profile information as if it were a CSS file.
 
-### Explotaiton
+#### Explotaiton
 
 To test how the origin server maps the URL path to resources, add an arbitrary path segment to the URL of your target endpoint. If the response still contains the same sensitive data as the base response, it indicates that the origin server abstracts the URL path and ignores the added segment.
 
@@ -101,7 +101,7 @@ To test how the cache maps the URL paths to resources, you'll need to modify the
 
 > **Note**: Try a range of extensions including `.css`, `.ico`, `.js`, `.exe` ...
 
-## Delimiter discrepancies
+### Delimiter discrepancies
 
 Delimiters specify boundaries between different elements in URLs. The use of characters and strings as delimiters is generally standardized. For example, ? is generally used to separate the URL path from the query string. However, as the URI RFC is quite permissive, variations still occur between different frameworks or technologies. 
 
@@ -112,7 +112,7 @@ Discrepancies in how the cache and origin server use characters and strings as d
 
 Encoded characters may algo sometimes be used as delimeters for example `/profile%00foo.js`.
 
-### Exploitation
+#### Exploitation
 
 First we need to find characters that are used as delimiters by the origin server. Start by adding a random string to a legit endpoint such as `/my/endpoint/list` to `/my/endpoint/listaaaa`.
 
@@ -199,11 +199,11 @@ _
 ```
 > **Note**: Some delimiters characters may be processed by the victim's browser before it forwards the request to cache. This means that some delimiters can't be used in an exploit. An example of this are `#`, `{`, `}`, `<` and `>`. If the cache or origin server decodes these characters, it may be possible to use and encoded version.
 
-# Exploiting static directory cache rules
+## Exploiting static directory cache rules
 
 It's common practice for web servers to store static resources in specific directories such as `/static`, `/assets`, `/scripts` or `/images`. These rules can also be vulnerable to web cache deception.
 
-## Normalization discrepancies
+### Normalization discrepancies
 
 Normalization involves converting various representations of URL paths into a standardized format. Includes decoding and resolving dot-segments such as `/static..%2fprofile`.
 
@@ -212,7 +212,7 @@ Normalization involves converting various representations of URL paths into a st
 
 > **Note**: Each dot-segment in the path traversal sequence needs to be encoded. Otherwise the victim's browser willl resolve it before forwarding the request to the cache.
 
-### Detecting normalization by the origin server
+#### Detecting normalization by the origin server
 
 To test how the origin server normalizes the URL path, **send a request to a non-cacheable resource** with a path traversal sequence.
 
@@ -230,7 +230,7 @@ If the origin server resolves encoded dot-segments, and the cache don't, we can 
 /assets/..%2fprofile
 ```
 
-### Detecting normalization by the cache server
+#### Detecting normalization by the cache server
 
 We can use different methods to test how the cache normalizes the path. We can start by identifying potential static directories. Focus on static resources.
 
@@ -259,7 +259,7 @@ The origin server is likely to return an error `404` because will interpret `/pr
 /profile;%2f%2e%2e%2fstatic
 ```
 
-# Exploiting file name cache rules
+## Exploiting file name cache rules
 
 Certain files such as `robots.txt`, `index.html` or `favicon.ico` are common files found on web servers. They're often cached due to their infrequent changes. Those files can be cached.
 

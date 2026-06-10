@@ -11,11 +11,11 @@ Be aware that when working with different programming languages, serialization m
 
 **Insecure deserialization** is when user-controllable data is deserialized by a website. This potentially enables an attacker to manipulate serialized objects in order to pass harmful data into the application code. 
 
-# Identifying serialized objects
+## Identifying serialized objects
 
 Serialized data can be identified relatively easily if you know the format that different languages use.
 
-## PHP serialization format
+### PHP serialization format
 
 PHP uses a mostly human-readable string format, with letters representing the data type and numbers representing the length of each entry. For example, consider a User object with the attributes: 
 
@@ -41,7 +41,7 @@ This can be interpreted as follows:
 
 The native PHP methods for serialization are `serialize()` and `unserialize()`.
 
-## Java serialization format
+### Java serialization format
 
 Some languages, such as Java, use binary serialization formats. This is more difficult to read, but you can still identify serialized data if you know how to recognize a few tell-tale signs.
 
@@ -50,9 +50,9 @@ Java objects always begin with the same bytes, which are encoded as `ac ed` in h
 Any class that implements the interface `java.io.Serializable` can be serialized and deserialized. If you have source code access, take note of any code that uses the `readObject()` method, which is used to read and deserialize data from an `InputStream`. 
 
 
-# Manipulating serialized objects
+## Manipulating serialized objects
 
-## Modifying object attributes
+### Modifying object attributes
 
 We can modify the attributes of an object such as the example shown before to obtain privilege rights such as admin.
 
@@ -66,7 +66,7 @@ So the boolean attribute `isAdmin` can me modified to `true`.
 O:4:"User":2:{s:4:"name":s:6:"benjugat"; s:10:"isAdmin":b:1;}
 ```
 
-## Modifying data types
+### Modifying data types
 
 We've seen how you can modify attribute values in serialized objects, but it's also possible to supply unexpected data types.
 
@@ -83,7 +83,7 @@ The behavior when comparing an alphanumeric string that starts with a number rem
 
 > **Note**: Remember to update any type labels and lenght indicators in the serialized data.
 
-# Magic methods
+## Magic methods
 
 Magic methods are a special subset of methods that you do not have to explicitly invoke. Instead, they are invoked automatically whenever a particular event or scenario occurs. Magic methods are a common feature of object-oriented programming in various languages. They are sometimes indicated by prefixing or surrounding the method name with double-underscores. 
 
@@ -93,7 +93,7 @@ Magic methods are widely used and do not represent a vulnerability on their own.
 
 Most importantly in this context, some languages have magic methods that are invoked automatically during the deserialization process. For example, PHP's `unserialize()` method looks for and invokes an object's `__wakeup()` magic method. 
 
-# Injecting arbitrary objects
+## Injecting arbitrary objects
 
 It is possible to exploit insecure deserialization by simply editing the object supplied by the website. However, injecting arbitrary object types can open up many more possibilities.
 
@@ -111,19 +111,19 @@ O:4:"User":2:{s:4:"name":s:6:"benjugat"; s:10:"isAdmin":b:1;}
 O:14:"CustomTemplate":1:{s:14:"lock_file_path";s:10:"morale.txt";}
 ```
 
-# Gadget Chains
+## Gadget Chains
 
 A "gadget" is a snippet of code that exists in the application that can help an attacker to achieve a particular goal. An individual gadget may not directly do anything harmful with user input. However, the attacker's goal might simply be to invoke a method that will pass their input into another gadget. By chaining multiple gadgets together in this way, an attacker can potentially pass their input into a dangerous "sink gadget", where it can cause maximum damage. 
 
 It is important to understand that, unlike some other types of exploit, a gadget chain is not a payload of chained methods constructed by the attacker. All of the code already exists on the website. The only thing the attacker controls is the data that is passed into the gadget chain. This is typically done using a magic method that is invoked during deserialization, sometimes known as a "kick-off gadget". 
 
-## Working with pre-built gadget chains
+### Working with pre-built gadget chains
 
 Manually identifying gadget chains can be a fairly arduous process, and is almost impossible without source code access. Fortunately, there are a few options for working with pre-built gadget chains that you can try first. 
 
 There are several tools available that provide a range of pre-discovered chains that have been successfully exploited on other websites.
 
-### ysoserial
+#### ysoserial
 
 One such tool for Java deserialization is "ysoserial". This lets you choose one of the provided gadget chains for a library that you think the target application is using, then pass in a command that you want to execute. 
 
@@ -147,7 +147,7 @@ java \
 
 > **Note**: Do obtain in base64 format try to pipe `| base64 -w0`
 
-### PHP Generic Gadget Chains (pphpggc)
+#### PHP Generic Gadget Chains (pphpggc)
 
 Most languages that frequently suffer from insecure deserialization vulnerabilities have equivalent proof-of-concept tools. For example, for PHP-based sites you can use "PHP Generic Gadget Chains" (PHPGGC). 
 
@@ -171,7 +171,7 @@ If we need to sign a cookie or something like that with a `hmac` key we can try 
 ?>
 ```
 
-## Working with documented gadget chains
+### Working with documented gadget chains
 
 There may not always be a dedicated tool available for exploiting known gadget chains in the framework used by the target application. In this case, it's always worth looking online to see if there are any documented exploits that you can adapt manually. Tweaking the code may require some basic understanding of the language and framework, and you might sometimes need to serialize the object yourself, but this approach is still considerably less effort than building an exploit from scratch. 
 

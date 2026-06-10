@@ -4,9 +4,9 @@ title: Port Scanning
 
 The best option to identify Ports, Protocols, and Services (PPS) on a targetwould be to scan all ports (65535) of the remote system.
 
-# TCP Scanning
+## TCP Scanning
 
-## Nmap
+### Nmap
 
 * Simply Scan
 
@@ -21,7 +21,7 @@ nmap --top-ports 5000 --open -T5 -v -n IP
 nmap -sV -A -p PORTS IP
 ```
 
-## Masscan
+### Masscan
 
 Masscan is the fastest port scanner, it can scan the whole internet in 6 minutes.
 
@@ -29,7 +29,7 @@ Masscan is the fastest port scanner, it can scan the whole internet in 6 minutes
 sudo masscan -p[PORTS] [IP/MASK] --rate=1000 -e [IFACE] --router-ip [GATEWAY]
 ```
 
-## Bash Port Scanner
+### Bash Port Scanner
 
 This one is created by [@s4vitar](https://www.youtube.com/channel/UCNHWpNqiM8yOQcHXtsluD7Q):
 
@@ -56,7 +56,7 @@ for i in {1..65535}; do (< "/dev/tcp/$1
 /$i") &>/dev/null && { echo; echo "[+] Open Port at: $i"; }  || printf ""; done; echo
 ```
 
-# UDP Scanning
+## UDP Scanning
 
 Pentesters often forgot to scan for open UDP ports, although UDP scanning can be unrealiable, there are plenty of attack vectors lurking behind open UDP ports.
 

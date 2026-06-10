@@ -2,14 +2,14 @@
 title: Basics
 ---
 
-# Methodology
+## Methodology
 
-## After pwning a Machine
+### After pwning a Machine
 
 1. `Invoke-Mimikatz` for dumping secrets.
 2. Look for interesting internal files.
 
-## After pwning a User
+### After pwning a User
 
 1. Find where the user has local admin privileges. `Find-WMILocalAdminAccess.ps1` and `Invoke-UserHunter -CheckAccess`
 2. Find new shares. `Invoke-ShareFinder -ExcludeStandard`
@@ -17,7 +17,7 @@ title: Basics
 4. Check ACL for the Groups where the user is member. `Get-ObjectAcl -ResolveGUIDs | ?{$_.IdentityReference "*GROUP*"}`
 5. Find new MSSQL Access. `Import-Module PowerUpSql.psd1; Get-SQLInstanceDomain | Get-SQLConnectionTestThreaded -Verbose`
 
-# What is Active Directory?
+## What is Active Directory?
 
 An **Active Directory (AD)** is a system that allows to manage a set of computers and users connected in the same network from a central server.
 
@@ -30,7 +30,7 @@ An Active Directory is installed on **Windows Servers**. Let's see their items.
 > On Linux:
 > `rdate -n <DC_IP>`
 
-# Domain
+## Domain
 
 We usually known an Active Directory as a **Domain**. A domain is a set of connected computers that shares an active directory database which is managed by the central servers called **Domain Controllers (DC)**.
 
@@ -73,7 +73,7 @@ SystemsContainer                   : CN=System,DC=corpme,DC=local
 UsersContainer                     : CN=Users,DC=corpme,DC=local
 ```
 
-# Forest
+## Forest
 
 Active Directory offers many ways to organize your infraestructure. An organitzation can use domain and subdomains in order to organize the object via departmants, countries, etc...
 
@@ -99,7 +99,7 @@ In a forest each domain has its own database and its own domain controllers.
 > **Note**: A user of a domain in the forest can also access to the other domains of the same forest.
 
 
-## Functional Modes
+### Functional Modes
 
 As well as Windows computers, domains/forest can also have their own "version", that is called functional mode. Depending on the mode of the domain/forest, new characteristics can be used.
 
@@ -120,7 +120,7 @@ Windows2016Forest
 ```
 Then if, for example, you find a domain/forest with `Windows2012` mode, you can know that all the Domain Controllers are at least Windows Server 2012. You must be aware of the mode in order to use some characteristics of the domain, for example, the Protected Users group requires a Windows2012R2 mode.
 
-# Trusts
+## Trusts
 
 In an active directory environment, trust is a relationship between two domains or forests which allows users of one domain or forest to access resources in the other domain or forest.
 
@@ -128,7 +128,7 @@ Trust can be automatic for example parent-child, same forest, etc... or establis
 
 Trusted Domain Objects (TDOs) the trust relationship in a domain.
 
-## Directions of Trust
+### Directions of Trust
 
 Exist diferent directions of Trust:
 
@@ -148,7 +148,7 @@ It is bidirectional. Users of both domains can access resources in the other dom
 
 ![Two-Way-Trust](../images/two-way-trust.png)
 
-## Trust Transitivity
+### Trust Transitivity
 
 Exist different types of transitivity on a domain:
 
@@ -169,7 +169,7 @@ Nontransitive means that the trust can not be extended to other domains in the f
 
 This is the default trust called external trust between two domains in different forests, when forests do not have a trust relationship.
 
-## Type of Trusts
+### Type of Trusts
 
 There are many types of trusts:
 
@@ -217,7 +217,7 @@ Can be one-way or two-way and transitive or nontransitive.
 > **Note**: In case of nonsensitvie Forest 1 would not have any type of trust relationship with Forest 3.
 
 
-## Trust Key
+### Trust Key
 
 Technically, when you use a trust, there is a communication between the domain controller of your domain and the domain controller of the target domain (or of an intermediary domain).
 
@@ -234,11 +234,11 @@ Invoke-Mimikatz -Command '"lsadump::trust /patch"'
 Invoke-Mimikatz -Command '"lsadump::dcsync /user:dcorp\mcorp$"'
 ```
 
-# Users
+## Users
 
 
 
 
-# References
+## References
 
 * [https://zer1t0.gitlab.io/posts/attacking_ad/](https://zer1t0.gitlab.io/posts/attacking_ad/)

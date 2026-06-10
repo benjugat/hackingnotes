@@ -41,7 +41,7 @@ Since HTTP/1 has two differents methods for specifyng the length of HTTP message
 * **TE.CL**: The front-end server uses the `Transfer-Encoding` header and the back-end server uses the `Content-Length` header.
 * **TE.TE**: Both servers support the `Transfer-Encoding` header, but one of the servers can be induced not to process it by obfuscating the header in some way.
 
-# Burpuiste Setup for smuggling attacks
+## Burpuiste Setup for smuggling attacks
 
 At first we need to download `HTTP Request Smuggler` burp extension may be we can use it. It has a usefull scanner.
 
@@ -54,7 +54,7 @@ We should do this on every request on the repeater tab.
 3. Turn on `Non printable characters`
 ![HTTP Request Smuggling](../images/smuggling-linebreak.png)
 
-# CL.TE
+## CL.TE
 
 Here, the front-end server uses the `Content-Length` header and the back-end server uses the `Transfer-Encoding` header. We can perform a simple HTTP request smuggling attack as follows: 
 
@@ -72,7 +72,7 @@ SMUGGLED
 
 ![HTTP Request Smuggling](../images/smuggling-clte.png)
 
-# TE.CL
+## TE.CL
 
 The front-end server uses the `Transfer-Encoding` header and the back-end server uses the `Content-Length` header. We can perform a simple HTTP request smuggling attack as follows: 
 
@@ -92,7 +92,7 @@ SMUGGLED\r\n
 ![HTTP Request Smuggling](../images/smuggling-tecl.png)
 
 
-# TE.TE
+## TE.TE
 
 The front-end and back-end servers both support the `Transfer-Encoding` header, but one of the servers can be induced not to process it by obfuscating the header in some way.
 
@@ -128,7 +128,7 @@ SMUGGLED\r\n
 ```
 
 
-# Finding Smuggling Vulnerabilities
+## Finding Smuggling Vulnerabilities
 
 The best way to find smuggling is to execute the following two tests:
 
@@ -152,7 +152,7 @@ Content-Length: 11
 q=smuggling
 ```
 
-## Confirming CL.TE
+### Confirming CL.TE
 
 To confirm a CL.TE vulnerability, you would send an attack request like this: 
 
@@ -186,7 +186,7 @@ GET /404 HTTP/1.1
 X-Ignore: X
 ```
 
-## Confirming TE.CL
+### Confirming TE.CL
 
 To confirm a TE.CL vulnerability, you would send an attack request like this: 
 
@@ -228,9 +228,9 @@ x=1
 
 ```
 
-# Exploiting HTTP Request smuggling Vulnerabilities
+## Exploiting HTTP Request smuggling Vulnerabilities
 
-## Using smuggling to bypass front-end security controls
+### Using smuggling to bypass front-end security controls
 
 Suppose the current user is permitted to access `/home` but not `/admin`. They can bypass this restriction using the following request smuggling attack: 
 
@@ -274,7 +274,7 @@ x=
 
 ```
 
-## Revealing front-end request rewriting
+### Revealing front-end request rewriting
 
 In many applications, the front-end server performs some rewriting of requests before they are forwarded to the back-end server, typically by adding some additional request headers. For example, the front-end server might:
 
@@ -330,7 +330,7 @@ x-nr-external-service: external
 
 > **Note**: Since the final request is being rewritten, you don't know how long it will end up. The value of `Content-Length` header is smuggled request will determine how long the back-end server believes the request is. Guess an initial value tat is a bit bigger than the submitted request, and then **gradually increase the value** to retrive more information. If you put a big value it will get a timout.
 
-## Bypassing client authentication
+### Bypassing client authentication
 
 As part of the TLS handshake, servers authenticate themselves with the client (usually a browser) by providing a certificate. This certificate contains their "common name" (CN), which should match their registered hostname. The client can then use this to verify that they're talking to a legitimate server belonging to the expected domain. 
 
@@ -358,7 +358,7 @@ X-SSL-CLIENT-CN: administrator
 Foo: x
 ```
 
-## Capturing other users' requests
+### Capturing other users' requests
 
 If the application contains any kind of functionality that allows you to store and later retrieve textual data, you can potentially use this to capture the contents of other users' requests. These may include session tokens or other sensitive data submitted by the user.
 
@@ -395,7 +395,7 @@ Cookie: session=jJNLJs2RKpbg9EQ7iWrcfzwaTvMw81Rj
 ... 
 ```
 
-## Using HTTP request smuggling to exploit reflected XSS
+### Using HTTP request smuggling to exploit reflected XSS
 
 If an application is vulnerable to HTTP request smuggling and also contains reflected XSS, you can use a request smuggling attack to hit other users of the application.
 
@@ -415,13 +415,13 @@ Foo: X
 ```
 
 
-# Advanced request smuggling
+## Advanced request smuggling
 
-## HTTP/2 Request Smuggling
+### HTTP/2 Request Smuggling
 
 Implementing HTTP/2 has actually made many websites more vulnerable to request smuggling, even if they were previously safe from these kinds of attacks. 
 
-### H2.CL
+#### H2.CL
 
 HTTP/2 requests don't have to specify their length explicitly in a header. During downgrading, this means front-end servers often add an HTTP/1 `Content-Length` header, deriving its value using HTTP/2's built-in length mechanism. 
 
@@ -463,7 +463,7 @@ x=1GET / H
 
 > **Note**: By using a `Content-Length` header that is slightly longer than the body, the victim's request will still be appended to your smuggled prefix but will be truncated before the headers.
 
-### H2.TE
+#### H2.TE
 
 Chunked transfer encoding is incompatible with HTTP/2 and the spec recommends that any `transfer-encoding: chunked` header you try to inject should be stripped or the request blocked entirely. If the front-end server fails to do this, and subsequently downgrades the request for an HTTP/1 back-end that does support chunked encoding, this can also enable request smuggling attacks.
 
@@ -498,7 +498,7 @@ Host: vulnerable-website.com
 Foo: bar
 ```
 
-## Response queue poisoning
+### Response queue poisoning
 
 Response queue poisoning is a powerful form of request smuggling attack that causes a front-end server to start mapping responses from the back-end to the wrong requests. In practice, this means that all users of the same front-end/back-end connection are persistently served responses that were intended for someone else.
 
@@ -527,7 +527,7 @@ Once the response queue is poisoned, the attacker can just send an arbitrary req
 
 ![Response queue posioning](../images/response-queue-poisoning.png)
 
-## HTTP/2 request smuggling via CRLF injection
+### HTTP/2 request smuggling via CRLF injection
 
 Even if websites take steps to prevent basic H2.CL or H2.TE attacks, such as validating the content-length or stripping any `transfer-encoding` headers, HTTP/2's binary format enables some novel ways to bypass these kinds of front-end measures. 
 
@@ -539,7 +539,7 @@ Foo: bar\r\nTransfer-Encoding: chunked
 ![CRLF Injection](../images/crlf-injection.png)
 
 
-## HTTP/2 request splitting via CRLF injection
+### HTTP/2 request splitting via CRLF injection
 
 When we looked at response queue poisoning, you learned how to split a single HTTP request into exactly two complete requests on the back-end. In the example we looked at, the split occurred inside the message body, but when HTTP/2 downgrading is in play, you can also cause this split to occur in the headers instead.
 
@@ -557,11 +557,11 @@ So we just need to inject before our smuggled request.
 
 After that like **Response queue poisoning** we should need to do another normal request to obtain the users response.
 
-# Browser-powered request smuggling
+## Browser-powered request smuggling
 
 Is the ability to perform client-side variations of these attacks by inducing a victim's browser to poison its own connection to a vulnerable web server.
 
-## CL.0 request smuggling
+### CL.0 request smuggling
 
 Request smuggling vulnerabilities are the result of discrepancies in how chained systems determine where each request starts and ends. This is typically due to inconsistent header parsing, leading to one server using a request's `Content-Length` and the other treating the message as `chunked`. However, it's possible to perform many of the same attacks without relying on either of these issues.
 

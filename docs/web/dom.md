@@ -4,7 +4,7 @@ title: DOM Based
 
 The Document Object Model (DOM) is a web browser's hierarchical representation of the elements on the page. Websites can use JavaScript to manipulate the nodes and objects of the DOM, as well as their properties. DOM manipulation in itself is not a problem. In fact, it is an integral part of how modern websites work. However, JavaScript that handles data insecurely can enable various attacks. DOM-based vulnerabilities arise when a website contains JavaScript that takes an attacker-controllable value, known as a source, and passes it into a dangerous function, known as a sink.
 
-# DOM-based open redirect
+## DOM-based open redirect
 
 DOM-based open-redirection vulnerabilities arise when a script writes attacker-controllable data into a sink that can trigger cross-domain navigation.
 
@@ -28,7 +28,7 @@ jQuery.ajax()
 $.ajax()
 ```
 
-# DOM-based cookie manipulation
+## DOM-based cookie manipulation
 
 Some DOM-based vulnerabilities allow attackers to manipulate data that they do not typically control. This transforms normally-safe data types, such as cookies, into potential sources. DOM-based cookie-manipulation vulnerabilities arise when a script writes attacker-controllable data into the value of a cookie. 
 
@@ -42,7 +42,7 @@ So we can deliver a the following exploit to the victim:
 <iframe src="https://example.com/product?productId=1&test'><script>print()</script>" onload="if(!window.x)this.src='https://example.com';window.x=1;">
 ```
 
-# DOM-based web message vulnerabilities
+## DOM-based web message vulnerabilities
 
 If a page handles incoming web messages in an unsafe way, for example, by not verifying the origin of incoming messages correctly in the event listener, properties and functions that are called by the event listener can potentially become sinks.
 
@@ -64,7 +64,7 @@ This is vulnerable because an attacker could inject a JavaScript payload by cons
 <iframe src="https://vulnerable-website" onload="this.contentWindow.postMessage('<img src=x onerror=print()>','*')">
 ```
 
-## Origin verification
+### Origin verification
 
 Even if an event listener does include some form of origin verification, this verification step can sometimes be fundamentally flawed. For example, consider the following code: 
 

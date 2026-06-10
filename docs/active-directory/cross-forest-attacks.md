@@ -4,7 +4,7 @@ title: Cross Forest Attacks
 
 In this section we are going to abuse trusts between forests.
 
-# One-Way (Inbound)
+## One-Way (Inbound)
 
 When a trust is inbound in our perspective, it means that principals in our domain can be granted access to resources in the foreign domain.
 
@@ -53,7 +53,7 @@ Finally we an use this inter-realm ticket to request a TGS.
 ```
 
 
-# One-Way (Outbound)
+## One-Way (Outbound)
 
 If Domain A (Me) trusts Domain B, users in Domain B can access resources in Domain A but users in Domain A should not be able to access resources in Domain B. But there are some circumstances in which we can slide under the radar. An example of this includes SQL Server Links.
 
@@ -61,7 +61,7 @@ If Domain A (Me) trusts Domain B, users in Domain B can access resources in Doma
 Get-DomainTrust -Domain corp.local
 ```
 
-## Trusted Domain Object (TDO) user
+### Trusted Domain Object (TDO) user
 
 But, we can still partially exploit this trus and obtain a "Domain User" of the trust abusing the Trusted Domain Object (TDO). Both domains in a trust relationship store a shared password which is automatically changed every 30 days. These objects are stored in the system contained and can be read via LDAP.
 
@@ -69,7 +69,7 @@ But, we can still partially exploit this trus and obtain a "Domain User" of the 
 beacon> execute-assembly C:\Tools\ADSearch\ADSearch\bin\Release\ADSearch.exe --search "(objectCategory=trustedDomain)" --domain corp.local --attributes distinguishedName,name,flatName,trustDirection
 ```
 
-### Retrieving the Trusted Key
+#### Retrieving the Trusted Key
 
 There are two ways:
 
@@ -93,7 +93,7 @@ beacon> mimikatz @lsadump::dcsync /domain:corp.local /guid:{b93d2e36-48df-46bf-8
 
 `[Out]` and `[Out-1]` are the "new" and "old" passwords respectively.  In most cases, the current `[Out]` key is the one you want. 
 
-### Creating a TGT
+#### Creating a TGT
 
 In addition, there is also a "trust account" which is created in the "trusted" domain, with the name of the "trusting" domain.  For instance, if we get all the user accounts in the DEV domain, we'll see CYBER$ and STUDIO$, which are the trust accounts for those respective domain trusts.
 
@@ -115,7 +115,7 @@ This meand TARGET domain will have a trust account called `CORP$`. This is the a
 
 > **Note**: RC4 tickets are used by default across trusts.
 
-## Trust Abuse with MSSQL Server
+### Trust Abuse with MSSQL Server
 
 MSSQL Servers are generally deployed in plenty windows domain. SQL Servers provide very good options for lateral movement as domain users can be mapped to dabase roles.
 
@@ -145,7 +145,7 @@ Gather information:
 Get-SQLInstanceDomain | Get-SQLServerInfo -Verbose
 ```
 
-### Database Links
+#### Database Links
 
 A database link allows a SQL Server to access external data sources like other SQL Servers and OLE DB data sources. In case of databases links between Microsoft SQL Servers, it is possible to execute stored procedures which means RCE.
 
@@ -183,7 +183,7 @@ And finally:
 Get-SQLServerLinkCrawl -Instance mssql.corp.local -Query "exec master..xp_cmdshell 'whoami'"
 ```
 
-## RDPInception
+### RDPInception
 
 Another way is via RDP drive sharing (**RDPInception**). When a user enables drive sharing for their RDP sessions, it creates a mount-point on the target machine that maps back to their local machine. If the target machine is compromised, we may migrate into RDP users's session and use this mount-point to write files directly onto their machine. Useful for dropping payloads into their startup folder which would be executed the next time they logon.
 
@@ -235,7 +235,7 @@ beacon> upload payload.exe
 ```
 
 
-# Across Forests using Trust Tickets
+## Across Forests using Trust Tickets
 
 First we need to retrieved the Trust Key:
 

@@ -6,7 +6,7 @@ order: 24
 
 GraphQL vulnerabilities generally arise due to implementation and design flaws. For example, the introspection feature may be left active, enabling attackers to query the API in order to glean information about its schema. 
 
-# Finding GraphQL Endpoints
+## Finding GraphQL Endpoints
 
 GraphQL APIs use the same endpoint for all requests.
 
@@ -32,11 +32,11 @@ query{__typename}
 "data": {"__typename": "query"}}
 ```
 
-# Discovering Schema Information
+## Discovering Schema Information
 
 The next step in testing the API is to piece together information about the underlying schema. 
 
-## Instrospection
+### Instrospection
 
 To use introspection to discover schema information, query the `__schema` field. This field is available on the root type of all queries. 
 
@@ -182,9 +182,9 @@ mutation {
 }
 ```
 
-# Bypassing GraphQL instrospection defenses
+## Bypassing GraphQL instrospection defenses
 
-## Regex Bypass
+### Regex Bypass
 
 When developers disable introspection, they could use a regex to exclude the `__schema` keyword in queries. Try to use **spaces**, **new lines** and **commas** to bypass those regex.
 
@@ -195,7 +195,7 @@ When developers disable introspection, they could use a regex to exclude the `__
 }
 ```
 
-## GET Bypass
+### GET Bypass
 
 Try running the test over an alternative request method such as GET.
 
@@ -211,7 +211,7 @@ GET /graphql?query=query%7B__schema%0A%7BqueryType%7Bname%7D%7D%7D
 GET /graphql?query=query%20{%20getUser(id:1)%20{%20id%20username}%20}
 ```
 
-#  Bypassing rate limiting using aliases 
+##  Bypassing rate limiting using aliases 
 
 Many endpoints will have some sort of rate limiter in place to prevent brute force attacks. Some rate limiters work based on the number of HTTP requests received rather than the number of operations performed on the endpoint. Because aliases effectively enable you to send multiple queries in a single HTTP message, they can bypass this restriction. 
 
@@ -261,7 +261,7 @@ bruteforce$index:login(input:{password: "$password", username: "carlos"}) {
 `.replaceAll('$index',index).replaceAll('$password',element)).join('\n'));console.log("The query has been copied to your clipboard.");
 ```
 
-# CSRF over GraphQL
+## CSRF over GraphQL
 
 CSRF vulnerabilities can arise where a GraphQL endpoint does not validate the content type of the requests sent to it and no CSRF tokens are implemented. 
 

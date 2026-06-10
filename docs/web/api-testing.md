@@ -2,7 +2,7 @@
 title: API Testing
 ---
 
-# Discovering API Documentation
+## Discovering API Documentation
 
 APIs are usually documented so that developers know how to use and integrate with them.
 
@@ -21,7 +21,7 @@ Juicy endpoints:
 /api/swagger
 ```
 
-# Interacting with API endpoints
+## Interacting with API endpoints
 
 * **Suported HTTP Methods**:
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 Content-Type: application/xml
 ```
 
-# Mass Assigment Vulnerabilities
+## Mass Assigment Vulnerabilities
 
 Mass assignment (also known as auto-binding) can inadvertently create hidden parameters. It occurs when software frameworks automatically bind request parameters to fields on an internal object. Mass assignment may therefore result in the application supporting parameters that were never intended to be processed by the developer.
 
@@ -92,7 +92,7 @@ Content-Type: application/json
 }
 ```
 
-# Server-side parameter pollution
+## Server-side parameter pollution
 
 Some systems contain internal APIs that aren't directly accessible from the internet. Server-side parameter pollution occurs when a website embeds user input in a server-side request to an internal API without adequate encoding. This means that an attacker may be able to manipulate or inject parameters, which may enable them to, for example: 
 
@@ -113,7 +113,7 @@ The app ask to a API with the following query:
 GET /user/search?name=benjugat&publicProfile=true
 ```
 
-## Truncating query strings
+### Truncating query strings
 
 We can trick the app to trucnate the final API request with `#` urlencoded:
 
@@ -129,7 +129,7 @@ GET /user/search?name=benjugat#foo&publicProfile=true
 
 If the response return the user `benjugat`, the server-side query may have benn truncated, but if an error such as `invalid name` is received the application may treated `#foo` as a part of the username and it is not vulnerable.
 
-## Injecting invalid parameters
+### Injecting invalid parameters
 
 We can url encode `&` character to attempt to add a second parameter to the server-side request.
 
@@ -145,7 +145,7 @@ GET /users/search?name=benjugat&foo=xyz&publicProfile=true
 
 Review the response for clues about how the additional parameter is parsed. For example, if the response is unchanged this may indicate that the parameter was successfully injected but ignored by the application.
 
-## Injecting valid parameters
+### Injecting valid parameters
 
 If we are able to modify the query string, we can attempt to add a second valid parameter to the server-side request.
 
@@ -158,7 +158,7 @@ This results to:
 GET /users/search?name=benjugat&email=foo&publicProfile=true
 ```
 
-## Overriding existing parameters
+### Overriding existing parameters
 
 To confirm if the application is vulnerable to server-side parameter pollution, we can try to override the original parameter. We can inject a second parameter with the same name.
 

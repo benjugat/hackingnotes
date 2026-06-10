@@ -4,11 +4,11 @@ title: Host Discovery
 
 When we have our pool of IP addresses, we have to identify the devices and the roles played by each IP in the target organization.
 
-# Live Hosts
+## Live Hosts
 
 There are different methods that one can use to identify live hosts. 
 
-## ICMP Ping Sweep
+### ICMP Ping Sweep
 
 The most common is the **ICMP ping sweep.** It consists of ICMP ECHO requests sent to multiple hosts. If a given host is alive, it will return an ICMP ECHO reply.
 
@@ -32,7 +32,7 @@ for i in $(seq 1 255); do
 done; wait
 ```
 
-## Most common ports
+### Most common ports
 
 The second technique is doing a most common port scanner with the following ports:
 

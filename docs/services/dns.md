@@ -4,7 +4,7 @@ title: PORT 53/tcp - DNS
 
 The Domain Name System (DNS) is the phonebook of the Internet. Humans access information online through domain names, like nytimes.com or espn.com.
 
-# Introduction
+## Introduction
 
 In this section only will be shown the methodology to enumerate locally the DNS service. If you need to take a look of DNS enumeration vía internet, you will found in the following section.
 
@@ -14,7 +14,7 @@ In this section only will be shown the methodology to enumerate locally the DNS 
 
 ![Table of DNS Record Types](../images/table_dnstypes.png)
 
-# Enumeration
+## Enumeration
 
 First we will need to a Reverse DNS Lookup,
 

@@ -8,9 +8,9 @@ More info in:
 
 * [https://ios.cfw.guide](https://ios.cfw.guide)
 
-# Jailbreaks
+## Jailbreaks
 
-## Jailbreak iOS 14 with Checkra1n
+### Jailbreak iOS 14 with Checkra1n
 
 Jailbreak is needed to make an audit of an iOS application. Checkra1n allows us to get our iphone jailbroke.
 
@@ -29,7 +29,7 @@ Once properly configured we can jailbreak our iphone.
 
 ![Checkra1n](../images/checkra1n_03.png)
 
-## Jailbreak iOS 15 with Palera1n (rootless)
+### Jailbreak iOS 15 with Palera1n (rootless)
 
 Passcode should be deleted previously. You can download palera1n from the following link:
 
@@ -63,7 +63,7 @@ sudo /bin/sh -c "$(curl -fsSL https://static.palera.in/scripts/install.sh)"
 sudo palera1n -l
 ```
 
-### Troubleshooting
+#### Troubleshooting
 
 * **Phone stucked in DFU mode**:
 
@@ -90,7 +90,7 @@ If an error like this `<Error>: Timed out waiting for download mode (error code:
 
 Remember to not set passcode or touchID during the hard reset.
 
-# Installing Burp certificate
+## Installing Burp certificate
 
 Once the proxy has been configured on the device, open the browser and search for the url `http://burp`. Download the profile.
 
@@ -108,7 +108,7 @@ Finally, we just need to enable and trust with the certificate. Search on settin
 
 ![Burp Certificate](../images/ios_certi.png)
 
-# Setup openssh server
+## Setup openssh server
 
 Root password should be changed before ssh usage. Execute the following commands to change the password from **NewTerm** software on the iOS device.
 
@@ -121,9 +121,9 @@ New Password: [alpine]
 Retype New Password: [alpine]
 ```
 
-# Installing packages
+## Installing packages
 
-## on Zebra 
+### on Zebra 
 
 In order to make and audit some software is needed:
 
@@ -136,7 +136,7 @@ In order to make and audit some software is needed:
 * **SSL Kill Switch 3**: SSL pinning bypass. Repo -> `https://repo.misty.moe/apt`.
 * **HookKit Module (Cydia Substrate)**: -> `https://ios.jjolano.me`
 
-## on Kali
+### on Kali
 
 * **Frida Client**:
 
@@ -219,7 +219,7 @@ mv /var/jb/Library/LaunchDaemons/re.frida.server.backup /var/jb/Library/LaunchDa
 launchctl load /Library/LaunchDaemons/re.frida.server.plist
 ```
 
-# Install unsigned IPAs
+## Install unsigned IPAs
 
 To install an unsigned IPA we need to install on our jailbroken device `AppSync Unified`. You can download the following `.deb` package and install it via `NewTerm`.
 
@@ -233,9 +233,9 @@ sudo dpkg -i ai.akemi.appsyncunified_113.0_iphoneos-arm64.deb
 > **Note** `AppSync unified` has `cydia substrate` as a dependency. Install it via Zebra or Sileo.
 
 
-# IPA extractor and decryption
+## IPA extractor and decryption
 
-## Frida-ios-dump
+### Frida-ios-dump
 
 We can extract the IPA from an installed application from APP Store.
 
@@ -262,9 +262,9 @@ python3 ./dump.py com.example.app
 It is also possible to zip the bundle app and download it by ssh.
 
 
-# Evasion techniques
+## Evasion techniques
 
-## SSL Pinning
+### SSL Pinning
 
 * **With Objection**:
 
@@ -279,7 +279,7 @@ com.example.app on (iPhone: 16.7.9) [usb] # ios sslpinning disable
 With the package SSL Kill Switch 3 we can bypass ssl pinning. It can be installed from any package manager.
 Repo: `https://repo.misty.moe/apt`.
 
-## Jailbreak Detection
+### Jailbreak Detection
 
 * **With Shadow**:
 
@@ -287,9 +287,9 @@ With shadow some jailbreak detections can be bypassed.
 Repo: `https://ios.jjolano.shadow`.
 
 
-# Hooking 
+## Hooking 
 
-## With Objection
+### With Objection
 
 Sometimes we can't bypass the defenses with default templates, so should find the method that make the check and hook it properly.
 
@@ -316,7 +316,7 @@ ios hooking set return_value "-[<class_name> <method_name>]" false 		# change bo
 ios hooking generate simple <class_name> 		# generate a hooking template
 ```
 
-## With frida
+### With frida
 
 ```
 frida -l script.js -f com.example.app 		# basic hook
@@ -336,7 +336,7 @@ script.load()
 sys.stdin.read()
 ```
 
-# Installing a not signed ipa
+## Installing a not signed ipa
 
 We can only install ipas which are signed by a developer certificate. These certificates are expensive and there is a way to autosign it with a **validation of 7 days**.
 
@@ -357,9 +357,9 @@ Go to `Settings -> General -> VPN and device management`, click on the developer
 ![Developer verification](../images/developer_verification.png)
 
 
-# Bypassing Flutter apps
+## Bypassing Flutter apps
 
-## Jailbreak detection
+### Jailbreak detection
 
 We can use a frida script.
 
@@ -392,7 +392,7 @@ Interceptor.attach(Module.findExportByName("IOSSecuritySuite", "$s16IOSSecurityS
 });
 ```
 
-## SSL pinning detection
+### SSL pinning detection
 
 Since Flutter uses DART and is not using system proxy, we need to route our traffic to our burp with the help of a vpn.
 
@@ -618,9 +618,9 @@ function hook_ssl_verify_peer_cert(address) {
 }
 ````
 
-# Static Analysis
+## Static Analysis
 
-## Binary Analysis
+### Binary Analysis
 
 First, we need to download the ipa to our computer and install `llvm`.
 
@@ -660,6 +660,6 @@ $ llvm-otool-19 -I -v  Runner | grep _objc_
 ```
 
 
-# References:
+## References:
 
 * [https://medium.com/@shivayadav2820/unlocking-ios-a-comprehensive-guide-to-penetration-testing-on-apple-devices-2-5df8f4d72930](https://medium.com/@shivayadav2820/unlocking-ios-a-comprehensive-guide-to-penetration-testing-on-apple-devices-2-5df8f4d72930)

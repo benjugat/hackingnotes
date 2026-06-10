@@ -4,9 +4,9 @@ title: PORT 25/tcp - SMTP
 
 The Simple Mail Transfer Protocol (SMTP) is a communication protocol for electronic mail transmission. As an Internet standard.
 
-# Enumeration
+## Enumeration
 
-## User Enumeration
+### User Enumeration
 
 SMTP supports several interesting commands, such as `VRFY` and `EXPN`.
 
@@ -20,9 +20,9 @@ smtp-user-enum.pl -M RCPT -U users.txt -T mail-server-ips.txt
 smtp-user-enum.pl -M EXPN -D example.com -U users.txt -t 10.0.0.1
 ```
 
-# Send Mails
+## Send Mails
 
-## Telnet / Netcat
+### Telnet / Netcat
 
 We can conect to our SMTP server via telnet.
 
@@ -43,7 +43,7 @@ Body of the message ended with a dot
 .
 ```
 
-## Swiss Army Knife SMTP (swaks)
+### Swiss Army Knife SMTP (swaks)
 
 Other solution to automatize some tasks is using **swaks**:
 
@@ -51,7 +51,7 @@ Other solution to automatize some tasks is using **swaks**:
  swaks --to 'victim@server.local' --from 'test@server.local' --server 'smtp.server.local' --header 'Subject: Check this out!' --body 'Body of the message'
 ```
 
-# References:
+## References:
 
 * [https://book.hacktricks.xyz/pentesting/pentesting-smtp](https://book.hacktricks.xyz/pentesting/pentesting-smtp)
 * [http://systemadmin.es/2009/01/como-mandar-un-email-con-telnet-protocolo-smtp](http://systemadmin.es/2009/01/como-mandar-un-email-con-telnet-protocolo-smtp)

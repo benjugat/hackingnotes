@@ -2,7 +2,7 @@
 title: PORT 22/tcp - SSH
 ---
 
-# Introduction
+## Introduction
 
 The SSH protocol works on the client/server-model. The SSH client always initiates the setup of the secure connection, and the SSH server listens for incoming connection requests (usually on TCP port 22 on the host system) and responds to them.
 
@@ -11,7 +11,7 @@ In the connection setup phase, the SSH server authenticates itself to the client
 After a successful authentication the server provides the client access to the host system. This access is governed with the user account permissions at the target host system.
 
 
-# Bruteforcing Credentials
+## Bruteforcing Credentials
 
 To bruteforce the login in order to find valid credentials we can use different tools:
 
@@ -39,7 +39,7 @@ patator ssh_login host=10.10.10.10 user=FILE0 password=FILE1 0=users.txt  1=pass
 patator ssh_login host=10.10.10.10 user=root password=FILE0 0=pass.txt -x ignore:mesg='Authentication failed'
 ```
 
-# Download Files
+## Download Files
 
 To download files we can use `sftp` or `scp`:
 

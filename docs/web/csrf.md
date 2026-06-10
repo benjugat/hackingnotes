@@ -11,13 +11,13 @@ For a CSRF attack to be possible, three key conditions must be in place:
 * **Cookie-based session handling**: There is no other mechanism in place for tracking sessions or validating user requests. 
 * **Non unpredictable request parameters**: The requests that perform the action do not contain any parameters whose values the attacker cannot determine or guess.
 
-# How to construct a CSRF attack
+## How to construct a CSRF attack
 
 A CSRF PoC can be created with burpsuite. Right click on the desired request and `Engagemnt Tools->Generate CSRF PoC`
 
 ![](../images/csrf-poc.png)
 
-# How to deliver a CSRF exploit
+## How to deliver a CSRF exploit
 
 The delivery mechanisms for cross-site request forgery attacks are essentially the same as for reflected XSS. Typically, the attacker will place the malicious HTML onto a website that they control, and then induce victims to visit that website. This might be done by feeding the user a link to the website, via an email or social media message.
 
@@ -27,7 +27,7 @@ CSRF exploits employ the GET method and can be fully self-contained with a singl
 <img src="https://vulnerable-website.com/email/change?email=pwned@evil-user.net">
 ```
 
-# Common defences against CSRF
+## Common defences against CSRF
 
 Nowadays, successfully finding and exploiting CSRF vulnerabilities often involves bypassing anti-CSRF measures deployed by the target website, the victim's browser, or both. The most common defenses you'll encounter are as follows: 
 
@@ -36,11 +36,11 @@ Nowadays, successfully finding and exploiting CSRF vulnerabilities often involve
 * **Referer-based validation**: Some applications make use of the HTTP Referer header to attempt to defend against CSRF attacks, normally by verifying that the request originated from the application's own domain.
 
 
-# Bypass CSRF Token validation
+## Bypass CSRF Token validation
 
 A common way to share CSRF tokens with the client is to include them as a hidden parameter in an HTML form.
 
-## Validation of CSRF token depends on request method
+### Validation of CSRF token depends on request method
 
 Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
 
@@ -58,7 +58,7 @@ Deliver the payload with an HTML:
 </html>
 ```
 
-## Validation of CSRF token depends on token being present
+### Validation of CSRF token depends on token being present
 
 Some applications correctly validate the token when it is present but skip the validation if the token is omitted. 
 
@@ -74,13 +74,13 @@ Cookie: session=2yQIDcpia41WrATfjPqvm9tOkDvkMvLm
 email=pwned@evil-user.net
 ```
 
-## CSRF token is not tied to the user session
+### CSRF token is not tied to the user session
 
 Some applications do not validate that the token belongs to the same session as the user who is making the request. Instead, the application maintains a global pool of tokens that it has issued and accepts any token that appears in this pool. 
 
 In this situation, the attacker can log in to the application using their own account, obtain a valid token, and then feed that token to the victim user in their CSRF attack. 
 
-## CSRF token is tied to a non-session cookie
+### CSRF token is tied to a non-session cookie
 
 In a variation on the preceding vulnerability, some applications do tie the CSRF token to a cookie, but not to the same cookie that is used to track sessions. This can easily occur when an application employs two different frameworks, one for session handling and one for CSRF protection, which are not integrated together: 
 
@@ -118,7 +118,7 @@ Example of exploitation:
 
 > **Note**: It is very important to set the cookie attribute `SameSite` as `None` in order to work.
 
-## CSRF token is simply duplicated in a cookie
+### CSRF token is simply duplicated in a cookie
 
 In a further variation on the preceding vulnerability, some applications do not maintain any server-side record of tokens that have been issued, but instead duplicate each token within a cookie and a request parameter. When the subsequent request is validated, the application simply verifies that the token submitted in the request parameter matches the value submitted in the cookie. This is sometimes called the "double submit" defense against CSRF, and is advocated because it is simple to implement and avoids the need for any server-side state: 
 
@@ -151,7 +151,7 @@ In this situation, the attacker can again perform a CSRF attack if the website c
 </html>
 ```
 
-# Bypass SameSite Cookie restrictions
+## Bypass SameSite Cookie restrictions
 
 SameSite is a browser security mechanism that determines when a website's cookies are included in requests originating from other websites. SameSite cookie restrictions provide partial protection against a variety of cross-site attacks, including CSRF, cross-site leaks, and some CORS exploits. 
 
@@ -174,7 +174,7 @@ As you can see from this example, the term "site" is much less specific as it on
 * `Lax`: Browsers will send the cookie in cross-site requests but only if the request uses `GET` method and the request is a result of a top-level navigation by the user, such as clickn on a link.
 * `None`: Disables SameSite restrictions. It is the default behaviour used by major browsers if no `SameSite` is provided execept of Chrome.
 
-## Bypassing SameSite Lax restrictions using GET requests
+### Bypassing SameSite Lax restrictions using GET requests
 
 As long as the request involves a top-level navigation, the browser will still include the victim's session cookie. The following is one of the simplest approaches to launching such an attack: 
 
@@ -194,7 +194,7 @@ Some frameworks provide ways of overriding the method specified in the request l
 </form>
 ```
 
-## Bypassing SameSite restrictions using on-site gadgets
+### Bypassing SameSite restrictions using on-site gadgets
 
 If a cookie is set with the `SameSite=Strict` attribute, browsers won't include it in any cross-site requests. You may be able to get around this limitation if you can find a gadget that results in a secondary request within the same site.  Try to find a client-side redirect. 
 
@@ -239,7 +239,7 @@ Finally generate the CSRF poc.
 </html>
 ```
 
-## Bypassing SameSite restrictions via vulnerable sibling domains
+### Bypassing SameSite restrictions via vulnerable sibling domains
 
 Whether you're testing someone else's website or trying to secure your own, it's essential to keep in mind that a request can still be same-site even if it's issued cross-origin. 
 
@@ -247,7 +247,7 @@ Make sure you thoroughly audit all of the available attack surface, including an
 
 In addition to classic CSRF, don't forget that if the target website supports WebSockets, this functionality might be vulnerable to cross-site WebSocket hijacking (CSWSH), which is essentially just a CSRF attack targeting a WebSocket handshake.
 
-### Cross-Site WebSocket Hijacking (CSWSH)
+#### Cross-Site WebSocket Hijacking (CSWSH)
 
 Example of CSWSH payload:
 
@@ -265,7 +265,7 @@ Example of CSWSH payload:
 
 This payload needs to be exploit from a XSS in order to bypass `SameSite=Strict` cookie attribute.
 
-## Bypassing SameSite Lax restrictions with newly issued cookies
+### Bypassing SameSite Lax restrictions with newly issued cookies
 
 Cookies with `Lax` SameSite restrictions aren't normally sent in any cross-site `POST` requests, but there are some exceptions.
 
@@ -308,11 +308,11 @@ Example of payload:
 </script>
 ```
 
-# Bypassing Referer-based CSRF defenses
+## Bypassing Referer-based CSRF defenses
 
 Aside from defenses that employ CSRF tokens, some applications make use of the HTTP Referer header to attempt to defend against CSRF attacks, normally by verifying that the request originated from the application's own domain. This approach is generally less effective and is often subject to bypasses. 
 
-## Validation of Referer depends on header being present
+### Validation of Referer depends on header being present
 
 Some applications validate the `Referer` header when it is present in requests but skip the validation if the header is omitted.
 
@@ -337,7 +337,7 @@ Add `<meta name="referrer" content="never">` on your exploit:
 ```
 
 
-## Validation of Referer can be circumvented
+### Validation of Referer can be circumvented
 
 Some applications validate the `Referer` header in a naive way that can be bypassed.
 
@@ -361,7 +361,7 @@ Some applications validate the `Referer` header in a naive way that can be bypas
 ```
 > **Note**: Some browsers strips the referer headers, to avoid that add the following header on the malicious server response `Referrer-Policy: unsafe-url`.
 
-# Cross-Site WebSocket Hijacking
+## Cross-Site WebSocket Hijacking
 
 CSWH or Cross-Site Websocket hijacking involves a cross-site request forquery vulnerability on a WebSocket handshake. It arises when the websocket handshake request relies solely on HTTP cookies for session handling and does not contain any CSRF tokens.
 

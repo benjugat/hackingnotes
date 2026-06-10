@@ -4,7 +4,7 @@ title: PORT 1100/tcp - Java RMI
 
 The Java Remote Method Invocation, or Java RMI, is a mechanism that allows an object that exists in one Java virtual machine to access and call methods that are contained in another one.
 
-## Enumeration
+### Enumeration
 
 We can enumerate RMI ports with nmap.
 
@@ -22,7 +22,7 @@ nmap -sV --script "rmi-dumpregistry or rmi-vuln-classloader" -p <PORT> <IP>
 |_        java.rmi.server.RemoteObject
 ```
 
-## BaRMIe.jar
+### BaRMIe.jar
 
 If we can dump the registry of the java-rmi instance is the case where the machine may be vulnerable to a deserialization exploit. To exploit this deserialization on RMI ports I'm going to use BaRMIe.jar. We can download the file on the following link.
 

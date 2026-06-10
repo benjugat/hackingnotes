@@ -2,11 +2,11 @@
 title: PORT 21/tcp - FTP
 ---
 
-# Introduction
+## Introduction
 
 FTP (File Transfer Protocol) is used to communicate and transfer files between computers on a TCP/IP (Transmission Control Protocol/Internet Protocol) network, aka the internet. Users, who have been granted access, can receive and transfer files in the File Transfer Protocol server (also known as FTP host/site).
 
-# Anonymous User
+## Anonymous User
 
 In some devices anonymous user is enabled. It's important to give it a try.
 
@@ -16,7 +16,7 @@ name: anonymous
 pass
 ```
 
-# Bruteforcing Credentials
+## Bruteforcing Credentials
 
 To bruteforce the login in order to find valid credentials we can use different tools:
 
@@ -44,9 +44,9 @@ patator ftp_login host=10.10.10.10 user=FILE0 password=FILE1 0=usernames.txt 1=p
 patator ftp_login host=10.10.10.10 user=root password=FILE0 0=passwords.txt -x ignore:mesg='Login incorrect.'
 ```
 
-# FileZilla Server (From LFI)
+## FileZilla Server (From LFI)
 
-## FileZilla Server credentials
+### FileZilla Server credentials
 
 FileZilla Server credentials are stored on the `FileZilla Server.xml` file stored in one of the following routes:
 
@@ -77,7 +77,7 @@ Unescaped:      `!U3`CQ;a&3IzbXc/4Wpb\)OZ3TsXP;'Wx#^K"Tu_XX.K'o<'c&A:vItTX-M|Z0Y
 ```
 * [https://github.com/l4rm4nd/FileZilla-Password-Decryptor](https://github.com/l4rm4nd/FileZilla-Password-Decryptor)
 
-## FileZilla client credentials
+### FileZilla client credentials
 
 FileZilla client save last saved credentials on the following link.
 

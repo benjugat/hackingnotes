@@ -11,15 +11,15 @@ Authentication is the process of verifying the identity of a user. There are thr
 * Something you are: such as biometric patterns.
 
 
-# Vulns in password based login
+## Vulns in password based login
 
-## Bruteforcing Attacks
+### Bruteforcing Attacks
 
 Instead of doing a bruteforce attack of usernames and passwords, sometimes is more efficient trying to first identify the username and then bruteforce the password.
 
 > *Note*: Sometimes in bruteforcing attacks we have been blocked by IP. Try to add the header `X-Forwarded-For`.
 
-### User Enumeration
+#### User Enumeration
 
 An user enumeration is when an attacker is able to observer changes in the website behaviour in order to determine if the username exists or not.
 
@@ -30,13 +30,13 @@ This can happen looking:
 * **Response Times**: Sometime is higher on platforms that perform 2 different SQL queries, one for the username and other for the password. **Try to put a very long password in order to see the difference between a valid or not existant username.**
 
 
-## Flawed brute-force protection
+### Flawed brute-force protection
 
 The two most common ways of preventing bruteforce attacks is by:
 * Blocking the user after few fail attemps.
 * Block the remote users IP address after too many login attempts.
 
-### IP Block
+#### IP Block
 
 Sometimes you can find that your IP is blocked if you fail to log in too many times. In some implementations, the counter for the number of failed attempts resets if the IP owner logs in successfully. 
 
@@ -88,21 +88,21 @@ def handleResponse(req, interesting):
 
 ```
 
-### Account locking
+#### Account locking
 
 One way in which websites try to prevent brute-forcing is to lock the account if certain suspicious criteria are met, usually a set number of failed login attempts. Just as with normal login errors, responses from the server indicating that an account is locked can also help an attacker to enumerate usernames. 
 
 Locking an account offers a certain amount of protection against targeted brute-forcing of a specific account. However, this approach fails to adequately prevent brute-force attacks in which the attacker is just trying to gain access to any random account they can.
 
-# Vulns in multi-factor authentication
+## Vulns in multi-factor authentication
 
-## Bypassing 2FA
+### Bypassing 2FA
 
 At times, the implementation of two-factor authentication is flawed to the point where it can be bypassed entirely.
 
 If the user is first prompted to enter a password, and then prompted to enter a verification code on a separate page, the user is effectively in a "logged in" state before they have entered the verification code. In this case, it is worth testing to see if you can directly skip to "logged-in only" pages after completing the first authentication step. Occasionally, you will find that a website doesn't actually check whether or not you completed the second step before loading the page. 
 
-## Flawed two-factor verification logic
+### Flawed two-factor verification logic
 
 Sometimes the application does not verify that the same user is who is completing the second step (2FA). So we can use our credentials, trigger the 2FA on the victims device and in the second step bruteforce the victim code.
 
@@ -128,11 +128,11 @@ Cookie: account=victim
 mfa=123456
 ```
 
-# Vulns in other authentication mechanisms
+## Vulns in other authentication mechanisms
 
 In addition to the login functionality, applications add more functionalities to manage the user account such as password reset panels.
 
-## Keeping users logged in
+### Keeping users logged in
 
 A common feature is the option to stay logged in even after closing a browser session. This is usually a simple checkbox labeled something like "Remember me" or "Keep me logged in". 
 
@@ -166,15 +166,15 @@ body:document.cookie
 </script>
 ```
 
-## Resetting user passwords
+### Resetting user passwords
 
 There are different ways to implement a password reset functionality.
 
-### Sending passwords by email
+#### Sending passwords by email
 
 Some websites generate a new password and sends this to the user via email. Email is generally not considered secure given that inboxes are both persistent and not really designed for secure storage of confidential information.
 
-### Resetting passwords using a URL
+#### Resetting passwords using a URL
 
 Another way to reset the password is by sending to the user a unique URL that takes the user to a password reset page. Less secure implementations of this method use a URL with an easily guessable parameter to identify which account is being reset.
 
@@ -197,15 +197,15 @@ This token should expire on a short period term.
 The header `X-Forwarded-Host` can be used to point the dynamically generated reset link to an arbitrary domain.
 
 
-## Changing user passwords
+### Changing user passwords
 
 Typically, changing your password involves entering your current password and then the new password twice. These pages fundamentally rely on the same process for checking that usernames and current passwords match as a normal login page does. Therefore, these pages can be vulnerable to the same techniques. 
 
 Password change functionality can be particularly dangerous if it allows an attacker to access it directly without being logged in as the victim user. For example, if the username is provided in a hidden field, an attacker might be able to edit this value in the request to target arbitrary users. This can potentially be exploited to enumerate usernames and brute-force passwords. 
 
-# Bruteforcing Tools
+## Bruteforcing Tools
 
-## Hydra
+### Hydra
 
 hydra is a powerful network service attack tool that attacks a variety of protocol authentication schemes, including SSH and HTTP.
 
@@ -220,13 +220,13 @@ hydra <ip-addr> -l user -P passwords.txt -s <port> -vV -f http-form-post "/index
 -P password wordlist
 ```
 
-## Basic Auth
+### Basic Auth
 
 ```
 hydra <ip-addr> -l user -P passwords.txt -s <port> -vV -f http-get /index.php
 ```
 
-## My own script
+### My own script
 
 I made my own script in order to bruteforce some login panes with CSRF protection. I think is a good alternative to the Burpsuite **Pitchfork attack.**
 
@@ -259,17 +259,17 @@ with codecs.open("/usr/share/wordlists/rockyou.txt", 'r', encoding='utf-8', erro
 			sys.exit(0)	
 ```
 
-## Bypass it!
+### Bypass it!
 
 The are very different methods to bypass a login pane, this are the most common ones.
 
-### SQLi
+#### SQLi
 
 There are more info to bypass login panes with SQL Injections in:
 
 * [sqli.md](../sqli/)
 
-### PHP Type Juggling (==)
+#### PHP Type Juggling (==)
 
 How PHP’s type comparison features lead to vulnerabilities and in that case to bypass the login. Loose comparisons (==) have a set of operand conversion rules to make it easier for developers.
 
@@ -293,7 +293,7 @@ username=admin&password[]=
 
 * [https://owasp.org/www-pdf-archive/PHPMagicTricks-TypeJuggling.pdf](https://owasp.org/www-pdf-archive/PHPMagicTricks-TypeJuggling.pdf)
 
-### Magic Hashes
+#### Magic Hashes
 
 This particular implication for password hashes wen the operator equals-equals(==) is used. The problem is in == comparison, the 0e means that if the following characters are all digits the whole string gets treated as a float. Below is a list of hash types that when hashed are ^0+ed\*$ which equates to zero in PHP when magic hashes typing using the “==” operator is applied. That means that when a password hash starts with “0e…” as an example it will always appear to match the below strings, regardless of what they actually are if all of the subsequent characters are digits from “0-9”.
 
@@ -306,11 +306,11 @@ aabg7XSs  - 0e087386482136013740957780965295
 
 * [https://www.whitehatsec.com/blog/magic-hashes/](https://www.whitehatsec.com/blog/magic-hashes/)
 
-## Client Certificates
+### Client Certificates
 
 **SSL/TLS** certificates are commonly used for both encryption and identification of the parties, sometimes this is used instead of credentials at login.
 
-### Setting up the private key and the certificate (Server)
+#### Setting up the private key and the certificate (Server)
 
 First of all, we need to generate our keys and certificates. We use the `openssl` command-line tool.
 
@@ -318,7 +318,7 @@ First of all, we need to generate our keys and certificates. We use the `openssl
 openssl req -x509 -newkey rsa:4096 -keyout server_key.pem -out server_cert.pem -nodes -days 365 -subj "/CN=localhost/O=Client\ Certificate\ Demo"
 ```
 
-### Setting up client certificates
+#### Setting up client certificates
 
 To create a key and a Certificate Signing Request for Alice and Bob we can use the following command:
 
@@ -343,7 +343,7 @@ Maybe during the pentest we found the server key, remember that **we can downloa
 openssl x509 -req -in bob_csr.pem -signkey bob_key.pem -out bob_cert.pem -days 365
 ```
 
-### Trying to get in
+#### Trying to get in
 
 To use these certificates in our browser or via curl, we need to bundle them in PKCS#12 format.
 
@@ -366,7 +366,7 @@ curl --insecure --cert mvc1009.p12 --cert-type p12 https://localhost:443/
 
 * [https://medium.com/@sevcsik/authentication-using-https-client-certificates-3c9d270e8326](https://medium.com/@sevcsik/authentication-using-https-client-certificates-3c9d270e8326)
 
-# References:
+## References:
 
 * [https://www.netsparker.com/blog/web-security/php-type-juggling-vulnerabilities/](https://www.netsparker.com/blog/web-security/php-type-juggling-vulnerabilities/)
 * [https://medium.com/swlh/php-type-juggling-vulnerabilities-3e28c4ed5c09](https://medium.com/swlh/php-type-juggling-vulnerabilities-3e28c4ed5c09)

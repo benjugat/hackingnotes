@@ -1,8 +1,3 @@
----
-title: Other
-description: Miscellaneous topics: AWS, Python and PowerShell for offensive security.
----
-
 # Other
 
 Miscellaneous topics: AWS, Python and PowerShell for offensive security.
