@@ -5,12 +5,10 @@ site_name: Hacking Notes
 site_description: Notes for an ethical hacker.
 site_author: benjugat
 copyright: ""
+
 # GitHub Pages project site URL
 site_url: https://benjugat.github.io/hackingnotes/
 
-repo_url: https://github.com/benjugat/hackingnotes
-repo_name: benjugat/hackingnotes
-edit_uri: edit/main/docs/
 
 # Source and build directories
 docs_dir: docs
