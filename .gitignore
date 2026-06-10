@@ -1,0 +1,22 @@
+# Build artifacts
+site/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.venv/
+venv/
+
+# Jekyll leftovers (will be deleted in a follow-up commit, ignore meanwhile)
+_sass-cache/
+_site/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

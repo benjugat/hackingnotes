@@ -1,0 +1,256 @@
+# MkDocs configuration for Hacking Notes
+# https://www.mkdocs.org/user-guide/configuration/
+
+site_name: Hacking Notes
+site_description: Notes for an ethical hacker.
+site_author: benjugat
+copyright: ""
+# GitHub Pages project site URL
+site_url: https://benjugat.github.io/hackingnotes/
+
+repo_url: https://github.com/benjugat/hackingnotes
+repo_name: benjugat/hackingnotes
+edit_uri: edit/main/docs/
+
+# Source and build directories
+docs_dir: docs
+site_dir: site
+
+exclude_docs: |
+  README.md
+
+# Theme: Material for MkDocs
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+  favicon: images/favicon.png
+  logo: images/logo_rtnotes.png
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/benjugat
+  generator: false
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      auto_title: false
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.smartsymbols
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.\_]+'
+
+# Pretty URLs (/section/page/ without .html)
+use_directory_urls: true
+
+# Validation: warn on broken links, ignore external/absolute ones
+validation:
+  nav:
+    omitted_files: ignore
+    not_found: warn
+    absolute_links: ignore
+  links:
+    not_found: ignore
+    absolute_links: ignore
+    unrecognized_links: ignore
+
+# Manual navigation. Order follows the previous Jekyll `order` field where
+# possible so the reading flow is preserved.
+nav:
+  - Home: index.md
+
+  - Reconnaissance:
+      - reconnaissance/index.md
+      - reconnaissance/information-gathering.md
+
+  - Enumeration:
+      - enumeration/index.md
+      - enumeration/host-discovery.md
+      - enumeration/os-discovery.md
+      - enumeration/port-scanning.md
+      - enumeration/dns-enumeration.md
+      - enumeration/waf-evasion.md
+
+  - Web:
+      - web/index.md
+      - web/file-inclusion.md
+      - web/broken-authentication.md
+      - web/sqli.md
+      - web/nosqli.md
+      - web/templates-injections.md
+      - web/unrestricted-file-upload.md
+      - web/oauth-2.0-bypass.md
+      - web/command-injection.md
+      - web/api-testing.md
+      - web/race-conditions.md
+      - web/logic-flaws.md
+      - web/web-cache-deception.md
+      - web/access-control.md
+      - web/file-upload.md
+      - web/ssrf.md
+      - web/xxe.md
+      - web/csrf.md
+      - web/cors.md
+      - web/clickjacking.md
+      - web/dom.md
+      - web/xss.md
+      - web/http-host-header-attacks.md
+      - web/insecure-deserialization.md
+      - web/jwt-attacks.md
+      - web/web-llm.md
+      - web/graphql.md
+      - web/web-cache-poisoning.md
+      - web/http-request-smuggling.md
+      - web/prototype-pollution.md
+
+  - Mobile:
+      - movil/index.md
+      - movil/ios.md
+      - movil/non-jailbroken-ios.md
+
+  - Services:
+      - services/index.md
+      - services/ftp.md
+      - services/ssh.md
+      - services/smtp.md
+      - services/dns.md
+      - services/http.md
+      - services/rpcbind.md
+      - services/imap.md
+      - services/smb.md
+      - services/snmp.md
+      - services/java-rmi.md
+      - services/sql-server.md
+      - services/nfs.md
+      - services/mysql.md
+      - services/rdp.md
+
+  - Hacking WiFi:
+      - hacking-wifi/index.md
+      - hacking-wifi/theory.md
+      - hacking-wifi/wep.md
+      - hacking-wifi/wpa-wpa2-psk.md
+      - hacking-wifi/wpa-wpa2-peap-enterprise.md
+
+  - Exploiting:
+      - exploiting/index.md
+      - exploiting/buffer-overflow.md
+      - exploiting/bof-windows.md
+      - exploiting/bof-linux.md
+
+  - Active Directory:
+      - active-directory/index.md
+      - active-directory/introduction.md
+      - active-directory/domain-enumeration.md
+      - active-directory/lateral-movement.md
+      - active-directory/domain-persistence.md
+      - active-directory/domain-privesc.md
+      - active-directory/cross-forest-attacks.md
+      - active-directory/forest-persistence.md
+      - active-directory/ad-certificate-services.md
+      - active-directory/securing-ad.md
+      - active-directory/ad-attacks.md
+
+  - Client-Side Attacks:
+      - client-side-attacks/index.md
+      - client-side-attacks/evil-pdf.md
+      - client-side-attacks/microsoft-office-macros.md
+      - client-side-attacks/html-application.md
+      - client-side-attacks/html-smuggling.md
+
+  - Post-Exploitation:
+      - post-exploitation/index.md
+      - post-exploitation/av-evasion.md
+      - post-exploitation/bypass-uac.md
+      - post-exploitation/get-credentials.md
+      - post-exploitation/password-cracking.md
+      - post-exploitation/port-forwarding.md
+      - post-exploitation/reverse-shell.md
+      - post-exploitation/transfering-files.md
+      - post-exploitation/ata-evasion.md
+      - post-exploitation/bypass-applocker.md
+
+  - Privilege Escalation:
+      - privilege-escalation/index.md
+      - privilege-escalation/linux-privesc.md
+      - privilege-escalation/windows-privesc.md
+      - privilege-escalation/run-commands-as.md
+
+  - Software:
+      - software/index.md
+      - software/wordpress.md
+      - software/drupal.md
+      - software/tomcat.md
+      - software/jenkins.md
+      - software/pypi-server.md
+      - software/owa-exchange.md
+      - software/liferay.md
+
+  - Other:
+      - other/index.md
+      - other/hacking-aws.md
+      - other/hacking-with-powershell.md
+      - other/hacking-python.md

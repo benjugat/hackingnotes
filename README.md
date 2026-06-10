@@ -1,68 +1,154 @@
-# Edition
+# Hacking Notes
 
-Product documentation template for Jekyll. Browse through a [live demo](https://long-pig.cloudvent.net/).
-Start documenting your product, application, service or website with this configurable theme.
+Notes for an ethical hacker — cheatsheets, methodology and references
+across web, mobile, network, Active Directory, post-exploitation and more.
 
-![Edition template screenshot](images/_screenshot.png)
+The site is built with [MkDocs](https://www.mkdocs.org/) using
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) and is
+deployed automatically to GitHub Pages on every push to `main`.
 
-Edition was made by [CloudCannon](http://cloudcannon.com/), the Cloud CMS for Jekyll.
+> 🌐 Live site: <https://benjugat.github.io/hackingnotes/>
 
-Find more templates, themes and step-by-step Jekyll tutorials at [CloudCannon Academy](https://learn.cloudcannon.com/).
+## Stack
 
-[![Deploy to CloudCannon](https://buttons.cloudcannon.com/deploy.svg)](https://app.cloudcannon.com/register#sites/connect/github/CloudCannon/edition-jekyll-template)
+- **Static site generator:** MkDocs 1.6
+- **Theme:** Material for MkDocs 9.6
+- **Markdown extensions:** PyMdown Extensions (superfences, highlight,
+  tabbed, details, snippets, tasklist, …)
+- **Deploy:** GitHub Actions → `actions/deploy-pages@v4`
 
-## Features
+## Project layout
 
-* Two column layout
-* Full text search
-* Pre-styled components
-* Auto-generated navigation based on category
-* Optimised for editing in [CloudCannon](http://cloudcannon.com/)
-* Change log
-* RSS/Atom feed
-* SEO tags
-* Google Analytics
+```
+.
+├── docs/                 # Markdown content (one folder per topic)
+│   ├── index.md
+│   ├── changelog.md
+│   ├── active-directory/
+│   ├── client-side-attacks/
+│   ├── enumeration/
+│   ├── exploiting/
+│   ├── hacking-wifi/
+│   ├── movil/
+│   ├── other/
+│   ├── post-exploitation/
+│   ├── privilege-escalation/
+│   ├── reconnaissance/
+│   ├── services/
+│   ├── software/
+│   ├── web/
+│   ├── images/           # All images live here
+│   └── css/extra.css     # Site-wide custom CSS
+├── mkdocs.yml            # Site config & navigation
+├── requirements.txt      # Python dependencies
+├── .github/workflows/
+│   └── deploy.yml        # Build & publish to GitHub Pages
+├── migrate_content.py    # One-shot Jekyll → MkDocs migration script
+└── MIGRATION_TO_MKDOCS.md
+```
 
-## Setup
+## Editing notes
 
-1. Add your site and author details in `_config.yml`.
-2. Get a workflow going to see your site's output (with [CloudCannon](https://app.cloudcannon.com/) or Jekyll locally).
+1. Create or edit a Markdown file inside `docs/<topic>/`.
+2. Add (or update) the front matter — only `title:` is required:
 
-## Develop
+   ```markdown
+   ---
+   title: My New Page
+   ---
 
-Edition was built with [Jekyll](http://jekyllrb.com/) version 3.3.1, but should support newer versions as well.
+   # Heading
+   ...
+   ```
 
-Install the dependencies with [Bundler](http://bundler.io/):
+3. Reference other pages with a relative `.md` link. MkDocs resolves the
+   URL at build time:
 
-~~~bash
-$ bundle install
-~~~
+   ```markdown
+   See [SQLi](../web/sqli.md) for details.
+   ```
 
-Run `jekyll` commands through Bundler to ensure you're using the right versions:
+4. Reference an image with a relative path inside `docs/images/`:
 
-~~~bash
-$ bundle exec jekyll serve --open-url --host 0.0.0.0 --port 4000
-~~~
+   ```markdown
+   ![Alt text](../images/my-image.png)
+   ```
 
-## Editing
+5. Open a pull request. The action will preview-build the site and
+   publish to GitHub Pages on merge to `main`.
 
-Edition is already optimised for adding, updating and removing documentation pages in CloudCannon.
+## Local development
 
-### Documentation pages
+You need **Python 3.10+** installed.
 
-* Add, update or remove a documentation page in the *Documentation* collection.
-* Change the category of a documentation page to move it to another section in the navigation.
-* Documentation pages are organised in the navigation by category, with URLs based on the path inside the `_docs` folder.
+```bash
+# 1. Create a virtual environment (recommended)
+python -m venv .venv
+.venv\Scripts\activate           # Windows
+# source .venv/bin/activate      # macOS / Linux
 
-### Change log
+# 2. Install dependencies
+pip install -r requirements.txt
 
-* Add, update or remove change log entries from your posts.
-* Tag entries as minor or major in the front matter.
+# 3. Start the live-reloading dev server
+mkdocs serve                     # browse to http://127.0.0.1:8000
+```
 
-### Search
+While the dev server is running, every save to a Markdown file or to
+`mkdocs.yml` triggers an automatic rebuild and browser refresh.
 
-* Add `excluded_in_search: true` to any documentation page's front matter to exclude that page in the search results.
+## Building the site locally
 
-### Navigation
+```bash
+mkdocs build --clean
+# Output is written to ./site/
+```
 
-* Change `site.show_full_navigation` to control all or only the current navigation group being open.
+Use `--strict` to fail the build on any warning (broken internal link,
+missing nav entry, …). The CI workflow runs with `--strict` enabled.
+
+## Deploying to GitHub Pages
+
+Deployment is fully automatic:
+
+- Push to `main` (or trigger the workflow manually from the Actions tab).
+- The workflow at `.github/workflows/deploy.yml` installs Python 3.11,
+  installs dependencies from `requirements.txt`, runs `mkdocs build
+  --strict`, and publishes the `site/` directory via the official
+  `actions/deploy-pages@v4` action.
+- No `gh-pages` branch is used; the site is published straight from the
+  workflow artifact.
+
+### One-time GitHub setup
+
+1. Open **Settings → Pages** for the repository.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Save. The next successful workflow run will publish the site.
+
+## Adding a new page to the navigation
+
+New pages are not auto-added to the navigation. Edit `mkdocs.yml` and
+append the page to the appropriate section:
+
+```yaml
+nav:
+  - Web:
+      - web/sqli.md
+      - web/my-new-page.md   # ← new entry
+```
+
+Then run `mkdocs serve` to preview.
+
+## Conventions
+
+- **Filenames** are lowercase, dash-separated (`sql-injection.md`,
+  not `SQL_Injection.md`).
+- **Folder names** match the section name in `mkdocs.yml`.
+- **Front matter**: only `title:` is used. The `category` and `order`
+  fields from the old Jekyll site are no longer needed.
+- **Images** go into `docs/images/`. Prefer descriptive kebab-case
+  filenames (`request-splitting.png` rather than `IMG_1234.png`).
+
+## License
+
+See [`LICENSE`](./LICENSE).

@@ -1,0 +1,141 @@
+/* Custom tweaks for Hacking Notes */
+
+:root {
+  --md-text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --md-code-font: "JetBrains Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* Code blocks */
+.md-typeset code,
+.md-typeset pre {
+  font-size: 0.82rem;
+}
+
+.md-typeset pre > code {
+  border-radius: 6px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+}
+
+/* Make images a bit smaller by default so they fit columns */
+.md-typeset img {
+  max-width: 80%;
+  border-radius: 4px;
+}
+
+/* Admonitions: tighter padding */
+.md-typeset .admonition {
+  margin: 1rem 0;
+}
+
+/* Slightly denser TOCs in the right sidebar */
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+}
+
+/* Footer link style */
+.md-footer-meta {
+  font-size: 0.7rem;
+}
+
+/* -------------------------------------------------------------------------
+ * Sidebar: keep sub-items collapsed by default, but let the user
+ * expand them either by clicking the section title OR by being on a
+ * page that lives inside the section. Material automatically tags the
+ * active section with `.md-nav__item--active` so we only need to opt
+ * in to expand it via CSS.
+ * ------------------------------------------------------------------------- */
+.md-nav__item--section.md-nav__item--nested > .md-nav {
+  display: none;
+}
+
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__toggle:checked
+  ~ .md-nav {
+  display: block;
+}
+
+.md-nav__item--section.md-nav__item--nested.md-nav__item--active
+  > .md-nav {
+  display: block;
+}
+
+/* Visual cue: section titles must look clickable */
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__link.md-nav__container
+  > a.md-nav__link,
+.md-nav__item--section.md-nav__item--nested
+  > label.md-nav__link {
+  cursor: pointer;
+}
+
+/* Hover state to make the click target obvious */
+.md-nav__item--section.md-nav__item--nested
+  > .md-nav__link.md-nav__container:hover {
+  background-color: var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+}
+
+/* -------------------------------------------------------------------------
+ * Dark mode polish
+ * Make the palette toggle clearly visible, and tighten a few colour
+ * tokens so the slate scheme reads as proper night mode.
+ * ------------------------------------------------------------------------- */
+
+/* Bigger / more obvious palette toggle in the header */
+.md-header__option .md-header__button.md-icon {
+  padding: 0.4rem;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+}
+
+.md-header__option .md-header__button.md-icon:hover {
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+/* Soften some surfaces in the slate scheme so the page doesn't look
+   flat-black and the code blocks stand out. */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color:        #1c1f26;
+  --md-default-bg-color--light: #23262e;
+  --md-default-fg-color:        #e6e6e6;
+  --md-default-fg-color--light: #b9bcc4;
+  --md-default-fg-color--lighter: #8b8e97;
+  --md-code-bg-color:           #2a2d36;
+  --md-code-fg-color:           #e6e6e6;
+  --md-typeset-table-color:     #2a2d36;
+  --md-admonition-bg-color:     #2a2d36;
+  --md-footer-bg-color:         #14161b;
+  --md-footer-bg-color--dark:  #0f1115;
+  --md-shadow-z1: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.4);
+  --md-shadow-z2: 0 0 0.8rem rgba(0, 0, 0, 0.5);
+}
+
+/* Slightly tinted code blocks in dark mode for legibility */
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background-color: #2a2d36;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #b7c6d4;
+}
+
+/* Better table contrast in dark mode */
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: #2a2d36;
+  color: #e6e6e6;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Admonitions: a touch of colour in dark mode */
+[data-md-color-scheme="slate"] .md-typeset .admonition {
+  border-left-color: var(--md-primary-fg-color);
+}
