@@ -403,7 +403,7 @@ sudo wget https://git.io/vpn -O openvpn-install.sh
 sudo sed -i "$(($(grep -ni "debian is too old" openvpn-install.sh | cut  -d : -f 1)+1))d" ./openvpn-install.sh
 sudo chmod +x openvpn-install.sh
 sudo ./openvpn-install.sh
-````
+```
 
 ```
 Which IPv4 address should be used?  
