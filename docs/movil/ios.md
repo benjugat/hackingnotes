@@ -616,7 +616,7 @@ function hook_ssl_verify_peer_cert(address) {
         return 0;
     }, 'int', ['pointer', 'int']));
 }
-````
+```
 
 ## Static Analysis
 
@@ -660,6 +660,6 @@ $ llvm-otool-19 -I -v  Runner | grep _objc_
 ```
 
 
-## References:
+## References
 
 * [https://medium.com/@shivayadav2820/unlocking-ios-a-comprehensive-guide-to-penetration-testing-on-apple-devices-2-5df8f4d72930](https://medium.com/@shivayadav2820/unlocking-ios-a-comprehensive-guide-to-penetration-testing-on-apple-devices-2-5df8f4d72930)
