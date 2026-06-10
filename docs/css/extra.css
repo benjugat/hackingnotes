@@ -1,0 +1,42 @@
+/* Custom tweaks for Hacking Notes */
+
+:root {
+  --md-text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --md-code-font: "JetBrains Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* Code blocks */
+.md-typeset code,
+.md-typeset pre {
+  font-size: 0.82rem;
+}
+
+.md-typeset pre > code {
+  border-radius: 6px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+}
+
+/* Make images a bit smaller by default so they fit columns */
+.md-typeset img {
+  max-width: 80%;
+  border-radius: 4px;
+}
+
+/* Admonitions: tighter padding */
+.md-typeset .admonition {
+  margin: 1rem 0;
+}
+
+/* Slightly denser TOCs in the right sidebar */
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+}
+
+/* Footer link style */
+.md-footer-meta {
+  font-size: 0.7rem;
+}
