@@ -1,5 +1,5 @@
 ---
-title: Jailborken iOS
+title: Jailbroken iOS
 ---
 
 Setup of the environment
