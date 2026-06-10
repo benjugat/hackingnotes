@@ -42,22 +42,25 @@
 }
 
 /* -------------------------------------------------------------------------
- * Sidebar: force every section's sub-items to be hidden by default, and
- * only reveal them when the user explicitly clicks the section title.
- *
- * This belt-and-suspenders rule overrides any case where Material's
- * default CSS or JS might leave a section expanded (e.g. when arriving
- * from a page that was already inside that section, or when persistent
- * state from `navigation.instant` survives across navigations).
+ * Sidebar: keep sub-items collapsed by default, but let the user
+ * expand them either by clicking the section title OR by being on a
+ * page that lives inside the section. Material automatically tags the
+ * active section with `.md-nav__item--active` so we only need to opt
+ * in to expand it via CSS.
  * ------------------------------------------------------------------------- */
 .md-nav__item--section.md-nav__item--nested > .md-nav {
-  display: none !important;
+  display: none;
 }
 
 .md-nav__item--section.md-nav__item--nested
   > .md-nav__toggle:checked
   ~ .md-nav {
-  display: block !important;
+  display: block;
+}
+
+.md-nav__item--section.md-nav__item--nested.md-nav__item--active
+  > .md-nav {
+  display: block;
 }
 
 /* Visual cue: section titles must look clickable */
