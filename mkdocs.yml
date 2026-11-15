@@ -215,6 +215,7 @@ nav:
       - client-side-attacks/microsoft-office-macros.md
       - client-side-attacks/html-application.md
       - client-side-attacks/html-smuggling.md
+      - client-side-attacks/ics-phishing.md
 
   - Post-Exploitation:
       - post-exploitation/index.md
