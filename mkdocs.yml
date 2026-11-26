@@ -215,7 +215,6 @@ nav:
       - client-side-attacks/evil-pdf.md
       - client-side-attacks/microsoft-office-macros.md
       - client-side-attacks/html-application.md
-      - client-side-attacks/html-smuggling.md
       - client-side-attacks/ics-phishing.md
 
   - Post-Exploitation:
