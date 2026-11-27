@@ -228,6 +228,7 @@ nav:
       - post-exploitation/transfering-files.md
       - post-exploitation/ata-evasion.md
       - post-exploitation/bypass-applocker.md
+      - post-exploitation/linux-post-exploitation.md
 
   - Privilege Escalation:
       - privilege-escalation/index.md
